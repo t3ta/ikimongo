@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		3BE53468221FB11700C8AEDD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE53467221FB11700C8AEDD /* AppDelegate.swift */; };
 		3BE5346A221FB11700C8AEDD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE53469221FB11700C8AEDD /* ViewController.swift */; };
-		3BE5346D221FB11700C8AEDD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3BE5346B221FB11700C8AEDD /* Main.storyboard */; };
+		3BE5346D221FB11700C8AEDD /* LoginViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3BE5346B221FB11700C8AEDD /* LoginViewController.storyboard */; };
 		3BE5346F221FB11800C8AEDD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3BE5346E221FB11800C8AEDD /* Assets.xcassets */; };
 		3BE53472221FB11800C8AEDD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3BE53470221FB11800C8AEDD /* LaunchScreen.storyboard */; };
 		3BE5347D221FB11800C8AEDD /* IkimonGOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE5347C221FB11800C8AEDD /* IkimonGOTests.swift */; };
@@ -37,7 +37,7 @@
 		3BE53464221FB11700C8AEDD /* IkimonGO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IkimonGO.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3BE53467221FB11700C8AEDD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3BE53469221FB11700C8AEDD /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		3BE5346C221FB11700C8AEDD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		3BE5346C221FB11700C8AEDD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LoginViewController.storyboard; sourceTree = "<group>"; };
 		3BE5346E221FB11800C8AEDD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3BE53471221FB11800C8AEDD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3BE53473221FB11800C8AEDD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -99,7 +99,7 @@
 			children = (
 				3BE53467221FB11700C8AEDD /* AppDelegate.swift */,
 				3BE53469221FB11700C8AEDD /* ViewController.swift */,
-				3BE5346B221FB11700C8AEDD /* Main.storyboard */,
+				3BE5346B221FB11700C8AEDD /* LoginViewController.storyboard */,
 				3BE5346E221FB11800C8AEDD /* Assets.xcassets */,
 				3BE53470221FB11800C8AEDD /* LaunchScreen.storyboard */,
 				3BE53473221FB11800C8AEDD /* Info.plist */,
@@ -231,7 +231,7 @@
 			files = (
 				3BE53472221FB11800C8AEDD /* LaunchScreen.storyboard in Resources */,
 				3BE5346F221FB11800C8AEDD /* Assets.xcassets in Resources */,
-				3BE5346D221FB11700C8AEDD /* Main.storyboard in Resources */,
+				3BE5346D221FB11700C8AEDD /* LoginViewController.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -293,12 +293,12 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		3BE5346B221FB11700C8AEDD /* Main.storyboard */ = {
+		3BE5346B221FB11700C8AEDD /* LoginViewController.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
 				3BE5346C221FB11700C8AEDD /* Base */,
 			);
-			name = Main.storyboard;
+			name = LoginViewController.storyboard;
 			sourceTree = "<group>";
 		};
 		3BE53470221FB11800C8AEDD /* LaunchScreen.storyboard */ = {
