@@ -9,9 +9,18 @@
 import RxSwift
 
 protocol RecordDataStoreProtocol {
-    
+//    func getMyRecords() -> Observable<[Record]>
+//    func getRecord(by id: String) -> Observable<Record>
 }
 
 final class RecordDataStore: RecordDataStoreProtocol {
+    let request = RecordRequest()
     
+/*    func getRecord(by id: String) -> Observable<Record> {
+        
+    }
+    
+    func getMyRecords() -> Observable<[Record]> {
+        
+    }*/
 }

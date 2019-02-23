@@ -21,8 +21,7 @@ final class LoginPresenter: LoginPresenterProtocol {
     private let useCase: LoginUseCaseProtocol
     private let router: LoginRouterProtocol
     private weak var viewInput: LoginViewControllerInput?
-    
-    
+        
     fileprivate let disposeBag = DisposeBag()
     
     init(useCase: LoginUseCaseProtocol, router: LoginRouterProtocol ,viewInput: LoginViewControllerInput) {
@@ -41,6 +40,7 @@ final class LoginPresenter: LoginPresenterProtocol {
         useCase.login(email: email, password: password)
             .subscribe(onNext: { [weak self] (loginStatus) in
                 guard let self = self else { return }
+                print(loginStatus)
                 self.router.transitionToMapViewController()
             }, onError: { [weak self] (error) in
                 guard let self = self else { return }

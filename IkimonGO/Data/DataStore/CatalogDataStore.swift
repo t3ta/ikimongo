@@ -9,9 +9,18 @@
 import RxSwift
 
 protocol CatalogDataStoreProtocol {
-    
+//    func getMyCatalogs() -> Observable<[Catalog]>
+//    func getCatalog(by id: String) -> Observable<Catalog>
 }
 
 final class CatalogDataStore: CatalogDataStoreProtocol {
+    let request = CatalogRequest()
     
+/*    func getMyCatalogs() -> Observable<[Catalog]> {
+        
+    }
+    
+    func getCatalog(by id: String) -> Observable<Catalog> {
+        
+    }*/
 }

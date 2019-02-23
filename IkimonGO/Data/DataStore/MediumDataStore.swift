@@ -9,9 +9,13 @@
 import RxSwift
 
 protocol MediumDataStoreProtocol {
-    
+//    func getMedium(by id: String) -> Observable<Medium>
 }
 
 final class MediumDataStore: MediumDataStoreProtocol {
+    let request = MediumRequest()
     
+/*    func getMedium(by id: String) -> Observable<Medium> {
+        
+    }*/
 }
