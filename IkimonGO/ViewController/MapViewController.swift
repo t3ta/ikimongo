@@ -18,6 +18,10 @@ final class MapViewController: UIViewController {
     public func inject(presenter: MapPresenterProtocol) {
         self.presenter = presenter
     }
+    
+    override func viewDidLoad() {
+        presenter?.showMyRecords()
+    }
 }
 
 extension MapViewController: MapViewControllerInput {

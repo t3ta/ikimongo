@@ -25,9 +25,9 @@ extension RecordAPI: AuthorizedTargetType {
     var path: String {
         switch self {
         case .get:
-            return "/record"
+            return "/records"
         case .getById(let id):
-            return "/record/"+id
+            return "/records/"+id
         }
     }
     

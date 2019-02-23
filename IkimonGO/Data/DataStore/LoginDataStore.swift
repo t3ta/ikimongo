@@ -13,20 +13,33 @@ import Moya
 
 enum LoginError: Error {
     case parseError
+    case noAccessToken
+    case authError
 }
 
 protocol LoginDataStoreProtocol {
-    func getAccessToken(email: String, password: String) -> Observable<LoginStatus>
+    func getAccessToken() -> Observable<String>
+    func getLoginStatus(email: String, password: String) -> Observable<LoginStatus>
 }
 
 final class LoginDataStore: LoginDataStoreProtocol {
-    private let provider = MoyaProvider<AuthAPI>()
-    
-    func getAccessToken(email: String, password: String) -> Observable<LoginStatus> {
-        return Observable<LoginStatus>.create({ [weak self] (observer) -> Disposable in
-            guard let self = self else { return Disposables.create() }
+    func getAccessToken() -> Observable<String> {
+        return Observable<String>.create({ (observer) -> Disposable in
+            if let accessToken = UserDefaults.standard.object(forKey: "accessToken") as? String {
+                observer.onNext(accessToken)
+            } else {
+                observer.onError(LoginError.noAccessToken)
+            }
             
-            let _ = self.provider.rx
+            return Disposables.create()
+        })
+    }
+    
+    func getLoginStatus(email: String, password: String) -> Observable<LoginStatus> {
+        let provider = MoyaProvider<AuthAPI>()
+        
+        return Observable<LoginStatus>.create({ (observer) -> Disposable in
+            let _ = provider.rx
                         .request(.login(email: email, password: password))
                         .filterSuccessfulStatusCodes()
                         .map({ (response) -> LoginStatus? in
@@ -34,6 +47,7 @@ final class LoginDataStore: LoginDataStoreProtocol {
                         })
                         .subscribe(onSuccess: { (loginStatus) in
                             if let loginStatus = loginStatus {
+                                UserDefaults.standard.register(defaults: ["accessToken": loginStatus.accessToken])
                                 observer.onNext(loginStatus)
                             } else {
                                 observer.onError(LoginError.parseError)

@@ -70,6 +70,11 @@
 		3BA0E54E2221B6F70044F17E /* MediumAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E54D2221B6F70044F17E /* MediumAPI.swift */; };
 		3BA0E5502221B9700044F17E /* AuthPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E54F2221B9700044F17E /* AuthPlugin.swift */; };
 		3BA0E5522221C1BB0044F17E /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E5512221C1BB0044F17E /* User.swift */; };
+		3BA0E5532221C5D60044F17E /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E5512221C1BB0044F17E /* User.swift */; };
+		3BA0E5542221C5E00044F17E /* AuthPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E54F2221B9700044F17E /* AuthPlugin.swift */; };
+		3BA0E5552221C5ED0044F17E /* RecordAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E5492221B6E50044F17E /* RecordAPI.swift */; };
+		3BA0E5562221C5F20044F17E /* CatalogAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E54B2221B6ED0044F17E /* CatalogAPI.swift */; };
+		3BA0E5572221C5F60044F17E /* MediumAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E54D2221B6F70044F17E /* MediumAPI.swift */; };
 		3BE53468221FB11700C8AEDD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE53467221FB11700C8AEDD /* AppDelegate.swift */; };
 		3BE5346A221FB11700C8AEDD /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE53469221FB11700C8AEDD /* LoginViewController.swift */; };
 		3BE5346D221FB11700C8AEDD /* LoginViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3BE5346B221FB11700C8AEDD /* LoginViewController.storyboard */; };
@@ -618,6 +623,7 @@
 				3BE534A3221FBA9D00C8AEDD /* LoginRepository.swift in Sources */,
 				3BA0E5402221ABF40044F17E /* UserAPI.swift in Sources */,
 				3BA0E5432221ABFF0044F17E /* Format.swift in Sources */,
+				3BA0E5532221C5D60044F17E /* User.swift in Sources */,
 				3BA0E53F2221ABEF0044F17E /* MediumDataStore.swift in Sources */,
 				3BA0E5442221AC010044F17E /* Medium.swift in Sources */,
 				3BE534A6221FBBBF00C8AEDD /* APIClient.swift in Sources */,
@@ -626,6 +632,8 @@
 				3BA0E53E2221ABEC0044F17E /* RecordDataStore.swift in Sources */,
 				3BE53497221FB20D00C8AEDD /* LoginPresenter.swift in Sources */,
 				3BA0E5482221AC140044F17E /* MediumRepository.swift in Sources */,
+				3BA0E5552221C5ED0044F17E /* RecordAPI.swift in Sources */,
+				3BA0E5572221C5F60044F17E /* MediumAPI.swift in Sources */,
 				3BA0E4F0222186F00044F17E /* MapViewController.swift in Sources */,
 				3BA0E5422221ABFC0044F17E /* Catalog.swift in Sources */,
 				3BA0E5462221AC0F0044F17E /* RecordRepository.swift in Sources */,
@@ -636,6 +644,8 @@
 				3BA0E53D2221ABE90044F17E /* CatalogDataStore.swift in Sources */,
 				3BA0E5392221ABC40044F17E /* LoginStatus.swift in Sources */,
 				3BA0E5472221AC120044F17E /* CatalogRepository.swift in Sources */,
+				3BA0E5542221C5E00044F17E /* AuthPlugin.swift in Sources */,
+				3BA0E5562221C5F20044F17E /* CatalogAPI.swift in Sources */,
 				3BA0E53A2221ABCF0044F17E /* LoginRouter.swift in Sources */,
 				3BA0E5412221ABF90044F17E /* Record.swift in Sources */,
 				3BE5349A221FB21900C8AEDD /* LoginUseCase.swift in Sources */,

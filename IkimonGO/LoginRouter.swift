@@ -24,7 +24,8 @@ final class LoginRouter: LoginRouterProtocol {
     }
     
     func transitionToMapViewController() {
-        let useCase = MapUseCase(recordRepository: RecordRepository(dataStore: RecordDataStore()),
+        let useCase = MapUseCase(loginRepository: LoginRepository(dataStore: LoginDataStore()),
+                                 recordRepository: RecordRepository(dataStore: RecordDataStore()),
                                  catalogRepository: CatalogRepository(dataStore: CatalogDataStore()),
                                  mediumRepository: MediumRepository(dataStore: MediumDataStore()))
         let mapViewController = UIStoryboard(name: "MapViewController", bundle: nil).instantiateInitialViewController() as! MapViewController
