@@ -15,7 +15,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        
+        let useCase = LoginUsecase()
+        let presenter = LoginPresenter(useCase: useCase)
+        let apiClient = APIClientStub()
+        let gateway = LoginGateway(useCase: useCase, apiClient: apiClient)
+        useCase.output = presenter
+        useCase.gateway = gateway
+        let viewController = UIStoryboard(name: "LoginViewController", bundle: nil).instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
+        presenter.output = viewController
+        viewController.presenter = presenter
+        
+        window?.rootViewController = UINavigationController(rootViewController: viewController)
+        
         return true
     }
 

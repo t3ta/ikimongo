@@ -6,4 +6,7 @@
 //  Copyright © 2019 Takahito Mita. All rights reserved.
 //
 
-import Foundation
+enum Result<T> {
+    case success(T)
+    case failure(Error)
+}
