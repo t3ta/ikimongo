@@ -33,14 +33,43 @@
 		3BA0E52022219D720044F17E /* Moya.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3BA0E51422219D720044F17E /* Moya.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3BA0E52122219D720044F17E /* RxBlocking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BA0E51522219D720044F17E /* RxBlocking.framework */; };
 		3BA0E52222219D720044F17E /* RxBlocking.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3BA0E51522219D720044F17E /* RxBlocking.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		3BA0E52322219D720044F17E /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BA0E51622219D720044F17E /* RxSwift.framework */; };
-		3BA0E52422219D720044F17E /* RxSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3BA0E51622219D720044F17E /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3BA0E52722219D720044F17E /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BA0E51822219D720044F17E /* Alamofire.framework */; };
 		3BA0E52822219D720044F17E /* Alamofire.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3BA0E51822219D720044F17E /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3BA0E52922219D720044F17E /* Result.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BA0E51922219D720044F17E /* Result.framework */; };
 		3BA0E52A22219D720044F17E /* Result.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3BA0E51922219D720044F17E /* Result.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3BA0E52B22219D720044F17E /* RxAtomic.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BA0E51A22219D720044F17E /* RxAtomic.framework */; };
 		3BA0E52C22219D720044F17E /* RxAtomic.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3BA0E51A22219D720044F17E /* RxAtomic.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3BA0E52F2221AAA40044F17E /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BA0E52E2221AAA40044F17E /* RxSwift.framework */; };
+		3BA0E5302221AAA40044F17E /* RxSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3BA0E52E2221AAA40044F17E /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3BA0E5312221ABA30044F17E /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BA0E52E2221AAA40044F17E /* RxSwift.framework */; };
+		3BA0E5322221ABA30044F17E /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BA0E51822219D720044F17E /* Alamofire.framework */; };
+		3BA0E5332221ABA30044F17E /* Moya.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BA0E51422219D720044F17E /* Moya.framework */; };
+		3BA0E5342221ABA30044F17E /* Result.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BA0E51922219D720044F17E /* Result.framework */; };
+		3BA0E5352221ABA30044F17E /* RxAtomic.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BA0E51A22219D720044F17E /* RxAtomic.framework */; };
+		3BA0E5362221ABA30044F17E /* RxBlocking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BA0E51522219D720044F17E /* RxBlocking.framework */; };
+		3BA0E5372221ABA30044F17E /* RxCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BA0E51222219D710044F17E /* RxCocoa.framework */; };
+		3BA0E5382221ABA30044F17E /* RxMoya.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BA0E51322219D710044F17E /* RxMoya.framework */; };
+		3BA0E5392221ABC40044F17E /* LoginStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE5349B221FB23300C8AEDD /* LoginStatus.swift */; };
+		3BA0E53A2221ABCF0044F17E /* LoginRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E4EC222177330044F17E /* LoginRouter.swift */; };
+		3BA0E53B2221ABD70044F17E /* MapPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E4F3222187780044F17E /* MapPresenter.swift */; };
+		3BA0E53C2221ABDF0044F17E /* Transitioner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E4EA222175850044F17E /* Transitioner.swift */; };
+		3BA0E53D2221ABE90044F17E /* CatalogDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E4FF222189330044F17E /* CatalogDataStore.swift */; };
+		3BA0E53E2221ABEC0044F17E /* RecordDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E4FD2221892C0044F17E /* RecordDataStore.swift */; };
+		3BA0E53F2221ABEF0044F17E /* MediumDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E5012221893A0044F17E /* MediumDataStore.swift */; };
+		3BA0E5402221ABF40044F17E /* UserAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E50C222197810044F17E /* UserAPI.swift */; };
+		3BA0E5412221ABF90044F17E /* Record.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E50422218A480044F17E /* Record.swift */; };
+		3BA0E5422221ABFC0044F17E /* Catalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E50622218A550044F17E /* Catalog.swift */; };
+		3BA0E5432221ABFF0044F17E /* Format.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E50A22218C8B0044F17E /* Format.swift */; };
+		3BA0E5442221AC010044F17E /* Medium.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E50822218A620044F17E /* Medium.swift */; };
+		3BA0E5452221AC0B0044F17E /* MapUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E4F5222187EB0044F17E /* MapUseCase.swift */; };
+		3BA0E5462221AC0F0044F17E /* RecordRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E4F7222188A30044F17E /* RecordRepository.swift */; };
+		3BA0E5472221AC120044F17E /* CatalogRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E4F9222188AD0044F17E /* CatalogRepository.swift */; };
+		3BA0E5482221AC140044F17E /* MediumRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E4FB222188B30044F17E /* MediumRepository.swift */; };
+		3BA0E54A2221B6E50044F17E /* RecordAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E5492221B6E50044F17E /* RecordAPI.swift */; };
+		3BA0E54C2221B6ED0044F17E /* CatalogAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E54B2221B6ED0044F17E /* CatalogAPI.swift */; };
+		3BA0E54E2221B6F70044F17E /* MediumAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E54D2221B6F70044F17E /* MediumAPI.swift */; };
+		3BA0E5502221B9700044F17E /* AuthPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E54F2221B9700044F17E /* AuthPlugin.swift */; };
+		3BA0E5522221C1BB0044F17E /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E5512221C1BB0044F17E /* User.swift */; };
 		3BE53468221FB11700C8AEDD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE53467221FB11700C8AEDD /* AppDelegate.swift */; };
 		3BE5346A221FB11700C8AEDD /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE53469221FB11700C8AEDD /* LoginViewController.swift */; };
 		3BE5346D221FB11700C8AEDD /* LoginViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3BE5346B221FB11700C8AEDD /* LoginViewController.storyboard */; };
@@ -58,8 +87,6 @@
 		3BE534A5221FBBBF00C8AEDD /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE534A4221FBBBF00C8AEDD /* APIClient.swift */; };
 		3BE534A6221FBBBF00C8AEDD /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE534A4221FBBBF00C8AEDD /* APIClient.swift */; };
 		3BE534AB2221254300C8AEDD /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE53469221FB11700C8AEDD /* LoginViewController.swift */; };
-		3BE534B72221274A00C8AEDD /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BE534B62221274A00C8AEDD /* RxSwift.framework */; };
-		3BE534B82221274A00C8AEDD /* RxSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3BE534B62221274A00C8AEDD /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3BE534BB22214D3E00C8AEDD /* LoginDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE534BA22214D3E00C8AEDD /* LoginDataStore.swift */; };
 		3BE534BC22214D3E00C8AEDD /* LoginDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE534BA22214D3E00C8AEDD /* LoginDataStore.swift */; };
 /* End PBXBuildFile section */
@@ -91,10 +118,9 @@
 				3BA0E52022219D720044F17E /* Moya.framework in Embed Frameworks */,
 				3BA0E52222219D720044F17E /* RxBlocking.framework in Embed Frameworks */,
 				3BA0E52A22219D720044F17E /* Result.framework in Embed Frameworks */,
-				3BA0E52422219D720044F17E /* RxSwift.framework in Embed Frameworks */,
 				3BA0E52C22219D720044F17E /* RxAtomic.framework in Embed Frameworks */,
+				3BA0E5302221AAA40044F17E /* RxSwift.framework in Embed Frameworks */,
 				3BA0E51C22219D720044F17E /* RxCocoa.framework in Embed Frameworks */,
-				3BE534B82221274A00C8AEDD /* RxSwift.framework in Embed Frameworks */,
 				3BA0E51E22219D720044F17E /* RxMoya.framework in Embed Frameworks */,
 				3BA0E52822219D720044F17E /* Alamofire.framework in Embed Frameworks */,
 			);
@@ -121,14 +147,19 @@
 		3BA0E50822218A620044F17E /* Medium.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Medium.swift; sourceTree = "<group>"; };
 		3BA0E50A22218C8B0044F17E /* Format.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Format.swift; sourceTree = "<group>"; };
 		3BA0E50C222197810044F17E /* UserAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAPI.swift; sourceTree = "<group>"; };
-		3BA0E51222219D710044F17E /* RxCocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxCocoa.framework; path = Carthage/Build/iOS/RxCocoa.framework; sourceTree = "<group>"; };
-		3BA0E51322219D710044F17E /* RxMoya.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxMoya.framework; path = Carthage/Build/iOS/RxMoya.framework; sourceTree = "<group>"; };
-		3BA0E51422219D720044F17E /* Moya.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Moya.framework; path = Carthage/Build/iOS/Moya.framework; sourceTree = "<group>"; };
-		3BA0E51522219D720044F17E /* RxBlocking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxBlocking.framework; path = Carthage/Build/iOS/RxBlocking.framework; sourceTree = "<group>"; };
-		3BA0E51622219D720044F17E /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
-		3BA0E51822219D720044F17E /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
-		3BA0E51922219D720044F17E /* Result.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Result.framework; path = Carthage/Build/iOS/Result.framework; sourceTree = "<group>"; };
-		3BA0E51A22219D720044F17E /* RxAtomic.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxAtomic.framework; path = Carthage/Build/iOS/RxAtomic.framework; sourceTree = "<group>"; };
+		3BA0E51222219D710044F17E /* RxCocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RxCocoa.framework; sourceTree = "<group>"; };
+		3BA0E51322219D710044F17E /* RxMoya.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RxMoya.framework; sourceTree = "<group>"; };
+		3BA0E51422219D720044F17E /* Moya.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Moya.framework; sourceTree = "<group>"; };
+		3BA0E51522219D720044F17E /* RxBlocking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RxBlocking.framework; sourceTree = "<group>"; };
+		3BA0E51822219D720044F17E /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Alamofire.framework; sourceTree = "<group>"; };
+		3BA0E51922219D720044F17E /* Result.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Result.framework; sourceTree = "<group>"; };
+		3BA0E51A22219D720044F17E /* RxAtomic.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RxAtomic.framework; sourceTree = "<group>"; };
+		3BA0E52E2221AAA40044F17E /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = ../Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
+		3BA0E5492221B6E50044F17E /* RecordAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordAPI.swift; sourceTree = "<group>"; };
+		3BA0E54B2221B6ED0044F17E /* CatalogAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogAPI.swift; sourceTree = "<group>"; };
+		3BA0E54D2221B6F70044F17E /* MediumAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediumAPI.swift; sourceTree = "<group>"; };
+		3BA0E54F2221B9700044F17E /* AuthPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthPlugin.swift; sourceTree = "<group>"; };
+		3BA0E5512221C1BB0044F17E /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		3BE53464221FB11700C8AEDD /* IkimonGO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IkimonGO.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3BE53467221FB11700C8AEDD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3BE53469221FB11700C8AEDD /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -147,7 +178,6 @@
 		3BE5349B221FB23300C8AEDD /* LoginStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginStatus.swift; sourceTree = "<group>"; };
 		3BE534A1221FBA9D00C8AEDD /* LoginRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginRepository.swift; sourceTree = "<group>"; };
 		3BE534A4221FBBBF00C8AEDD /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
-		3BE534B62221274A00C8AEDD /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
 		3BE534BA22214D3E00C8AEDD /* LoginDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginDataStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -159,10 +189,9 @@
 				3BA0E51F22219D720044F17E /* Moya.framework in Frameworks */,
 				3BA0E52122219D720044F17E /* RxBlocking.framework in Frameworks */,
 				3BA0E52922219D720044F17E /* Result.framework in Frameworks */,
-				3BA0E52322219D720044F17E /* RxSwift.framework in Frameworks */,
 				3BA0E52B22219D720044F17E /* RxAtomic.framework in Frameworks */,
+				3BA0E52F2221AAA40044F17E /* RxSwift.framework in Frameworks */,
 				3BA0E51B22219D720044F17E /* RxCocoa.framework in Frameworks */,
-				3BE534B72221274A00C8AEDD /* RxSwift.framework in Frameworks */,
 				3BA0E51D22219D720044F17E /* RxMoya.framework in Frameworks */,
 				3BA0E52722219D720044F17E /* Alamofire.framework in Frameworks */,
 			);
@@ -172,6 +201,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3BA0E5312221ABA30044F17E /* RxSwift.framework in Frameworks */,
+				3BA0E5322221ABA30044F17E /* Alamofire.framework in Frameworks */,
+				3BA0E5332221ABA30044F17E /* Moya.framework in Frameworks */,
+				3BA0E5342221ABA30044F17E /* Result.framework in Frameworks */,
+				3BA0E5352221ABA30044F17E /* RxAtomic.framework in Frameworks */,
+				3BA0E5362221ABA30044F17E /* RxBlocking.framework in Frameworks */,
+				3BA0E5372221ABA30044F17E /* RxCocoa.framework in Frameworks */,
+				3BA0E5382221ABA30044F17E /* RxMoya.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -202,9 +239,25 @@
 				3BA0E50622218A550044F17E /* Catalog.swift */,
 				3BA0E50822218A620044F17E /* Medium.swift */,
 				3BA0E50A22218C8B0044F17E /* Format.swift */,
+				3BA0E5512221C1BB0044F17E /* User.swift */,
 			);
 			name = Entity;
 			path = DataStore;
+			sourceTree = "<group>";
+		};
+		3BA0E52D2221AA290044F17E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3BA0E52E2221AAA40044F17E /* RxSwift.framework */,
+				3BA0E51822219D720044F17E /* Alamofire.framework */,
+				3BA0E51422219D720044F17E /* Moya.framework */,
+				3BA0E51922219D720044F17E /* Result.framework */,
+				3BA0E51A22219D720044F17E /* RxAtomic.framework */,
+				3BA0E51522219D720044F17E /* RxBlocking.framework */,
+				3BA0E51222219D710044F17E /* RxCocoa.framework */,
+				3BA0E51322219D710044F17E /* RxMoya.framework */,
+			);
+			path = Frameworks;
 			sourceTree = "<group>";
 		};
 		3BE5345B221FB11700C8AEDD = {
@@ -214,15 +267,7 @@
 				3BE5347B221FB11800C8AEDD /* IkimonGOTests */,
 				3BE53486221FB11800C8AEDD /* IkimonGOUITests */,
 				3BE53465221FB11700C8AEDD /* Products */,
-				3BA0E51822219D720044F17E /* Alamofire.framework */,
-				3BA0E51422219D720044F17E /* Moya.framework */,
-				3BA0E51922219D720044F17E /* Result.framework */,
-				3BA0E51A22219D720044F17E /* RxAtomic.framework */,
-				3BA0E51522219D720044F17E /* RxBlocking.framework */,
-				3BA0E51222219D710044F17E /* RxCocoa.framework */,
-				3BA0E51322219D710044F17E /* RxMoya.framework */,
-				3BA0E51622219D720044F17E /* RxSwift.framework */,
-				3BE534B62221274A00C8AEDD /* RxSwift.framework */,
+				3BA0E52D2221AA290044F17E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -358,6 +403,10 @@
 			children = (
 				3BE534A4221FBBBF00C8AEDD /* APIClient.swift */,
 				3BA0E50C222197810044F17E /* UserAPI.swift */,
+				3BA0E5492221B6E50044F17E /* RecordAPI.swift */,
+				3BA0E54B2221B6ED0044F17E /* CatalogAPI.swift */,
+				3BA0E54D2221B6F70044F17E /* MediumAPI.swift */,
+				3BA0E54F2221B9700044F17E /* AuthPlugin.swift */,
 			);
 			name = Network;
 			sourceTree = "<group>";
@@ -530,12 +579,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3BA0E5502221B9700044F17E /* AuthPlugin.swift in Sources */,
 				3BA0E50922218A620044F17E /* Medium.swift in Sources */,
+				3BA0E54A2221B6E50044F17E /* RecordAPI.swift in Sources */,
 				3BA0E4FC222188B30044F17E /* MediumRepository.swift in Sources */,
 				3BA0E4EF222186ED0044F17E /* MapViewController.swift in Sources */,
 				3BA0E50522218A480044F17E /* Record.swift in Sources */,
 				3BA0E50B22218C8B0044F17E /* Format.swift in Sources */,
 				3BA0E4ED222177330044F17E /* LoginRouter.swift in Sources */,
+				3BA0E5522221C1BB0044F17E /* User.swift in Sources */,
 				3BE534A2221FBA9D00C8AEDD /* LoginRepository.swift in Sources */,
 				3BE534BB22214D3E00C8AEDD /* LoginDataStore.swift in Sources */,
 				3BA0E4F6222187EB0044F17E /* MapUseCase.swift in Sources */,
@@ -549,11 +601,13 @@
 				3BA0E4F8222188A30044F17E /* RecordRepository.swift in Sources */,
 				3BA0E50D222197810044F17E /* UserAPI.swift in Sources */,
 				3BA0E500222189330044F17E /* CatalogDataStore.swift in Sources */,
+				3BA0E54C2221B6ED0044F17E /* CatalogAPI.swift in Sources */,
 				3BE53468221FB11700C8AEDD /* AppDelegate.swift in Sources */,
 				3BE53499221FB21900C8AEDD /* LoginUseCase.swift in Sources */,
 				3BA0E50722218A550044F17E /* Catalog.swift in Sources */,
 				3BA0E4F4222187780044F17E /* MapPresenter.swift in Sources */,
 				3BA0E4FE2221892C0044F17E /* RecordDataStore.swift in Sources */,
+				3BA0E54E2221B6F70044F17E /* MediumAPI.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -562,12 +616,28 @@
 			buildActionMask = 2147483647;
 			files = (
 				3BE534A3221FBA9D00C8AEDD /* LoginRepository.swift in Sources */,
+				3BA0E5402221ABF40044F17E /* UserAPI.swift in Sources */,
+				3BA0E5432221ABFF0044F17E /* Format.swift in Sources */,
+				3BA0E53F2221ABEF0044F17E /* MediumDataStore.swift in Sources */,
+				3BA0E5442221AC010044F17E /* Medium.swift in Sources */,
 				3BE534A6221FBBBF00C8AEDD /* APIClient.swift in Sources */,
 				3BE534BC22214D3E00C8AEDD /* LoginDataStore.swift in Sources */,
+				3BA0E53B2221ABD70044F17E /* MapPresenter.swift in Sources */,
+				3BA0E53E2221ABEC0044F17E /* RecordDataStore.swift in Sources */,
 				3BE53497221FB20D00C8AEDD /* LoginPresenter.swift in Sources */,
+				3BA0E5482221AC140044F17E /* MediumRepository.swift in Sources */,
 				3BA0E4F0222186F00044F17E /* MapViewController.swift in Sources */,
+				3BA0E5422221ABFC0044F17E /* Catalog.swift in Sources */,
+				3BA0E5462221AC0F0044F17E /* RecordRepository.swift in Sources */,
+				3BA0E5452221AC0B0044F17E /* MapUseCase.swift in Sources */,
 				3BE534AB2221254300C8AEDD /* LoginViewController.swift in Sources */,
+				3BA0E53C2221ABDF0044F17E /* Transitioner.swift in Sources */,
 				3BE5347D221FB11800C8AEDD /* IkimonGOTests.swift in Sources */,
+				3BA0E53D2221ABE90044F17E /* CatalogDataStore.swift in Sources */,
+				3BA0E5392221ABC40044F17E /* LoginStatus.swift in Sources */,
+				3BA0E5472221AC120044F17E /* CatalogRepository.swift in Sources */,
+				3BA0E53A2221ABCF0044F17E /* LoginRouter.swift in Sources */,
+				3BA0E5412221ABF90044F17E /* Record.swift in Sources */,
 				3BE5349A221FB21900C8AEDD /* LoginUseCase.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -781,6 +851,12 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = Y3S3TP4PM3;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(PROJECT_DIR)/Frameworks",
+				);
 				INFOPLIST_FILE = IkimonGOTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -801,6 +877,12 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = Y3S3TP4PM3;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(PROJECT_DIR)/Frameworks",
+				);
 				INFOPLIST_FILE = IkimonGOTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

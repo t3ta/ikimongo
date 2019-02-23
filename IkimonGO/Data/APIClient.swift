@@ -9,10 +9,6 @@
 import Foundation
 import RxSwift
 
-enum LoginError: Error {
-    case invalid
-}
-
 struct RecordRequest {
     
 }

@@ -9,7 +9,7 @@
 import RxSwift
 
 protocol LoginUseCaseProtocol {
-    func login(email: String, password: String) -> Observable<LoginStatus?>
+    func login(email: String, password: String) -> Observable<LoginStatus>
 }
 
 final class LoginUsecase: LoginUseCaseProtocol {
@@ -19,7 +19,7 @@ final class LoginUsecase: LoginUseCaseProtocol {
         self.repository = repository
     }
     
-    func login(email: String, password: String) -> Observable<LoginStatus?> {
+    func login(email: String, password: String) -> Observable<LoginStatus> {
         return repository.getLoginStatus(email: email, password: password)
     }
 }

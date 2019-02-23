@@ -9,7 +9,7 @@
 import RxSwift
 
 protocol LoginRepositoryProtocol {
-    func getLoginStatus(email: String, password: String) -> Observable<LoginStatus?>
+    func getLoginStatus(email: String, password: String) -> Observable<LoginStatus>
 }
 
 final class LoginRepository: LoginRepositoryProtocol {
@@ -19,7 +19,7 @@ final class LoginRepository: LoginRepositoryProtocol {
         self.dataStore = dataStore
     }
     
-    func getLoginStatus(email: String, password: String) -> Observable<LoginStatus?> {
+    func getLoginStatus(email: String, password: String) -> Observable<LoginStatus> {
         return dataStore.getAccessToken(email: email, password: password)
     }
 }
