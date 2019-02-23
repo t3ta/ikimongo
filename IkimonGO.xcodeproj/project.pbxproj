@@ -7,6 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3BA0E4EB222175850044F17E /* Transitioner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E4EA222175850044F17E /* Transitioner.swift */; };
+		3BA0E4ED222177330044F17E /* LoginRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E4EC222177330044F17E /* LoginRouter.swift */; };
+		3BA0E4EF222186ED0044F17E /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E4EE222186ED0044F17E /* MapViewController.swift */; };
+		3BA0E4F0222186F00044F17E /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E4EE222186ED0044F17E /* MapViewController.swift */; };
+		3BA0E4F2222186FF0044F17E /* MapViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3BA0E4F1222186FF0044F17E /* MapViewController.storyboard */; };
+		3BA0E4F4222187780044F17E /* MapPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E4F3222187780044F17E /* MapPresenter.swift */; };
+		3BA0E4F6222187EB0044F17E /* MapUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E4F5222187EB0044F17E /* MapUseCase.swift */; };
+		3BA0E4F8222188A30044F17E /* RecordRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E4F7222188A30044F17E /* RecordRepository.swift */; };
+		3BA0E4FA222188AD0044F17E /* CatalogRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E4F9222188AD0044F17E /* CatalogRepository.swift */; };
+		3BA0E4FC222188B30044F17E /* MediumRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E4FB222188B30044F17E /* MediumRepository.swift */; };
+		3BA0E4FE2221892C0044F17E /* RecordDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E4FD2221892C0044F17E /* RecordDataStore.swift */; };
+		3BA0E500222189330044F17E /* CatalogDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E4FF222189330044F17E /* CatalogDataStore.swift */; };
+		3BA0E5022221893A0044F17E /* MediumDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E5012221893A0044F17E /* MediumDataStore.swift */; };
+		3BA0E50522218A480044F17E /* Record.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E50422218A480044F17E /* Record.swift */; };
+		3BA0E50722218A550044F17E /* Catalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E50622218A550044F17E /* Catalog.swift */; };
+		3BA0E50922218A620044F17E /* Medium.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E50822218A620044F17E /* Medium.swift */; };
+		3BA0E50B22218C8B0044F17E /* Format.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E50A22218C8B0044F17E /* Format.swift */; };
 		3BE53468221FB11700C8AEDD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE53467221FB11700C8AEDD /* AppDelegate.swift */; };
 		3BE5346A221FB11700C8AEDD /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE53469221FB11700C8AEDD /* LoginViewController.swift */; };
 		3BE5346D221FB11700C8AEDD /* LoginViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3BE5346B221FB11700C8AEDD /* LoginViewController.storyboard */; };
@@ -19,9 +36,6 @@
 		3BE53499221FB21900C8AEDD /* LoginUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE53498221FB21900C8AEDD /* LoginUseCase.swift */; };
 		3BE5349A221FB21900C8AEDD /* LoginUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE53498221FB21900C8AEDD /* LoginUseCase.swift */; };
 		3BE5349C221FB23300C8AEDD /* LoginStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE5349B221FB23300C8AEDD /* LoginStatus.swift */; };
-		3BE5349D221FB23300C8AEDD /* LoginStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE5349B221FB23300C8AEDD /* LoginStatus.swift */; };
-		3BE5349F221FB3E500C8AEDD /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE5349E221FB3E500C8AEDD /* Result.swift */; };
-		3BE534A0221FB3E500C8AEDD /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE5349E221FB3E500C8AEDD /* Result.swift */; };
 		3BE534A2221FBA9D00C8AEDD /* LoginRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE534A1221FBA9D00C8AEDD /* LoginRepository.swift */; };
 		3BE534A3221FBA9D00C8AEDD /* LoginRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE534A1221FBA9D00C8AEDD /* LoginRepository.swift */; };
 		3BE534A5221FBBBF00C8AEDD /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE534A4221FBBBF00C8AEDD /* APIClient.swift */; };
@@ -65,6 +79,22 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3BA0E4EA222175850044F17E /* Transitioner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transitioner.swift; sourceTree = "<group>"; };
+		3BA0E4EC222177330044F17E /* LoginRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginRouter.swift; sourceTree = "<group>"; };
+		3BA0E4EE222186ED0044F17E /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		3BA0E4F1222186FF0044F17E /* MapViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MapViewController.storyboard; sourceTree = "<group>"; };
+		3BA0E4F3222187780044F17E /* MapPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPresenter.swift; sourceTree = "<group>"; };
+		3BA0E4F5222187EB0044F17E /* MapUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapUseCase.swift; sourceTree = "<group>"; };
+		3BA0E4F7222188A30044F17E /* RecordRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordRepository.swift; sourceTree = "<group>"; };
+		3BA0E4F9222188AD0044F17E /* CatalogRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogRepository.swift; sourceTree = "<group>"; };
+		3BA0E4FB222188B30044F17E /* MediumRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediumRepository.swift; sourceTree = "<group>"; };
+		3BA0E4FD2221892C0044F17E /* RecordDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordDataStore.swift; sourceTree = "<group>"; };
+		3BA0E4FF222189330044F17E /* CatalogDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogDataStore.swift; sourceTree = "<group>"; };
+		3BA0E5012221893A0044F17E /* MediumDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediumDataStore.swift; sourceTree = "<group>"; };
+		3BA0E50422218A480044F17E /* Record.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Record.swift; sourceTree = "<group>"; };
+		3BA0E50622218A550044F17E /* Catalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Catalog.swift; sourceTree = "<group>"; };
+		3BA0E50822218A620044F17E /* Medium.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Medium.swift; sourceTree = "<group>"; };
+		3BA0E50A22218C8B0044F17E /* Format.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Format.swift; sourceTree = "<group>"; };
 		3BE53464221FB11700C8AEDD /* IkimonGO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IkimonGO.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3BE53467221FB11700C8AEDD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3BE53469221FB11700C8AEDD /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -81,7 +111,6 @@
 		3BE53495221FB20D00C8AEDD /* LoginPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginPresenter.swift; sourceTree = "<group>"; };
 		3BE53498221FB21900C8AEDD /* LoginUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginUseCase.swift; sourceTree = "<group>"; };
 		3BE5349B221FB23300C8AEDD /* LoginStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginStatus.swift; sourceTree = "<group>"; };
-		3BE5349E221FB3E500C8AEDD /* Result.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
 		3BE534A1221FBA9D00C8AEDD /* LoginRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginRepository.swift; sourceTree = "<group>"; };
 		3BE534A4221FBBBF00C8AEDD /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		3BE534B62221274A00C8AEDD /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
@@ -114,6 +143,28 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3BA0E4E92221755E0044F17E /* Router */ = {
+			isa = PBXGroup;
+			children = (
+				3BA0E4EA222175850044F17E /* Transitioner.swift */,
+				3BA0E4EC222177330044F17E /* LoginRouter.swift */,
+			);
+			name = Router;
+			sourceTree = "<group>";
+		};
+		3BA0E50322218A2F0044F17E /* Entity */ = {
+			isa = PBXGroup;
+			children = (
+				3BE5349B221FB23300C8AEDD /* LoginStatus.swift */,
+				3BA0E50422218A480044F17E /* Record.swift */,
+				3BA0E50622218A550044F17E /* Catalog.swift */,
+				3BA0E50822218A620044F17E /* Medium.swift */,
+				3BA0E50A22218C8B0044F17E /* Format.swift */,
+			);
+			name = Entity;
+			path = DataStore;
+			sourceTree = "<group>";
+		};
 		3BE5345B221FB11700C8AEDD = {
 			isa = PBXGroup;
 			children = (
@@ -172,7 +223,6 @@
 		3BE534A7222124ED00C8AEDD /* Util */ = {
 			isa = PBXGroup;
 			children = (
-				3BE5349E221FB3E500C8AEDD /* Result.swift */,
 			);
 			name = Util;
 			sourceTree = "<group>";
@@ -201,6 +251,7 @@
 			children = (
 				3BE534B922214D2000C8AEDD /* DataStore */,
 				3BE534B12221258700C8AEDD /* Network */,
+				3BA0E50322218A2F0044F17E /* Entity */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -208,7 +259,6 @@
 		3BE534AC2221255500C8AEDD /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				3BE5349B221FB23300C8AEDD /* LoginStatus.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -217,6 +267,7 @@
 			isa = PBXGroup;
 			children = (
 				3BE53498221FB21900C8AEDD /* LoginUseCase.swift */,
+				3BA0E4F5222187EB0044F17E /* MapUseCase.swift */,
 			);
 			path = UseCase;
 			sourceTree = "<group>";
@@ -225,6 +276,9 @@
 			isa = PBXGroup;
 			children = (
 				3BE534A1221FBA9D00C8AEDD /* LoginRepository.swift */,
+				3BA0E4F7222188A30044F17E /* RecordRepository.swift */,
+				3BA0E4F9222188AD0044F17E /* CatalogRepository.swift */,
+				3BA0E4FB222188B30044F17E /* MediumRepository.swift */,
 			);
 			name = Gateway;
 			sourceTree = "<group>";
@@ -232,6 +286,8 @@
 		3BE534AF2221257400C8AEDD /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
+				3BA0E4EE222186ED0044F17E /* MapViewController.swift */,
+				3BA0E4F1222186FF0044F17E /* MapViewController.storyboard */,
 				3BE53469221FB11700C8AEDD /* LoginViewController.swift */,
 				3BE5346B221FB11700C8AEDD /* LoginViewController.storyboard */,
 			);
@@ -242,6 +298,7 @@
 			isa = PBXGroup;
 			children = (
 				3BE53495221FB20D00C8AEDD /* LoginPresenter.swift */,
+				3BA0E4F3222187780044F17E /* MapPresenter.swift */,
 			);
 			name = Presenter;
 			sourceTree = "<group>";
@@ -258,6 +315,9 @@
 			isa = PBXGroup;
 			children = (
 				3BE534BA22214D3E00C8AEDD /* LoginDataStore.swift */,
+				3BA0E4FD2221892C0044F17E /* RecordDataStore.swift */,
+				3BA0E4FF222189330044F17E /* CatalogDataStore.swift */,
+				3BA0E5012221893A0044F17E /* MediumDataStore.swift */,
 			);
 			path = DataStore;
 			sourceTree = "<group>";
@@ -265,6 +325,7 @@
 		3BE534BD2221554A00C8AEDD /* Application */ = {
 			isa = PBXGroup;
 			children = (
+				3BA0E4E92221755E0044F17E /* Router */,
 				3BE534BE2221555400C8AEDD /* Shared */,
 			);
 			name = Application;
@@ -390,6 +451,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3BA0E4F2222186FF0044F17E /* MapViewController.storyboard in Resources */,
 				3BE53472221FB11800C8AEDD /* LaunchScreen.storyboard in Resources */,
 				3BE5346F221FB11800C8AEDD /* Assets.xcassets in Resources */,
 				3BE5346D221FB11700C8AEDD /* LoginViewController.storyboard in Resources */,
@@ -417,15 +479,29 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3BA0E50922218A620044F17E /* Medium.swift in Sources */,
+				3BA0E4FC222188B30044F17E /* MediumRepository.swift in Sources */,
+				3BA0E4EF222186ED0044F17E /* MapViewController.swift in Sources */,
+				3BA0E50522218A480044F17E /* Record.swift in Sources */,
+				3BA0E50B22218C8B0044F17E /* Format.swift in Sources */,
+				3BA0E4ED222177330044F17E /* LoginRouter.swift in Sources */,
 				3BE534A2221FBA9D00C8AEDD /* LoginRepository.swift in Sources */,
-				3BE5349F221FB3E500C8AEDD /* Result.swift in Sources */,
 				3BE534BB22214D3E00C8AEDD /* LoginDataStore.swift in Sources */,
+				3BA0E4F6222187EB0044F17E /* MapUseCase.swift in Sources */,
+				3BA0E4EB222175850044F17E /* Transitioner.swift in Sources */,
 				3BE53496221FB20D00C8AEDD /* LoginPresenter.swift in Sources */,
 				3BE534A5221FBBBF00C8AEDD /* APIClient.swift in Sources */,
 				3BE5349C221FB23300C8AEDD /* LoginStatus.swift in Sources */,
 				3BE5346A221FB11700C8AEDD /* LoginViewController.swift in Sources */,
+				3BA0E5022221893A0044F17E /* MediumDataStore.swift in Sources */,
+				3BA0E4FA222188AD0044F17E /* CatalogRepository.swift in Sources */,
+				3BA0E4F8222188A30044F17E /* RecordRepository.swift in Sources */,
+				3BA0E500222189330044F17E /* CatalogDataStore.swift in Sources */,
 				3BE53468221FB11700C8AEDD /* AppDelegate.swift in Sources */,
 				3BE53499221FB21900C8AEDD /* LoginUseCase.swift in Sources */,
+				3BA0E50722218A550044F17E /* Catalog.swift in Sources */,
+				3BA0E4F4222187780044F17E /* MapPresenter.swift in Sources */,
+				3BA0E4FE2221892C0044F17E /* RecordDataStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -437,9 +513,8 @@
 				3BE534A6221FBBBF00C8AEDD /* APIClient.swift in Sources */,
 				3BE534BC22214D3E00C8AEDD /* LoginDataStore.swift in Sources */,
 				3BE53497221FB20D00C8AEDD /* LoginPresenter.swift in Sources */,
-				3BE534A0221FB3E500C8AEDD /* Result.swift in Sources */,
+				3BA0E4F0222186F00044F17E /* MapViewController.swift in Sources */,
 				3BE534AB2221254300C8AEDD /* LoginViewController.swift in Sources */,
-				3BE5349D221FB23300C8AEDD /* LoginStatus.swift in Sources */,
 				3BE5347D221FB11800C8AEDD /* IkimonGOTests.swift in Sources */,
 				3BE5349A221FB21900C8AEDD /* LoginUseCase.swift in Sources */,
 			);

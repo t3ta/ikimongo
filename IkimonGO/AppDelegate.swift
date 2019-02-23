@@ -13,11 +13,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         let useCase = LoginUsecase(repository: LoginRepository(dataStore: LoginDataStore()))
-        let viewController = UIStoryboard(name: "LoginViewController", bundle: nil).instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
-        let presenter = LoginPresenter(useCase: useCase, viewInput: viewController)
+        let viewController = UIStoryboard(name: "LoginViewController", bundle: nil).instantiateInitialViewController() as! LoginViewController
+        let router = LoginRouter(viewController: viewController)
+        let presenter = LoginPresenter(useCase: useCase, router: router, viewInput: viewController)
         viewController.inject(presenter: presenter)
         
         window?.rootViewController = UINavigationController(rootViewController: viewController)

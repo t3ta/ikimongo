@@ -6,14 +6,13 @@
 //  Copyright © 2019 Takahito Mita. All rights reserved.
 //
 
-import Foundation
 import RxSwift
 
 protocol LoginDataStoreProtocol {
     func getAccessToken(email: String, password: String) -> Observable<LoginStatus>
 }
 
-class LoginDataStore: LoginDataStoreProtocol {
+final class LoginDataStore: LoginDataStoreProtocol {
     let request = LoginRequest()
     
     func getAccessToken(email: String, password: String) -> Observable<LoginStatus> {

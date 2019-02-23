@@ -12,7 +12,7 @@ protocol LoginViewControllerInput: class {
     func showAlert(with message: String)
 }
 
-class LoginViewController: UIViewController {
+final class LoginViewController: UIViewController {
     var presenter: LoginPresenterProtocol?
     
     @IBOutlet weak var emailField: UITextField!

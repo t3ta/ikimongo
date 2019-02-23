@@ -18,13 +18,16 @@ struct LoginViewData {
 }
 
 final class LoginPresenter: LoginPresenterProtocol {
-    let useCase: LoginUseCaseProtocol
-    weak var viewInput: LoginViewControllerInput?
+    private let useCase: LoginUseCaseProtocol
+    private let router: LoginRouterProtocol
+    private weak var viewInput: LoginViewControllerInput?
+    
     
     fileprivate let disposeBag = DisposeBag()
     
-    init(useCase: LoginUseCaseProtocol, viewInput: LoginViewControllerInput) {
+    init(useCase: LoginUseCaseProtocol, router: LoginRouterProtocol ,viewInput: LoginViewControllerInput) {
         self.useCase = useCase
+        self.router = router
         self.viewInput = viewInput
     }
     
@@ -36,9 +39,9 @@ final class LoginPresenter: LoginPresenterProtocol {
         }
         
         useCase.login(email: email, password: password)
-            .subscribe(onNext: { (loginStatus) in
-                // screen transition
-                print("screen transition!")
+            .subscribe(onNext: { [weak self] (loginStatus) in
+                guard let self = self else { return }
+                self.router.transitionToMapViewController()
             }, onError: { [weak self] (error) in
                 guard let self = self else { return }
                 self.viewInput?.showAlert(with: error.localizedDescription)
