@@ -6,11 +6,24 @@
 //  Copyright © 2019 Takahito Mita. All rights reserved.
 //
 
-import Foundation
+import RxSwift
 
-class APIClientStub: APIClientProtocol {
-    func fetch(email: String, password: String, completion: @escaping (Result<LoginStatus>) -> Void) {
-        let loginStatus = LoginStatus(userName: "t3ta", accessToken: "hogehoge")
-        completion(.success(loginStatus))
+enum LoginError: Error {
+    case invalid
+}
+
+struct LoginRequest {
+    func getLoginStatus(email: String, password: String) -> Observable<LoginStatus> {
+        return Observable.create({ (observer) -> Disposable in
+            if email == "test@test.com" && password == "testtest" {
+                let loginStatus = LoginStatus(userName: "t3ta", accessToken: "hogehoge")
+                observer.onNext(loginStatus)
+                observer.onCompleted()
+            } else {
+                observer.onError(LoginError.invalid)
+            }
+            
+            return Disposables.create()
+        })
     }
 }

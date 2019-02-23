@@ -22,15 +22,15 @@
 		3BE5349D221FB23300C8AEDD /* LoginStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE5349B221FB23300C8AEDD /* LoginStatus.swift */; };
 		3BE5349F221FB3E500C8AEDD /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE5349E221FB3E500C8AEDD /* Result.swift */; };
 		3BE534A0221FB3E500C8AEDD /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE5349E221FB3E500C8AEDD /* Result.swift */; };
-		3BE534A2221FBA9D00C8AEDD /* LoginGateway.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE534A1221FBA9D00C8AEDD /* LoginGateway.swift */; };
-		3BE534A3221FBA9D00C8AEDD /* LoginGateway.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE534A1221FBA9D00C8AEDD /* LoginGateway.swift */; };
+		3BE534A2221FBA9D00C8AEDD /* LoginRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE534A1221FBA9D00C8AEDD /* LoginRepository.swift */; };
+		3BE534A3221FBA9D00C8AEDD /* LoginRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE534A1221FBA9D00C8AEDD /* LoginRepository.swift */; };
 		3BE534A5221FBBBF00C8AEDD /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE534A4221FBBBF00C8AEDD /* APIClient.swift */; };
 		3BE534A6221FBBBF00C8AEDD /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE534A4221FBBBF00C8AEDD /* APIClient.swift */; };
 		3BE534AB2221254300C8AEDD /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE53469221FB11700C8AEDD /* LoginViewController.swift */; };
-		3BE534B32221273900C8AEDD /* RxMoya.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BE534B22221273900C8AEDD /* RxMoya.framework */; };
-		3BE534B42221273900C8AEDD /* RxMoya.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3BE534B22221273900C8AEDD /* RxMoya.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3BE534B72221274A00C8AEDD /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BE534B62221274A00C8AEDD /* RxSwift.framework */; };
 		3BE534B82221274A00C8AEDD /* RxSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3BE534B62221274A00C8AEDD /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3BE534BB22214D3E00C8AEDD /* LoginDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE534BA22214D3E00C8AEDD /* LoginDataStore.swift */; };
+		3BE534BC22214D3E00C8AEDD /* LoginDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE534BA22214D3E00C8AEDD /* LoginDataStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,7 +58,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				3BE534B82221274A00C8AEDD /* RxSwift.framework in Embed Frameworks */,
-				3BE534B42221273900C8AEDD /* RxMoya.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -83,10 +82,10 @@
 		3BE53498221FB21900C8AEDD /* LoginUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginUseCase.swift; sourceTree = "<group>"; };
 		3BE5349B221FB23300C8AEDD /* LoginStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginStatus.swift; sourceTree = "<group>"; };
 		3BE5349E221FB3E500C8AEDD /* Result.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
-		3BE534A1221FBA9D00C8AEDD /* LoginGateway.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginGateway.swift; sourceTree = "<group>"; };
+		3BE534A1221FBA9D00C8AEDD /* LoginRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginRepository.swift; sourceTree = "<group>"; };
 		3BE534A4221FBBBF00C8AEDD /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
-		3BE534B22221273900C8AEDD /* RxMoya.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxMoya.framework; path = Carthage/Build/iOS/RxMoya.framework; sourceTree = "<group>"; };
 		3BE534B62221274A00C8AEDD /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
+		3BE534BA22214D3E00C8AEDD /* LoginDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginDataStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,7 +94,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				3BE534B72221274A00C8AEDD /* RxSwift.framework in Frameworks */,
-				3BE534B32221273900C8AEDD /* RxMoya.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,12 +117,11 @@
 		3BE5345B221FB11700C8AEDD = {
 			isa = PBXGroup;
 			children = (
-				3BE534B62221274A00C8AEDD /* RxSwift.framework */,
-				3BE534B22221273900C8AEDD /* RxMoya.framework */,
 				3BE53466221FB11700C8AEDD /* IkimonGO */,
 				3BE5347B221FB11800C8AEDD /* IkimonGOTests */,
 				3BE53486221FB11800C8AEDD /* IkimonGOUITests */,
 				3BE53465221FB11700C8AEDD /* Products */,
+				3BE534B62221274A00C8AEDD /* RxSwift.framework */,
 			);
 			sourceTree = "<group>";
 		};
@@ -142,6 +139,7 @@
 			isa = PBXGroup;
 			children = (
 				3BE53467221FB11700C8AEDD /* AppDelegate.swift */,
+				3BE534BD2221554A00C8AEDD /* Application */,
 				3BE534AA2221252300C8AEDD /* Data */,
 				3BE534A92221250900C8AEDD /* Presentation */,
 				3BE534A82221250200C8AEDD /* Domain */,
@@ -201,6 +199,7 @@
 		3BE534AA2221252300C8AEDD /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				3BE534B922214D2000C8AEDD /* DataStore */,
 				3BE534B12221258700C8AEDD /* Network */,
 			);
 			path = Data;
@@ -225,7 +224,7 @@
 		3BE534AE2221256500C8AEDD /* Gateway */ = {
 			isa = PBXGroup;
 			children = (
-				3BE534A1221FBA9D00C8AEDD /* LoginGateway.swift */,
+				3BE534A1221FBA9D00C8AEDD /* LoginRepository.swift */,
 			);
 			name = Gateway;
 			sourceTree = "<group>";
@@ -253,6 +252,37 @@
 				3BE534A4221FBBBF00C8AEDD /* APIClient.swift */,
 			);
 			name = Network;
+			sourceTree = "<group>";
+		};
+		3BE534B922214D2000C8AEDD /* DataStore */ = {
+			isa = PBXGroup;
+			children = (
+				3BE534BA22214D3E00C8AEDD /* LoginDataStore.swift */,
+			);
+			path = DataStore;
+			sourceTree = "<group>";
+		};
+		3BE534BD2221554A00C8AEDD /* Application */ = {
+			isa = PBXGroup;
+			children = (
+				3BE534BE2221555400C8AEDD /* Shared */,
+			);
+			name = Application;
+			sourceTree = "<group>";
+		};
+		3BE534BE2221555400C8AEDD /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				3BE534BF2221555900C8AEDD /* Observer */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		3BE534BF2221555900C8AEDD /* Observer */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Observer;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -387,8 +417,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3BE534A2221FBA9D00C8AEDD /* LoginGateway.swift in Sources */,
+				3BE534A2221FBA9D00C8AEDD /* LoginRepository.swift in Sources */,
 				3BE5349F221FB3E500C8AEDD /* Result.swift in Sources */,
+				3BE534BB22214D3E00C8AEDD /* LoginDataStore.swift in Sources */,
 				3BE53496221FB20D00C8AEDD /* LoginPresenter.swift in Sources */,
 				3BE534A5221FBBBF00C8AEDD /* APIClient.swift in Sources */,
 				3BE5349C221FB23300C8AEDD /* LoginStatus.swift in Sources */,
@@ -402,8 +433,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3BE534A3221FBA9D00C8AEDD /* LoginGateway.swift in Sources */,
+				3BE534A3221FBA9D00C8AEDD /* LoginRepository.swift in Sources */,
 				3BE534A6221FBBBF00C8AEDD /* APIClient.swift in Sources */,
+				3BE534BC22214D3E00C8AEDD /* LoginDataStore.swift in Sources */,
 				3BE53497221FB20D00C8AEDD /* LoginPresenter.swift in Sources */,
 				3BE534A0221FB3E500C8AEDD /* Result.swift in Sources */,
 				3BE534AB2221254300C8AEDD /* LoginViewController.swift in Sources */,

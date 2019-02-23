@@ -6,39 +6,20 @@
 //  Copyright © 2019 Takahito Mita. All rights reserved.
 //
 
-import Foundation
+import RxSwift
 
-protocol LoginUseCaseProtocol: AnyObject {
-    func startFetch(email: String, password: String)
-    func set(loginStatus: LoginStatus)
-}
-
-protocol LoginUsecaseOutput {
-    func useCaseDidUpdateStatus(_ loginStatus: LoginStatus)
-    func useCaseDidReceiveError(_ error: Error)
+protocol LoginUseCaseProtocol {
+    func login(email: String, password: String) -> Observable<LoginStatus>
 }
 
 final class LoginUsecase: LoginUseCaseProtocol {
-    let gateway: LoginGatewayProtocol
+    private let repository: LoginRepositoryProtocol
     
-    init(gateway: LoginGatewayProtocol) {
-        self.gateway = gateway
+    init(repository: LoginRepositoryProtocol) {
+        self.repository = repository
     }
     
-    func startFetch(email: String, password: String) {
-        gateway.fetch(email: email, password: password) { [weak self] result in
-            guard let self = self else { return }
-            
-            switch result {
-            case .failure(let e):
-                self.output.useCaseDidReceiveError(e)
-            case .success(let loginStatus):
-                self.output.useCaseDidUpdateStatus(loginStatus)
-            }
-        }
-    }
-    
-    func set(loginStatus: LoginStatus) {
-        
+    func login(email: String, password: String) -> Observable<LoginStatus> {
+        return repository.getLoginStatus(email: email, password: password)
     }
 }
