@@ -14,7 +14,7 @@ struct Medium: Decodable {
     let path: String
     let size: Int
     let description: String?
-    let owner: User
+    let owner: String
     
     enum Key:String, CodingKey {
         case fileName = "filename"
@@ -36,6 +36,6 @@ struct Medium: Decodable {
         self.path = try container.decode(String.self, forKey: .path)
         self.size = try container.decode(Int.self, forKey: .size)
         self.description = try container.decode(String.self, forKey: .description)
-        self.owner = try container.decode(User.self, forKey: .owner)
+        self.owner = try container.decode(String.self, forKey: .owner)
     }
 }
