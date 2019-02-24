@@ -387,6 +387,16 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
+		3BA0E5872222F9670044F17E /* StoryBoard */ = {
+			isa = PBXGroup;
+			children = (
+				3BE5346B221FB11700C8AEDD /* LoginViewController.storyboard */,
+				3BA0E4F1222186FF0044F17E /* MapViewController.storyboard */,
+				3BA0E57C2222DE610044F17E /* ARViewController.storyboard */,
+			);
+			path = StoryBoard;
+			sourceTree = "<group>";
+		};
 		3BE5345B221FB11700C8AEDD = {
 			isa = PBXGroup;
 			children = (
@@ -475,12 +485,10 @@
 		3BE534AF2221257400C8AEDD /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
+				3BA0E5872222F9670044F17E /* StoryBoard */,
 				3BE53469221FB11700C8AEDD /* LoginViewController.swift */,
-				3BE5346B221FB11700C8AEDD /* LoginViewController.storyboard */,
 				3BA0E4EE222186ED0044F17E /* MapViewController.swift */,
-				3BA0E4F1222186FF0044F17E /* MapViewController.storyboard */,
 				3BA0E57A2222DE530044F17E /* ARViewController.swift */,
-				3BA0E57C2222DE610044F17E /* ARViewController.storyboard */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
