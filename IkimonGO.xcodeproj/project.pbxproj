@@ -227,15 +227,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		3BA0E4E92221755E0044F17E /* Router */ = {
-			isa = PBXGroup;
-			children = (
-				3BA0E4EA222175850044F17E /* Transitioner.swift */,
-				3BA0E4EC222177330044F17E /* LoginRouter.swift */,
-			);
-			name = Router;
-			sourceTree = "<group>";
-		};
 		3BA0E50322218A2F0044F17E /* Entity */ = {
 			isa = PBXGroup;
 			children = (
@@ -265,6 +256,79 @@
 			path = Frameworks;
 			sourceTree = "<group>";
 		};
+		3BA0E558222250020044F17E /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				3BE534A4221FBBBF00C8AEDD /* APIClient.swift */,
+				3BA0E50C222197810044F17E /* UserAPI.swift */,
+				3BA0E5492221B6E50044F17E /* RecordAPI.swift */,
+				3BA0E54B2221B6ED0044F17E /* CatalogAPI.swift */,
+				3BA0E54D2221B6F70044F17E /* MediumAPI.swift */,
+				3BA0E54F2221B9700044F17E /* AuthPlugin.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		3BA0E559222250260044F17E /* Application */ = {
+			isa = PBXGroup;
+			children = (
+				3BA0E55B222250350044F17E /* Router */,
+			);
+			path = Application;
+			sourceTree = "<group>";
+		};
+		3BA0E55B222250350044F17E /* Router */ = {
+			isa = PBXGroup;
+			children = (
+				3BA0E4EA222175850044F17E /* Transitioner.swift */,
+				3BA0E4EC222177330044F17E /* LoginRouter.swift */,
+			);
+			path = Router;
+			sourceTree = "<group>";
+		};
+		3BA0E55E222250560044F17E /* Presentation */ = {
+			isa = PBXGroup;
+			children = (
+				3BA0E55F222250720044F17E /* Presenter */,
+				3BE534AF2221257400C8AEDD /* ViewController */,
+			);
+			path = Presentation;
+			sourceTree = "<group>";
+		};
+		3BA0E55F222250720044F17E /* Presenter */ = {
+			isa = PBXGroup;
+			children = (
+				3BE53495221FB20D00C8AEDD /* LoginPresenter.swift */,
+				3BA0E4F3222187780044F17E /* MapPresenter.swift */,
+			);
+			path = Presenter;
+			sourceTree = "<group>";
+		};
+		3BA0E5602222509A0044F17E /* Gateway */ = {
+			isa = PBXGroup;
+			children = (
+				3BE534A1221FBA9D00C8AEDD /* LoginRepository.swift */,
+				3BA0E4F7222188A30044F17E /* RecordRepository.swift */,
+				3BA0E4F9222188AD0044F17E /* CatalogRepository.swift */,
+				3BA0E4FB222188B30044F17E /* MediumRepository.swift */,
+			);
+			path = Gateway;
+			sourceTree = "<group>";
+		};
+		3BA0E561222250B20044F17E /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		3BA0E562222250CA0044F17E /* Util */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Util;
+			sourceTree = "<group>";
+		};
 		3BE5345B221FB11700C8AEDD = {
 			isa = PBXGroup;
 			children = (
@@ -290,11 +354,11 @@
 			isa = PBXGroup;
 			children = (
 				3BE53467221FB11700C8AEDD /* AppDelegate.swift */,
-				3BE534BD2221554A00C8AEDD /* Application */,
+				3BA0E55E222250560044F17E /* Presentation */,
+				3BA0E559222250260044F17E /* Application */,
 				3BE534AA2221252300C8AEDD /* Data */,
-				3BE534A92221250900C8AEDD /* Presentation */,
 				3BE534A82221250200C8AEDD /* Domain */,
-				3BE534A7222124ED00C8AEDD /* Util */,
+				3BA0E562222250CA0044F17E /* Util */,
 				3BE5346E221FB11800C8AEDD /* Assets.xcassets */,
 				3BE53470221FB11800C8AEDD /* LaunchScreen.storyboard */,
 				3BE53473221FB11800C8AEDD /* Info.plist */,
@@ -320,47 +384,24 @@
 			path = IkimonGOUITests;
 			sourceTree = "<group>";
 		};
-		3BE534A7222124ED00C8AEDD /* Util */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Util;
-			sourceTree = "<group>";
-		};
 		3BE534A82221250200C8AEDD /* Domain */ = {
 			isa = PBXGroup;
 			children = (
 				3BE534AD2221255D00C8AEDD /* UseCase */,
-				3BE534AE2221256500C8AEDD /* Gateway */,
-				3BE534AC2221255500C8AEDD /* Model */,
+				3BA0E5602222509A0044F17E /* Gateway */,
+				3BA0E561222250B20044F17E /* Model */,
 			);
 			path = Domain;
-			sourceTree = "<group>";
-		};
-		3BE534A92221250900C8AEDD /* Presentation */ = {
-			isa = PBXGroup;
-			children = (
-				3BE534B02221257D00C8AEDD /* Presenter */,
-				3BE534AF2221257400C8AEDD /* ViewController */,
-			);
-			name = Presentation;
 			sourceTree = "<group>";
 		};
 		3BE534AA2221252300C8AEDD /* Data */ = {
 			isa = PBXGroup;
 			children = (
 				3BE534B922214D2000C8AEDD /* DataStore */,
-				3BE534B12221258700C8AEDD /* Network */,
+				3BA0E558222250020044F17E /* Network */,
 				3BA0E50322218A2F0044F17E /* Entity */,
 			);
 			path = Data;
-			sourceTree = "<group>";
-		};
-		3BE534AC2221255500C8AEDD /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Model;
 			sourceTree = "<group>";
 		};
 		3BE534AD2221255D00C8AEDD /* UseCase */ = {
@@ -370,17 +411,6 @@
 				3BA0E4F5222187EB0044F17E /* MapUseCase.swift */,
 			);
 			path = UseCase;
-			sourceTree = "<group>";
-		};
-		3BE534AE2221256500C8AEDD /* Gateway */ = {
-			isa = PBXGroup;
-			children = (
-				3BE534A1221FBA9D00C8AEDD /* LoginRepository.swift */,
-				3BA0E4F7222188A30044F17E /* RecordRepository.swift */,
-				3BA0E4F9222188AD0044F17E /* CatalogRepository.swift */,
-				3BA0E4FB222188B30044F17E /* MediumRepository.swift */,
-			);
-			name = Gateway;
 			sourceTree = "<group>";
 		};
 		3BE534AF2221257400C8AEDD /* ViewController */ = {
@@ -394,28 +424,6 @@
 			path = ViewController;
 			sourceTree = "<group>";
 		};
-		3BE534B02221257D00C8AEDD /* Presenter */ = {
-			isa = PBXGroup;
-			children = (
-				3BE53495221FB20D00C8AEDD /* LoginPresenter.swift */,
-				3BA0E4F3222187780044F17E /* MapPresenter.swift */,
-			);
-			name = Presenter;
-			sourceTree = "<group>";
-		};
-		3BE534B12221258700C8AEDD /* Network */ = {
-			isa = PBXGroup;
-			children = (
-				3BE534A4221FBBBF00C8AEDD /* APIClient.swift */,
-				3BA0E50C222197810044F17E /* UserAPI.swift */,
-				3BA0E5492221B6E50044F17E /* RecordAPI.swift */,
-				3BA0E54B2221B6ED0044F17E /* CatalogAPI.swift */,
-				3BA0E54D2221B6F70044F17E /* MediumAPI.swift */,
-				3BA0E54F2221B9700044F17E /* AuthPlugin.swift */,
-			);
-			name = Network;
-			sourceTree = "<group>";
-		};
 		3BE534B922214D2000C8AEDD /* DataStore */ = {
 			isa = PBXGroup;
 			children = (
@@ -425,30 +433,6 @@
 				3BA0E5012221893A0044F17E /* MediumDataStore.swift */,
 			);
 			path = DataStore;
-			sourceTree = "<group>";
-		};
-		3BE534BD2221554A00C8AEDD /* Application */ = {
-			isa = PBXGroup;
-			children = (
-				3BA0E4E92221755E0044F17E /* Router */,
-				3BE534BE2221555400C8AEDD /* Shared */,
-			);
-			name = Application;
-			sourceTree = "<group>";
-		};
-		3BE534BE2221555400C8AEDD /* Shared */ = {
-			isa = PBXGroup;
-			children = (
-				3BE534BF2221555900C8AEDD /* Observer */,
-			);
-			path = Shared;
-			sourceTree = "<group>";
-		};
-		3BE534BF2221555900C8AEDD /* Observer */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Observer;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
