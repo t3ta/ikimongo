@@ -1,15 +1,15 @@
 //
-//  Catalog.swift
+//  CatalogEntity.swift
 //  IkimonGO
 //
 //  Created by Takahito Mita on 2019/02/23.
 //  Copyright © 2019 Takahito Mita. All rights reserved.
 //
 
-struct Catalog {
+struct CatalogEntity {
     let name: String
     let description: String?
-    let format: Format
+    let format: FormatEnttity
     let status: String
-    let records: [Record]
+    let records: [RecordEntity]
 }

@@ -19,7 +19,7 @@ extension RecordAPI: AuthorizedTargetType {
     }
     
     var baseURL: URL {
-        return URL(string: "http://localhost:3000")!
+        return URL(string: "http://ikimongo-server-express.herokuapp.com")!
     }
     
     var path: String {

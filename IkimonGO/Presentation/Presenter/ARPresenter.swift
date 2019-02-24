@@ -1,28 +1,25 @@
 //
-//  MapPresenter.swift
+//  ARPresenter.swift
 //  IkimonGO
 //
-//  Created by Takahito Mita on 2019/02/23.
+//  Created by Takahito Mita on 2019/02/24.
 //  Copyright © 2019 Takahito Mita. All rights reserved.
 //
 
 import RxSwift
 
-protocol MapPresenterProtocol {
+protocol ARPresenterProtocol {
     func loadMyRecords()
-    func arButtonTapped()
 }
 
-final class MapPresenter: MapPresenterProtocol {
-    private let useCase: MapUseCaseProtocol
-    private let router: MapRouterProtocol
-    weak var viewInput: MapViewControllerInput?
+final class ARPresenter: ARPresenterProtocol {
+    private let useCase: ARUseCaseProtocol
+    weak var viewInput: ARViewControllerInput?
     
     fileprivate let disposeBag = DisposeBag()
     
-    init(useCase: MapUseCaseProtocol, router: MapRouterProtocol, viewInput: MapViewControllerInput) {
+    init(useCase: ARUseCaseProtocol, viewInput: ARViewControllerInput) {
         self.useCase = useCase
-        self.router = router
         self.viewInput = viewInput
     }
     
@@ -34,10 +31,6 @@ final class MapPresenter: MapPresenterProtocol {
             }, onError: { (error) in
                 print(error)
             }, onCompleted: nil, onDisposed: nil)
-        .disposed(by: disposeBag)
-    }
-    
-    func arButtonTapped() {
-        router.transitionToARViewController()
+            .disposed(by: disposeBag)
     }
 }

@@ -19,7 +19,7 @@ enum LoginError: Error {
 
 protocol LoginDataStoreProtocol {
     func getAccessToken() -> Observable<String>
-    func getLoginStatus(email: String, password: String) -> Observable<LoginStatus>
+    func getToken(email: String, password: String) -> Observable<TokenEntity>
 }
 
 final class LoginDataStore: LoginDataStoreProtocol {
@@ -35,20 +35,20 @@ final class LoginDataStore: LoginDataStoreProtocol {
         })
     }
     
-    func getLoginStatus(email: String, password: String) -> Observable<LoginStatus> {
+    func getToken(email: String, password: String) -> Observable<TokenEntity> {
         let provider = MoyaProvider<AuthAPI>()
         
-        return Observable<LoginStatus>.create({ (observer) -> Disposable in
+        return Observable<TokenEntity>.create({ (observer) -> Disposable in
             let _ = provider.rx
                         .request(.login(email: email, password: password))
                         .filterSuccessfulStatusCodes()
-                        .map({ (response) -> LoginStatus? in
-                            return try? JSONDecoder().decode(LoginStatus.self, from: response.data)
+                        .map({ (response) -> TokenEntity? in
+                            return try? JSONDecoder().decode(TokenEntity.self, from: response.data)
                         })
-                        .subscribe(onSuccess: { (loginStatus) in
-                            if let loginStatus = loginStatus {
-                                UserDefaults.standard.register(defaults: ["accessToken": loginStatus.accessToken])
-                                observer.onNext(loginStatus)
+                        .subscribe(onSuccess: { (tokenEntity) in
+                            if let tokenEntity = tokenEntity {
+                                UserDefaults.standard.set(tokenEntity.accessToken, forKey: "accessToken")
+                                observer.onNext(tokenEntity)
                             } else {
                                 observer.onError(LoginError.parseError)
                             }

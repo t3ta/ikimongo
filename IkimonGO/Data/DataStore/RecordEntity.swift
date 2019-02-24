@@ -1,5 +1,5 @@
 //
-//  Record.swift
+//  RecordEntity.swift
 //  IkimonGO
 //
 //  Created by Takahito Mita on 2019/02/23.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Record: Decodable {
+struct RecordEntity: Decodable {
     let id: String
     let name: String
     let japaneseName: String?
@@ -17,14 +17,9 @@ struct Record: Decodable {
     let longitude: Double
     let accuracy: Double?
     let collectedAt: Date
-    let media: [Medium]?
-    let additionalData: [AdditionalDataElement]?
+    let media: [MediumEntity]?
+    let additionalData: [AdditionalDatumEntity]?
     let owner: String
-    
-    struct AdditionalDataElement: Decodable {
-        let key: String
-        let value: String
-    }
     
     enum Key: String, CodingKey {
         case id = "_id"
@@ -49,8 +44,8 @@ struct Record: Decodable {
         self.latitude = try container.decode(Double.self, forKey: .latitude)
         self.longitude = try container.decode(Double.self, forKey: .longitude)
         self.accuracy = try? container.decode(Double.self, forKey: .accuracy)
-        self.media = try? container.decode([Medium].self, forKey: .media)
-        self.additionalData = try? container.decode([AdditionalDataElement].self, forKey: .additionalData)
+        self.media = try? container.decode([MediumEntity].self, forKey: .media)
+        self.additionalData = try? container.decode([AdditionalDatumEntity].self, forKey: .additionalData)
         self.owner = try container.decode(String.self, forKey: .owner)
         
         let dateString = try container.decode(String.self, forKey: .collectedAt)

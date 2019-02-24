@@ -27,7 +27,7 @@ final class LoginViewController: UIViewController {
     }
 
     @IBAction func loginButtonTapped(_ sender: Any) {
-        presenter?.tappedLoginButton(email: emailField.text, password: passwordField.text)
+        presenter?.loginButtonTapped(email: emailField.text, password: passwordField.text)
     }
 }
 
@@ -40,3 +40,13 @@ extension LoginViewController: LoginViewControllerInput {
     }
 }
 
+struct LoginViewControllerBuilder {
+    func build() -> UIViewController {
+        let useCase = LoginUsecase(repository: LoginRepository(dataStore: LoginDataStore()))
+        let viewController = UIStoryboard(name: "LoginViewController", bundle: nil).instantiateInitialViewController() as! LoginViewController
+        let router = LoginRouter(viewController: viewController)
+        let presenter = LoginPresenter(useCase: useCase, router: router, viewInput: viewController)
+        viewController.inject(presenter: presenter)
+        return viewController
+    }
+}

@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol LoginViewControllerProtocol: AnyObject, Transitioner where Self: UIViewController {}
+protocol LoginViewControllerProtocol: Transitioner {}
 
 extension LoginViewController: LoginViewControllerProtocol {}
 
@@ -24,14 +24,7 @@ final class LoginRouter: LoginRouterProtocol {
     }
     
     func transitionToMapViewController() {
-        let useCase = MapUseCase(loginRepository: LoginRepository(dataStore: LoginDataStore()),
-                                 recordRepository: RecordRepository(dataStore: RecordDataStore()),
-                                 catalogRepository: CatalogRepository(dataStore: CatalogDataStore()),
-                                 mediumRepository: MediumRepository(dataStore: MediumDataStore()))
-        let mapViewController = UIStoryboard(name: "MapViewController", bundle: nil).instantiateInitialViewController() as! MapViewController
-        let presenter = MapPresenter(useCase: useCase, viewInput: mapViewController)
-        mapViewController.inject(presenter: presenter)
-        
-        viewController.present(viewController: mapViewController, completion: nil)
+        let builder = MapViewControllerBuilder()
+        viewController.present(viewController: builder.build(), completion: nil)
     }
 }

@@ -19,7 +19,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="メールアドレス" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="8c7-3Y-1se">
-                                <rect key="frame" x="62.5" y="318.5" width="250" height="30"/>
+                                <rect key="frame" x="62.5" y="168.5" width="250" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="250" id="p1i-j9-Gm9"/>
                                 </constraints>
@@ -28,7 +28,7 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="パスワード" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="hi3-uy-DUH">
-                                <rect key="frame" x="62.5" y="398.5" width="250" height="30"/>
+                                <rect key="frame" x="62.5" y="248.5" width="250" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="250" id="y4m-Md-xN7"/>
                                 </constraints>
@@ -37,7 +37,7 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KAs-Dy-tjR">
-                                <rect key="frame" x="146.5" y="478.5" width="82" height="36"/>
+                                <rect key="frame" x="146.5" y="328.5" width="82" height="36"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                 <state key="normal" title="ログイン">
                                     <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -47,20 +47,20 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="IkimonGO" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DTj-gE-NAV">
-                                <rect key="frame" x="73" y="139.5" width="229.5" height="60"/>
+                                <rect key="frame" x="73" y="64.5" width="229.5" height="60"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="50"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NaY-nl-8GN">
-                                <rect key="frame" x="187.5" y="199.5" width="0.0" height="119"/>
+                                <rect key="frame" x="187.5" y="124.5" width="0.0" height="44"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="width" id="JLL-mL-Wwb"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="F2E-ot-VRJ">
-                                <rect key="frame" x="187.5" y="20" width="0.0" height="119.5"/>
+                                <rect key="frame" x="187.5" y="20" width="0.0" height="44.5"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="width" id="vI7-Ms-Fkb"/>
@@ -76,7 +76,7 @@
                             <constraint firstItem="8c7-3Y-1se" firstAttribute="top" secondItem="NaY-nl-8GN" secondAttribute="bottom" id="UeG-1z-WXL"/>
                             <constraint firstItem="NaY-nl-8GN" firstAttribute="height" secondItem="F2E-ot-VRJ" secondAttribute="height" id="Ueu-mx-qhq"/>
                             <constraint firstItem="DTj-gE-NAV" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="VIc-eN-bW6"/>
-                            <constraint firstItem="8c7-3Y-1se" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="YNv-Dv-Ue4"/>
+                            <constraint firstItem="8c7-3Y-1se" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" constant="-150" id="YNv-Dv-Ue4"/>
                             <constraint firstItem="8c7-3Y-1se" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Ynj-je-4sX"/>
                             <constraint firstItem="hi3-uy-DUH" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="hCB-tQ-TES"/>
                             <constraint firstItem="F2E-ot-VRJ" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="iTK-y6-fiu"/>

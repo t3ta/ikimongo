@@ -21,13 +21,23 @@
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Sga-ev-N6d">
                                 <rect key="frame" x="0.0" y="20" width="375" height="647"/>
                             </mapView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TyW-kV-B2u">
+                                <rect key="frame" x="302" y="50" width="43" height="48"/>
+                                <fontDescription key="fontDescription" type="system" weight="heavy" pointSize="30"/>
+                                <state key="normal" title="AR"/>
+                                <connections>
+                                    <action selector="arButtonTapped:" destination="Xjb-2T-2ED" eventType="touchUpInside" id="cX4-O7-ge9"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="MXQ-39-KTt" firstAttribute="trailing" secondItem="Sga-ev-N6d" secondAttribute="trailing" id="5Dz-Ws-Kdo"/>
                             <constraint firstItem="Sga-ev-N6d" firstAttribute="top" secondItem="MXQ-39-KTt" secondAttribute="top" id="6MA-KU-qpr"/>
                             <constraint firstItem="MXQ-39-KTt" firstAttribute="bottom" secondItem="Sga-ev-N6d" secondAttribute="bottom" id="6gZ-Sk-g8E"/>
+                            <constraint firstItem="MXQ-39-KTt" firstAttribute="trailing" secondItem="TyW-kV-B2u" secondAttribute="trailing" constant="30" id="bMo-5A-9tU"/>
                             <constraint firstItem="Sga-ev-N6d" firstAttribute="leading" secondItem="MXQ-39-KTt" secondAttribute="leading" id="ch0-9l-lxB"/>
+                            <constraint firstItem="TyW-kV-B2u" firstAttribute="top" secondItem="MXQ-39-KTt" secondAttribute="top" constant="30" id="skf-Pm-Cni"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="MXQ-39-KTt"/>
                     </view>

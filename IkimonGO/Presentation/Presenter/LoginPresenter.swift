@@ -9,12 +9,7 @@
 import RxSwift
 
 protocol LoginPresenterProtocol {
-    func tappedLoginButton(email: String?, password: String?)
-}
-
-struct LoginViewData {
-    let email: String
-    let password: String
+    func loginButtonTapped(email: String?, password: String?)
 }
 
 final class LoginPresenter: LoginPresenterProtocol {
@@ -30,7 +25,7 @@ final class LoginPresenter: LoginPresenterProtocol {
         self.viewInput = viewInput
     }
     
-    func tappedLoginButton(email: String?, password: String?) {
+    func loginButtonTapped(email: String?, password: String?) {
         guard let email = email,
               let password = password else {
             viewInput?.showAlert(with: "メールアドレスとパスワードを入力してください")
@@ -38,7 +33,7 @@ final class LoginPresenter: LoginPresenterProtocol {
         }
         
         useCase.login(email: email, password: password)
-            .subscribe(onNext: { [weak self] (loginStatus) in
+            .subscribe(onNext: { [weak self] (tokenEntity) in
                 guard let self = self else { return }
                 self.router.transitionToMapViewController()
             }, onError: { [weak self] (error) in

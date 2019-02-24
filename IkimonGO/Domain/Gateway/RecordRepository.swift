@@ -9,7 +9,7 @@
 import RxSwift
 
 protocol RecordRepositoryProtocol {
-    func getMyRecords(with accessToken: String) -> Observable<[Record]>
+    func getMyRecords(with accessToken: String) -> Observable<[RecordEntity]>
 }
 
 final class RecordRepository: RecordRepositoryProtocol {
@@ -19,7 +19,7 @@ final class RecordRepository: RecordRepositoryProtocol {
         self.dataStore = dataStore
     }
     
-    func getMyRecords(with accessToken: String) -> Observable<[Record]> {
+    func getMyRecords(with accessToken: String) -> Observable<[RecordEntity]> {
         return dataStore.getMyRecords(with: accessToken)
     }
 }

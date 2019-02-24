@@ -12,19 +12,19 @@ import XCTest
 class LoginDataStoreTests: XCTestCase {
     let loginDataStore: LoginDataStoreProtocol = LoginDataStore()
     let recordDataStore: RecordDataStoreProtocol = RecordDataStore()
-    var loginStatus: LoginStatus?
+    var tokenEntity: TokenEntity?
 
     func testGetAccessToken() {
-        let _ = loginDataStore.getAccessToken(email: "test@test.com", password: "testtest").subscribe(onNext: { [weak self] (loginStatus) in
+        let _ = loginDataStore.getAccessToken(email: "test@test.com", password: "testtest").subscribe(onNext: { [weak self] (tokenEntity) in
                     guard let self = self else { return }
-                    self.loginStatus = loginStatus
+                    self.tokenEntity = tokenEntity
                     XCTAssertTrue(true)
                 }, onError: nil, onCompleted: nil, onDisposed: nil)
     }
     
     func testGetRecords() {
-        guard let loginStatus = loginStatus else { return }
-        let _ = recordDataStore.getMyRecords(with: loginStatus.accessToken).subscribe(onNext: { (records) in
+        guard let tokenEntity = tokenEntity else { return }
+        let _ = recordDataStore.getMyRecords(with: TokenEntity.accessToken).subscribe(onNext: { (records) in
                     print(records)
                     XCTAssertTrue(true)
                 }, onError: { (error) in

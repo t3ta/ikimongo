@@ -14,20 +14,20 @@ enum RecordError: Error {
 }
 
 protocol RecordDataStoreProtocol {
-    func getMyRecords(with accessToken: String) -> Observable<[Record]>
-    func getRecord(by id: String, with accessToken: String) -> Observable<Record>
+    func getMyRecords(with accessToken: String) -> Observable<[RecordEntity]>
+    func getRecord(by id: String, with accessToken: String) -> Observable<RecordEntity>
 }
 
 final class RecordDataStore: RecordDataStoreProtocol {
-    func getMyRecords(with accessToken: String) -> Observable<[Record]> {
+    func getMyRecords(with accessToken: String) -> Observable<[RecordEntity]> {
         let provider = MoyaProvider<RecordAPI>(plugins: [AuthPlugin(tokenClosure: { return accessToken })])
         
-        return Observable<[Record]>.create({ (observer) -> Disposable in
+        return Observable<[RecordEntity]>.create({ (observer) -> Disposable in
             let _ = provider.rx
                 .request(.get())
                 .filterSuccessfulStatusCodes()
-                .map({ (response) -> [Record]? in
-                    return try? JSONDecoder().decode([Record].self, from: response.data)
+                .map({ (response) -> [RecordEntity]? in
+                    return try? JSONDecoder().decode([RecordEntity].self, from: response.data)
                 })
                 .subscribe(onSuccess: { (records) in
                     if let records = records {
@@ -43,19 +43,19 @@ final class RecordDataStore: RecordDataStoreProtocol {
         })
     }
     
-    func getRecord(by id: String, with accessToken: String) -> Observable<Record> {
+    func getRecord(by id: String, with accessToken: String) -> Observable<RecordEntity> {
         let provider = MoyaProvider<RecordAPI>(plugins: [AuthPlugin(tokenClosure: { return accessToken })])
         
-        return Observable<Record>.create({ (observer) -> Disposable in
+        return Observable<RecordEntity>.create({ (observer) -> Disposable in
             let _ = provider.rx
                 .request(.getById(id: id))
                 .filterSuccessfulStatusCodes()
-                .map({ (response) -> Record? in
-                    return try? JSONDecoder().decode(Record.self, from: response.data)
+                .map({ (response) -> RecordEntity? in
+                    return try? JSONDecoder().decode(RecordEntity.self, from: response.data)
                 })
-                .subscribe(onSuccess: { (record) in
-                    if let record = record {
-                        observer.onNext(record)
+                .subscribe(onSuccess: { (RecordEntity) in
+                    if let RecordEntity = RecordEntity {
+                        observer.onNext(RecordEntity)
                     } else {
                         observer.onError(RecordError.parseError)
                     }

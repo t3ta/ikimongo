@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol Transitioner where Self: UIViewController {
+protocol Transitioner: class where Self: UIViewController {
     func pushViewController(_ viewController: UIViewController, animated: Bool)
     func popViewController(animated: Bool)
     func popToRootViewController(animated: Bool)
