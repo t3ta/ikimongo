@@ -32,6 +32,6 @@ final class LoginRouter: LoginRouterProtocol {
         let presenter = MapPresenter(useCase: useCase, viewInput: mapViewController)
         mapViewController.inject(presenter: presenter)
         
-        viewController.pushViewController(mapViewController, animated: true)
+        viewController.present(viewController: mapViewController, completion: nil)
     }
 }

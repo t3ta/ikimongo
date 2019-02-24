@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MapKit
 
 protocol MapViewControllerInput: class {
     
@@ -14,6 +15,8 @@ protocol MapViewControllerInput: class {
 
 final class MapViewController: UIViewController {
     var presenter: MapPresenterProtocol?
+    
+    @IBOutlet weak var mapView: MKMapView!
     
     public func inject(presenter: MapPresenterProtocol) {
         self.presenter = presenter

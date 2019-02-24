@@ -13,8 +13,8 @@ protocol Transitioner where Self: UIViewController {
     func popViewController(animated: Bool)
     func popToRootViewController(animated: Bool)
     func popToViewController(_ viewController: UIViewController, animated: Bool)
-    func present(viewController: UIViewController, animated: Bool, completion: (() -> ())?)
-    func dismiss(animated: Bool)
+    func present(viewController: UIViewController, completion: (() -> ())?)
+    func dismiss()
 }
 
 extension Transitioner {
@@ -38,11 +38,11 @@ extension Transitioner {
         navigationController.popToViewController(viewController, animated: animated)
     }
     
-    func present(viewController: UIViewController, animated: Bool, completion: (() -> ())?) {
-        present(viewController: viewController, animated: animated, completion: completion)
+    func present(viewController: UIViewController, completion: (() -> ())?) {
+        present(viewController, animated: false, completion: completion)
     }
     
-    func dismiss(animated: Bool) {
-        dismiss(animated: animated)
+    func dismiss() {
+        dismiss(animated: false)
     }
 }
