@@ -8,15 +8,18 @@
 
 import UIKit
 import ARKit
+import ARCL
+import CoreLocation
 
 protocol ARViewControllerInput: class {
     func setRecordsModel(_: RecordsModel)
 }
 
-final class ARViewController: UIViewController {
+final class ARViewController: UIViewController, ARSCNViewDelegate {
     var presenter: ARPresenterProtocol?
     
-    @IBOutlet weak var arScnView: ARSCNView!
+    var sceneLocationView = SceneLocationView()
+    @IBOutlet weak var mapButton: UIButton!
     
     var records: [RecordViewModel] = []
     
@@ -25,7 +28,20 @@ final class ARViewController: UIViewController {
     }
     
     override func viewDidLoad() {
+        super.viewDidLoad()
         presenter?.loadMyRecords()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()   
+        sceneLocationView.frame = view.bounds
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        sceneLocationView.run()
+        view.addSubview(sceneLocationView)
+        view.bringSubviewToFront(mapButton)
     }
     
     @IBAction func mapButtonTapped(_ sender: UIButton) {
@@ -39,6 +55,9 @@ extension ARViewController: ARViewControllerInput {
         
         records.forEach { [weak self] (record) in
             guard let self = self else { return }
+            let image = UIImage(named: "pin")!
+            let annotationNode = LocationAnnotationNode(location: record.location, image: image)
+            self.sceneLocationView.addLocationNodeWithConfirmedLocation(locationNode: annotationNode)
         }
     }
 }

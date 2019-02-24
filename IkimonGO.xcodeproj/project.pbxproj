@@ -88,6 +88,8 @@
 		3BA0E57D2222DE610044F17E /* ARViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3BA0E57C2222DE610044F17E /* ARViewController.storyboard */; };
 		3BA0E57F2222DF0D0044F17E /* ARUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E57E2222DF0D0044F17E /* ARUseCase.swift */; };
 		3BA0E5812222E4E40044F17E /* ARRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E5802222E4E40044F17E /* ARRouter.swift */; };
+		3BA0E5852222EB580044F17E /* ARCL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BA0E5822222EB450044F17E /* ARCL.framework */; };
+		3BA0E5862222EB580044F17E /* ARCL.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3BA0E5822222EB450044F17E /* ARCL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3BE53468221FB11700C8AEDD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE53467221FB11700C8AEDD /* AppDelegate.swift */; };
 		3BE5346A221FB11700C8AEDD /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE53469221FB11700C8AEDD /* LoginViewController.swift */; };
 		3BE5346D221FB11700C8AEDD /* LoginViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3BE5346B221FB11700C8AEDD /* LoginViewController.storyboard */; };
@@ -140,6 +142,7 @@
 				3BA0E5302221AAA40044F17E /* RxSwift.framework in Embed Frameworks */,
 				3BA0E51C22219D720044F17E /* RxCocoa.framework in Embed Frameworks */,
 				3BA0E51E22219D720044F17E /* RxMoya.framework in Embed Frameworks */,
+				3BA0E5862222EB580044F17E /* ARCL.framework in Embed Frameworks */,
 				3BA0E52822219D720044F17E /* Alamofire.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -191,6 +194,7 @@
 		3BA0E57C2222DE610044F17E /* ARViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ARViewController.storyboard; sourceTree = "<group>"; };
 		3BA0E57E2222DF0D0044F17E /* ARUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARUseCase.swift; sourceTree = "<group>"; };
 		3BA0E5802222E4E40044F17E /* ARRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARRouter.swift; sourceTree = "<group>"; };
+		3BA0E5822222EB450044F17E /* ARCL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ARCL.framework; sourceTree = "<group>"; };
 		3BE53464221FB11700C8AEDD /* IkimonGO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IkimonGO.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3BE53467221FB11700C8AEDD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3BE53469221FB11700C8AEDD /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -224,6 +228,7 @@
 				3BA0E52F2221AAA40044F17E /* RxSwift.framework in Frameworks */,
 				3BA0E51B22219D720044F17E /* RxCocoa.framework in Frameworks */,
 				3BA0E51D22219D720044F17E /* RxMoya.framework in Frameworks */,
+				3BA0E5852222EB580044F17E /* ARCL.framework in Frameworks */,
 				3BA0E52722219D720044F17E /* Alamofire.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -271,6 +276,7 @@
 		3BA0E52D2221AA290044F17E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3BA0E5822222EB450044F17E /* ARCL.framework */,
 				3BA0E52E2221AAA40044F17E /* RxSwift.framework */,
 				3BA0E51822219D720044F17E /* Alamofire.framework */,
 				3BA0E51422219D720044F17E /* Moya.framework */,
@@ -872,6 +878,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(PROJECT_DIR)/Frameworks",
 				);
 				INFOPLIST_FILE = IkimonGO/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -894,6 +901,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(PROJECT_DIR)/Frameworks",
 				);
 				INFOPLIST_FILE = IkimonGO/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
