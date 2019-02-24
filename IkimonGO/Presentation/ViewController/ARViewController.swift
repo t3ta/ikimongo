@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import ARKit
 
 protocol ARViewControllerInput: class {
     func setRecordsModel(_: RecordsModel)
@@ -14,6 +15,8 @@ protocol ARViewControllerInput: class {
 
 final class ARViewController: UIViewController {
     var presenter: ARPresenterProtocol?
+    
+    @IBOutlet weak var arScnView: ARSCNView!
     
     var records: [RecordViewModel] = []
     
@@ -23,6 +26,10 @@ final class ARViewController: UIViewController {
     
     override func viewDidLoad() {
         presenter?.loadMyRecords()
+    }
+    
+    @IBAction func mapButtonTapped(_ sender: UIButton) {
+        presenter?.mapButtonTapped()
     }
 }
 
@@ -43,7 +50,8 @@ struct ARViewControllerBuilder {
                                  catalogRepository: CatalogRepository(dataStore: CatalogDataStore()),
                                  mediumRepository: MediumRepository(dataStore: MediumDataStore()))
         let viewController = UIStoryboard(name: "ARViewController", bundle: nil).instantiateInitialViewController() as! ARViewController
-        let presenter = ARPresenter(useCase: useCase, viewInput: viewController)
+        let router = ARRouter(viewController: viewController)
+        let presenter = ARPresenter(useCase: useCase, router: router, viewInput: viewController)
         viewController.inject(presenter: presenter)
         return viewController
     }

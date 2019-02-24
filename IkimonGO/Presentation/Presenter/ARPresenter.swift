@@ -10,16 +10,19 @@ import RxSwift
 
 protocol ARPresenterProtocol {
     func loadMyRecords()
+    func mapButtonTapped()
 }
 
 final class ARPresenter: ARPresenterProtocol {
     private let useCase: ARUseCaseProtocol
+    private let router: ARRouter
     weak var viewInput: ARViewControllerInput?
     
     fileprivate let disposeBag = DisposeBag()
     
-    init(useCase: ARUseCaseProtocol, viewInput: ARViewControllerInput) {
+    init(useCase: ARUseCaseProtocol, router: ARRouter, viewInput: ARViewControllerInput) {
         self.useCase = useCase
+        self.router = router
         self.viewInput = viewInput
     }
     
@@ -32,5 +35,9 @@ final class ARPresenter: ARPresenterProtocol {
                 print(error)
             }, onCompleted: nil, onDisposed: nil)
             .disposed(by: disposeBag)
+    }
+    
+    func mapButtonTapped() {
+        router.transitionToMapViewController()
     }
 }

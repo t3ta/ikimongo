@@ -17,9 +17,33 @@
                     <view key="view" contentMode="scaleToFill" id="eAt-ww-axZ">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <arscnView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cen-7e-yJg">
+                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                            </arscnView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nr0-sv-F33">
+                                <rect key="frame" x="276" y="50" width="69" height="48"/>
+                                <fontDescription key="fontDescription" type="system" weight="heavy" pointSize="30"/>
+                                <state key="normal" title="MAP"/>
+                                <connections>
+                                    <action selector="mapButtonTapped:" destination="Yfw-i0-WBA" eventType="touchUpInside" id="COZ-Rr-9pL"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="O5p-b4-OuX" firstAttribute="bottom" secondItem="cen-7e-yJg" secondAttribute="bottom" id="5fV-8j-ode"/>
+                            <constraint firstItem="nr0-sv-F33" firstAttribute="top" secondItem="O5p-b4-OuX" secondAttribute="top" constant="30" id="Hgg-11-9iG"/>
+                            <constraint firstItem="O5p-b4-OuX" firstAttribute="trailing" secondItem="nr0-sv-F33" secondAttribute="trailing" constant="30" id="cht-8x-KKR"/>
+                            <constraint firstItem="cen-7e-yJg" firstAttribute="leading" secondItem="O5p-b4-OuX" secondAttribute="leading" id="ewI-NF-fEI"/>
+                            <constraint firstItem="cen-7e-yJg" firstAttribute="top" secondItem="O5p-b4-OuX" secondAttribute="top" id="ta8-Iv-Qu9"/>
+                            <constraint firstItem="O5p-b4-OuX" firstAttribute="trailing" secondItem="cen-7e-yJg" secondAttribute="trailing" id="wYT-Nd-J2T"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="O5p-b4-OuX"/>
                     </view>
+                    <connections>
+                        <outlet property="arScnView" destination="cen-7e-yJg" id="mcY-Gd-RcJ"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="D6H-F8-gFe" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
