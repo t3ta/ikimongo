@@ -18,7 +18,7 @@ struct RecordEntity: Decodable {
     let accuracy: Double?
     let collectedAt: Date
     let media: [MediumEntity]?
-    let additionalData: [AdditionalDatumEntity]?
+    let additionalData: [String:String]?
     let owner: String
     
     enum Key: String, CodingKey {
@@ -45,7 +45,7 @@ struct RecordEntity: Decodable {
         self.longitude = try container.decode(Double.self, forKey: .longitude)
         self.accuracy = try? container.decode(Double.self, forKey: .accuracy)
         self.media = try? container.decode([MediumEntity].self, forKey: .media)
-        self.additionalData = try? container.decode([AdditionalDatumEntity].self, forKey: .additionalData)
+        self.additionalData = try? container.decode([String:String].self, forKey: .additionalData)
         self.owner = try container.decode(String.self, forKey: .owner)
         
         let dateString = try container.decode(String.self, forKey: .collectedAt)
