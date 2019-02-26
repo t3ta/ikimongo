@@ -78,9 +78,7 @@
 		3BA0E565222273730044F17E /* Translator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E564222273730044F17E /* Translator.swift */; };
 		3BA0E567222273860044F17E /* RecordTranslator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E566222273860044F17E /* RecordTranslator.swift */; };
 		3BA0E5692222792D0044F17E /* RecordModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E5682222792D0044F17E /* RecordModel.swift */; };
-		3BA0E56B22227D050044F17E /* AdditionalDatumEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E56A22227D050044F17E /* AdditionalDatumEntity.swift */; };
 		3BA0E56D22227E060044F17E /* MediaModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E56C22227E060044F17E /* MediaModel.swift */; };
-		3BA0E56F22227E100044F17E /* AdditionalDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E56E22227E100044F17E /* AdditionalDataModel.swift */; };
 		3BA0E572222290340044F17E /* RecordViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E571222290340044F17E /* RecordViewModel.swift */; };
 		3BA0E5772222DD1D0044F17E /* MapRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E5762222DD1D0044F17E /* MapRouter.swift */; };
 		3BA0E5792222DE490044F17E /* ARPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA0E5782222DE490044F17E /* ARPresenter.swift */; };
@@ -184,9 +182,7 @@
 		3BA0E564222273730044F17E /* Translator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Translator.swift; sourceTree = "<group>"; };
 		3BA0E566222273860044F17E /* RecordTranslator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordTranslator.swift; sourceTree = "<group>"; };
 		3BA0E5682222792D0044F17E /* RecordModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordModel.swift; sourceTree = "<group>"; };
-		3BA0E56A22227D050044F17E /* AdditionalDatumEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdditionalDatumEntity.swift; sourceTree = "<group>"; };
 		3BA0E56C22227E060044F17E /* MediaModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaModel.swift; sourceTree = "<group>"; };
-		3BA0E56E22227E100044F17E /* AdditionalDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdditionalDataModel.swift; sourceTree = "<group>"; };
 		3BA0E571222290340044F17E /* RecordViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordViewModel.swift; sourceTree = "<group>"; };
 		3BA0E5762222DD1D0044F17E /* MapRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapRouter.swift; sourceTree = "<group>"; };
 		3BA0E5782222DE490044F17E /* ARPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARPresenter.swift; sourceTree = "<group>"; };
@@ -258,19 +254,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		3BA0E50322218A2F0044F17E /* Entity */ = {
+		3B2FAA882224DF6C00CA8752 /* Entity */ = {
 			isa = PBXGroup;
 			children = (
 				3BE5349B221FB23300C8AEDD /* TokenEntity.swift */,
 				3BA0E50422218A480044F17E /* RecordEntity.swift */,
-				3BA0E56A22227D050044F17E /* AdditionalDatumEntity.swift */,
 				3BA0E50622218A550044F17E /* CatalogEntity.swift */,
 				3BA0E50822218A620044F17E /* MediumEntity.swift */,
 				3BA0E50A22218C8B0044F17E /* FormatEntity.swift */,
 				3BA0E5512221C1BB0044F17E /* UserEntity.swift */,
 			);
-			name = Entity;
-			path = DataStore;
+			path = Entity;
 			sourceTree = "<group>";
 		};
 		3BA0E52D2221AA290044F17E /* Frameworks */ = {
@@ -342,7 +336,7 @@
 			path = Presenter;
 			sourceTree = "<group>";
 		};
-		3BA0E5602222509A0044F17E /* Gateway */ = {
+		3BA0E5602222509A0044F17E /* Repository */ = {
 			isa = PBXGroup;
 			children = (
 				3BE534A1221FBA9D00C8AEDD /* LoginRepository.swift */,
@@ -350,7 +344,7 @@
 				3BA0E4F9222188AD0044F17E /* CatalogRepository.swift */,
 				3BA0E4FB222188B30044F17E /* MediumRepository.swift */,
 			);
-			path = Gateway;
+			path = Repository;
 			sourceTree = "<group>";
 		};
 		3BA0E561222250B20044F17E /* Model */ = {
@@ -358,16 +352,8 @@
 			children = (
 				3BA0E5682222792D0044F17E /* RecordModel.swift */,
 				3BA0E56C22227E060044F17E /* MediaModel.swift */,
-				3BA0E56E22227E100044F17E /* AdditionalDataModel.swift */,
 			);
 			path = Model;
-			sourceTree = "<group>";
-		};
-		3BA0E562222250CA0044F17E /* Util */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Util;
 			sourceTree = "<group>";
 		};
 		3BA0E5632222735A0044F17E /* Translator */ = {
@@ -425,7 +411,6 @@
 				3BA0E559222250260044F17E /* Application */,
 				3BE534AA2221252300C8AEDD /* Data */,
 				3BE534A82221250200C8AEDD /* Domain */,
-				3BA0E562222250CA0044F17E /* Util */,
 				3BE5346E221FB11800C8AEDD /* Assets.xcassets */,
 				3BE53470221FB11800C8AEDD /* LaunchScreen.storyboard */,
 				3BE53473221FB11800C8AEDD /* Info.plist */,
@@ -455,7 +440,7 @@
 			isa = PBXGroup;
 			children = (
 				3BE534AD2221255D00C8AEDD /* UseCase */,
-				3BA0E5602222509A0044F17E /* Gateway */,
+				3BA0E5602222509A0044F17E /* Repository */,
 				3BA0E561222250B20044F17E /* Model */,
 			);
 			path = Domain;
@@ -466,7 +451,7 @@
 			children = (
 				3BE534B922214D2000C8AEDD /* DataStore */,
 				3BA0E558222250020044F17E /* Network */,
-				3BA0E50322218A2F0044F17E /* Entity */,
+				3B2FAA882224DF6C00CA8752 /* Entity */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -642,7 +627,6 @@
 				3BA0E50922218A620044F17E /* MediumEntity.swift in Sources */,
 				3BA0E54A2221B6E50044F17E /* RecordAPI.swift in Sources */,
 				3BA0E4FC222188B30044F17E /* MediumRepository.swift in Sources */,
-				3BA0E56F22227E100044F17E /* AdditionalDataModel.swift in Sources */,
 				3BA0E56D22227E060044F17E /* MediaModel.swift in Sources */,
 				3BA0E57F2222DF0D0044F17E /* ARUseCase.swift in Sources */,
 				3BA0E4EF222186ED0044F17E /* MapViewController.swift in Sources */,
@@ -650,7 +634,6 @@
 				3BA0E50B22218C8B0044F17E /* FormatEntity.swift in Sources */,
 				3BA0E57B2222DE530044F17E /* ARViewController.swift in Sources */,
 				3BA0E565222273730044F17E /* Translator.swift in Sources */,
-				3BA0E56B22227D050044F17E /* AdditionalDatumEntity.swift in Sources */,
 				3BA0E572222290340044F17E /* RecordViewModel.swift in Sources */,
 				3BA0E4ED222177330044F17E /* LoginRouter.swift in Sources */,
 				3BA0E5522221C1BB0044F17E /* UserEntity.swift in Sources */,
