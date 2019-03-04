@@ -18,9 +18,9 @@ struct RecordEntity: Decodable {
     let accuracy: Double?
     let collectedAt: Date
     let media: [MediumEntity]?
-    let additionalData: [String:String]?
+    let additionalData: [String: String]?
     let owner: String
-    
+
     enum Key: String, CodingKey {
         case id = "_id"
         case name
@@ -34,7 +34,7 @@ struct RecordEntity: Decodable {
         case additionalData = "additional_data"
         case owner
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: Key.self)
         self.id = try container.decode(String.self, forKey: .id)
@@ -45,9 +45,9 @@ struct RecordEntity: Decodable {
         self.longitude = try container.decode(Double.self, forKey: .longitude)
         self.accuracy = try? container.decode(Double.self, forKey: .accuracy)
         self.media = try? container.decode([MediumEntity].self, forKey: .media)
-        self.additionalData = try? container.decode([String:String].self, forKey: .additionalData)
+        self.additionalData = try? container.decode([String: String].self, forKey: .additionalData)
         self.owner = try container.decode(String.self, forKey: .owner)
-        
+
         let dateString = try container.decode(String.self, forKey: .collectedAt)
         let formatter = DateFormatter.iso8601Full
         if let date = formatter.date(from: dateString) {

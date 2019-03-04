@@ -8,7 +8,7 @@
 
 struct MediaModel {
     var media: [MediumModel] = []
-    
+
     init(with entities: [MediumEntity]) {
         media = entities.map { (entity) -> MediumModel in
             MediumModel(fileName: entity.fileName, originalName: entity.originalName, encoding: entity.encoding, mimeType: entity.mimeType, path: entity.path, size: entity.size, description: entity.description ?? "", owner: entity.owner)

@@ -11,7 +11,7 @@ import Foundation
 struct RecordTranslator: Translator {
     typealias Input = [RecordEntity]
     typealias Output = RecordsModel
-    
+
     func translate(_ entities: [RecordEntity]) throws -> RecordsModel {
         var recordsModel = RecordsModel()
         entities.forEach { (entity) in

@@ -15,15 +15,15 @@ protocol LoginRepositoryProtocol {
 
 final class LoginRepository: LoginRepositoryProtocol {
     private let dataStore: LoginDataStoreProtocol
-    
+
     init(dataStore: LoginDataStoreProtocol) {
         self.dataStore = dataStore
     }
-    
+
     func getAccessToken() -> Observable<String> {
         return dataStore.getAccessToken()
     }
-    
+
     func getToken(email: String, password: String) -> Observable<TokenEntity> {
         return dataStore.getToken(email: email, password: password)
     }

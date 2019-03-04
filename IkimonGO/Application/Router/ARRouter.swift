@@ -18,11 +18,11 @@ protocol ARRouterProtocol: AnyObject {
 
 final class ARRouter: ARRouterProtocol {
     private(set) weak var viewController: ARViewControllerProtocol!
-    
+
     init(viewController: ARViewControllerProtocol) {
         self.viewController = viewController
     }
-    
+
     func transitionToMapViewController() {
         let builder = MapViewControllerBuilder()
         viewController.present(viewController: builder.build(), completion: nil)

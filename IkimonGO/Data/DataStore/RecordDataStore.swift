@@ -8,6 +8,7 @@
 
 import Moya
 import RxSwift
+import RxMoya
 
 enum RecordError: Error {
     case parseError
@@ -21,9 +22,9 @@ protocol RecordDataStoreProtocol {
 final class RecordDataStore: RecordDataStoreProtocol {
     func getMyRecords(with accessToken: String) -> Observable<[RecordEntity]> {
         let provider = MoyaProvider<RecordAPI>(plugins: [AuthPlugin(tokenClosure: { return accessToken })])
-        
+
         return Observable<[RecordEntity]>.create({ (observer) -> Disposable in
-            let _ = provider.rx
+            _ = provider.rx
                 .request(.get())
                 .filterSuccessfulStatusCodes()
                 .map({ (response) -> [RecordEntity]? in
@@ -38,16 +39,16 @@ final class RecordDataStore: RecordDataStoreProtocol {
                 }, onError: { (error) in
                     observer.onError(error)
                 })
-            
+
             return Disposables.create()
         })
     }
-    
+
     func getRecord(by id: String, with accessToken: String) -> Observable<RecordEntity> {
         let provider = MoyaProvider<RecordAPI>(plugins: [AuthPlugin(tokenClosure: { return accessToken })])
-        
+
         return Observable<RecordEntity>.create({ (observer) -> Disposable in
-            let _ = provider.rx
+            _ = provider.rx
                 .request(.getById(id: id))
                 .filterSuccessfulStatusCodes()
                 .map({ (response) -> RecordEntity? in
@@ -62,7 +63,7 @@ final class RecordDataStore: RecordDataStoreProtocol {
                 }, onError: { (error) in
                     observer.onError(error)
                 })
-            
+
             return Disposables.create()
         })
     }

@@ -14,14 +14,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        if let _ = UserDefaults.standard.object(forKey: "accessToken") {
+        if UserDefaults.standard.object(forKey: "accessToken") != nil {
             let builder = MapViewControllerBuilder()
             self.window?.rootViewController = builder.build()
         } else {
             let builder = LoginViewControllerBuilder()
             self.window?.rootViewController = builder.build()
         }
-        
+
         return true
     }
 
@@ -40,4 +40,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
     }
 }
-

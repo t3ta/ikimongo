@@ -17,15 +17,15 @@ final class MapPresenter: MapPresenterProtocol {
     private let useCase: MapUseCaseProtocol
     private let router: MapRouterProtocol
     weak var viewInput: MapViewControllerInput?
-    
+
     fileprivate let disposeBag = DisposeBag()
-    
+
     init(useCase: MapUseCaseProtocol, router: MapRouterProtocol, viewInput: MapViewControllerInput) {
         self.useCase = useCase
         self.router = router
         self.viewInput = viewInput
     }
-    
+
     func loadMyRecords() {
         useCase.getMyRecords()
             .subscribe(onNext: { [weak self] (records) in
@@ -36,7 +36,7 @@ final class MapPresenter: MapPresenterProtocol {
             }, onCompleted: nil, onDisposed: nil)
         .disposed(by: disposeBag)
     }
-    
+
     func arButtonTapped() {
         router.transitionToARViewController()
     }

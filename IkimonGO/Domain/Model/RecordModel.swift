@@ -21,9 +21,9 @@ struct RecordModel: RecordViewModel {
     let location: CLLocation
     let collectedAt: Date
     let media: MediaModel
-    let additionalData: [String:String]
+    let additionalData: [String: String]
     let owner: String
-    
+
     init(with entity: RecordEntity) {
         id = entity.id
         name = entity.name
@@ -32,14 +32,14 @@ struct RecordModel: RecordViewModel {
         collectedAt = entity.collectedAt
         owner = entity.owner
         additionalData = entity.additionalData ?? [:]
-        
+
         if let lat = CLLocationDegrees(exactly: entity.latitude),
             let lon = CLLocationDegrees(exactly: entity.longitude) {
             location = CLLocation(latitude: lat, longitude: lon)
         } else {
             fatalError()
         }
-        
+
         if let mediumEntities = entity.media {
             media = MediaModel(with: mediumEntities)
         } else {

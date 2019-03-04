@@ -9,12 +9,12 @@
 import RxSwift
 
 protocol CatalogRepositoryProtocol {
-    
+
 }
 
 final class CatalogRepository: CatalogRepositoryProtocol {
     private let dataStore: CatalogDataStoreProtocol
-    
+
     init(dataStore: CatalogDataStoreProtocol) {
         self.dataStore = dataStore
     }
