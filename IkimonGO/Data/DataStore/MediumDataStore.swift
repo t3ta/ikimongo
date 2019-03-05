@@ -14,7 +14,7 @@ protocol MediumDataStoreProtocol {
 
 final class MediumDataStore: MediumDataStoreProtocol {
     let request = MediumRequest()
-    
+
 /*    func getMedium(by id: String) -> Observable<MediumEntity> {
         
     }*/

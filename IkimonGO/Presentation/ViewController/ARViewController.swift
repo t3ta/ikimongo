@@ -17,33 +17,33 @@ protocol ARViewControllerInput: class {
 
 final class ARViewController: UIViewController, ARSCNViewDelegate {
     var presenter: ARPresenterProtocol?
-    
+
     var sceneLocationView = SceneLocationView()
     @IBOutlet weak var mapButton: UIButton!
-    
+
     var records: [RecordViewModel] = []
-    
+
     public func inject(presenter: ARPresenterProtocol) {
         self.presenter = presenter
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         presenter?.loadMyRecords()
     }
-    
+
     override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()   
+        super.viewDidLayoutSubviews()
         sceneLocationView.frame = view.bounds
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         sceneLocationView.run()
         view.addSubview(sceneLocationView)
         view.bringSubviewToFront(mapButton)
     }
-    
+
     @IBAction func mapButtonTapped(_ sender: UIButton) {
         presenter?.mapButtonTapped()
     }
@@ -52,7 +52,7 @@ final class ARViewController: UIViewController, ARSCNViewDelegate {
 extension ARViewController: ARViewControllerInput {
     func setRecordsModel(_ recordsModel: RecordsModel) {
         records = recordsModel.records
-        
+
         records.forEach { [weak self] (record) in
             guard let self = self else { return }
             let image = UIImage(named: "pin")!

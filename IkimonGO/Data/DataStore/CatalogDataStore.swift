@@ -15,7 +15,7 @@ protocol CatalogDataStoreProtocol {
 
 final class CatalogDataStore: CatalogDataStoreProtocol {
     let request = CatalogRequest()
-    
+
 /*    func getMyCatalogs() -> Observable<[CatalogEntity]> {
         
     }

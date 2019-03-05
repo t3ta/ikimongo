@@ -18,11 +18,11 @@ protocol LoginRouterProtocol: AnyObject {
 
 final class LoginRouter: LoginRouterProtocol {
     private(set) weak var viewController: LoginViewControllerProtocol!
-    
+
     init(viewController: LoginViewControllerProtocol) {
         self.viewController = viewController
     }
-    
+
     func transitionToMapViewController() {
         let builder = MapViewControllerBuilder()
         viewController.present(viewController: builder.build(), completion: nil)

@@ -30,16 +30,16 @@ final class LoginDataStore: LoginDataStoreProtocol {
             } else {
                 observer.onError(LoginError.noAccessToken)
             }
-            
+
             return Disposables.create()
         })
     }
-    
+
     func getToken(email: String, password: String) -> Observable<TokenEntity> {
         let provider = MoyaProvider<AuthAPI>()
-        
+
         return Observable<TokenEntity>.create({ (observer) -> Disposable in
-            let _ = provider.rx
+            _ = provider.rx
                         .request(.login(email: email, password: password))
                         .filterSuccessfulStatusCodes()
                         .map({ (response) -> TokenEntity? in
@@ -55,7 +55,7 @@ final class LoginDataStore: LoginDataStoreProtocol {
                         }, onError: { (error) in
                             observer.onError(error)
                         })
-            
+
             return Disposables.create()
         })
     }

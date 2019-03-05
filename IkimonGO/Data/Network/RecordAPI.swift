@@ -17,11 +17,11 @@ extension RecordAPI: AuthorizedTargetType {
     var needsAuth: Bool {
         return true
     }
-    
+
     var baseURL: URL {
         return URL(string: "http://ikimongo-server-express.herokuapp.com")!
     }
-    
+
     var path: String {
         switch self {
         case .get:
@@ -30,7 +30,7 @@ extension RecordAPI: AuthorizedTargetType {
             return "/records/"+id
         }
     }
-    
+
     var method: Moya.Method {
         switch self {
         case .get:
@@ -39,7 +39,7 @@ extension RecordAPI: AuthorizedTargetType {
             return .get
         }
     }
-    
+
     var sampleData: Data {
         switch self {
         case .get:
@@ -50,7 +50,7 @@ extension RecordAPI: AuthorizedTargetType {
             return FileHandle(forReadingAtPath: path)!.readDataToEndOfFile()
         }
     }
-    
+
     var task: Task {
         switch self {
         case .get:
@@ -59,9 +59,8 @@ extension RecordAPI: AuthorizedTargetType {
             return .requestParameters(parameters: [:], encoding: URLEncoding.default)
         }
     }
-    
-    var headers: [String : String]? {
+
+    var headers: [String: String]? {
         return nil
     }
 }
-

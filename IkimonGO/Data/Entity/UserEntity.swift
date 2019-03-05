@@ -12,13 +12,13 @@ struct UserEntity: Decodable {
     let id: String
     let name: String
     let email: String
-    
+
     enum Key: String, CodingKey {
         case id = "_id"
         case name
         case email
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: Key.self)
         self.id = try container.decode(String.self, forKey: .id)

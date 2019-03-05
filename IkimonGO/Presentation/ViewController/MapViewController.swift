@@ -15,15 +15,15 @@ protocol MapViewControllerInput: class {
 
 final class MapViewController: UIViewController {
     var presenter: MapPresenterProtocol?
-    
+
     @IBOutlet weak var mapView: MKMapView!
-    
+
     var records: [RecordViewModel] = []
-    
+
     public func inject(presenter: MapPresenterProtocol) {
         self.presenter = presenter
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         presenter?.loadMyRecords()
@@ -37,7 +37,7 @@ final class MapViewController: UIViewController {
 extension MapViewController: MapViewControllerInput {
     func setRecordsModel(_ recordsModel: RecordsModel) {
         records = recordsModel.records
-        
+
         records.forEach { [weak self] (record) in
             guard let self = self else { return }
             let annotation = MKPointAnnotation()

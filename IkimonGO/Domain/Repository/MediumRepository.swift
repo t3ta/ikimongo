@@ -9,12 +9,12 @@
 import RxSwift
 
 protocol MediumRepositoryProtocol {
-    
+
 }
 
 final class MediumRepository: MediumRepositoryProtocol {
     private let dataStore: MediumDataStoreProtocol
-    
+
     init(dataStore: MediumDataStoreProtocol) {
         self.dataStore = dataStore
     }

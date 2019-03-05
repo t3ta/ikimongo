@@ -16,21 +16,21 @@ extension AuthAPI: TargetType {
     var baseURL: URL {
         return URL(string: "http://ikimongo-server-express.herokuapp.com")!
     }
-    
+
     var path: String {
         switch self {
         case .login:
             return "/auth/token"
         }
     }
-    
+
     var method: Moya.Method {
         switch self {
         case .login:
             return .post
         }
     }
-    
+
     var sampleData: Data {
         switch self {
         case .login:
@@ -38,15 +38,15 @@ extension AuthAPI: TargetType {
             return FileHandle(forReadingAtPath: path)!.readDataToEndOfFile()
         }
     }
-    
+
     var task: Task {
         switch self {
         case .login(let email, let password):
             return .requestParameters(parameters: ["email": email, "password": password], encoding: URLEncoding.default)
         }
     }
-    
-    var headers: [String : String]? {
+
+    var headers: [String: String]? {
         return nil
     }
 }

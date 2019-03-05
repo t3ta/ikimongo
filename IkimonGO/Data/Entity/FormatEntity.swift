@@ -9,7 +9,7 @@
 struct FormatEnttity: Decodable {
     let name: String
     let elements: [FormatElement]
-    
+
     struct FormatElement: Decodable {
         let key: String
         let isRequired: Bool

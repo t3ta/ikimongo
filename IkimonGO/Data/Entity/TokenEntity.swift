@@ -9,12 +9,12 @@
 struct TokenEntity: Decodable {
     let accessToken: String
     let user: UserEntity
-    
+
     enum Key: String, CodingKey {
         case accessToken = "access_token"
         case user
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: Key.self)
         self.accessToken = try container.decode(String.self, forKey: .accessToken)

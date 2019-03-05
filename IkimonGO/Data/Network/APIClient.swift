@@ -10,13 +10,13 @@ import Foundation
 import RxSwift
 
 struct RecordRequest {
-    
+
 }
 
 struct CatalogRequest {
-    
+
 }
 
 struct MediumRequest {
-    
+
 }

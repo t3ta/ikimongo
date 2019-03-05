@@ -14,11 +14,11 @@ protocol RecordRepositoryProtocol {
 
 final class RecordRepository: RecordRepositoryProtocol {
     private let dataStore: RecordDataStoreProtocol
-    
+
     init(dataStore: RecordDataStoreProtocol) {
         self.dataStore = dataStore
     }
-    
+
     func getMyRecords(with accessToken: String) -> Observable<[RecordEntity]> {
         return dataStore.getMyRecords(with: accessToken)
     }

@@ -15,14 +15,14 @@ protocol LoginViewControllerInput: class {
 
 final class LoginViewController: UIViewController {
     var presenter: LoginPresenterProtocol?
-    
+
     @IBOutlet weak var emailField: UITextField!
     @IBOutlet weak var passwordField: UITextField!
-    
-    public func inject(presenter :LoginPresenterProtocol) {
+
+    public func inject(presenter: LoginPresenterProtocol) {
         self.presenter = presenter
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -34,7 +34,7 @@ final class LoginViewController: UIViewController {
 
 extension LoginViewController: LoginViewControllerInput {
     func showAlert(with message: String) {
-        let alert = UIAlertController(title: "エラー", message: message, preferredStyle:  .alert)
+        let alert = UIAlertController(title: "エラー", message: message, preferredStyle: .alert)
         let action = UIAlertAction(title: "OK", style: .default, handler: nil)
         alert.addAction(action)
         present(alert, animated: true, completion: nil)
@@ -57,7 +57,7 @@ extension SwinjectStoryboard {
         defaultContainer.register(LoginUsecase.self) { r in
             LoginUsecase(repository: r.resolve(LoginRepository.self)!)
         }
-        defaultContainer.register(LoginRouter.self) { (r, vc: LoginViewController) in
+        defaultContainer.register(LoginRouter.self) { (_, vc: LoginViewController) in
             LoginRouter(viewController: vc)
         }
         defaultContainer.register(LoginPresenter.self) { (r, vc: LoginViewController) in

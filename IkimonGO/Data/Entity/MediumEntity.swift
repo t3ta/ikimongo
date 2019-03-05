@@ -15,8 +15,8 @@ struct MediumEntity: Decodable {
     let size: Int
     let description: String?
     let owner: String
-    
-    enum Key:String, CodingKey {
+
+    enum Key: String, CodingKey {
         case fileName = "filename"
         case originalName = "originalname"
         case encoding
@@ -26,7 +26,7 @@ struct MediumEntity: Decodable {
         case description
         case owner
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: Key.self)
         self.fileName = try container.decode(String.self, forKey: .fileName)

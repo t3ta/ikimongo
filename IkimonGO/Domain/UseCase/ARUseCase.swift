@@ -17,7 +17,7 @@ final class ARUseCase: ARUseCaseProtocol {
     private let recordRepository: RecordRepositoryProtocol
     private let catalogRepository: CatalogRepositoryProtocol
     private let mediumRepository: MediumRepositoryProtocol
-    
+
     init(loginRepository: LoginRepositoryProtocol,
          recordRepository: RecordRepositoryProtocol,
          catalogRepository: CatalogRepositoryProtocol,
@@ -27,14 +27,14 @@ final class ARUseCase: ARUseCaseProtocol {
         self.catalogRepository = catalogRepository
         self.mediumRepository = mediumRepository
     }
-    
+
     func getMyRecords() -> Observable<RecordsModel> {
         return loginRepository.getAccessToken()
             .flatMap({ [weak self] (accessToken) -> Observable<RecordsModel> in
                 guard let self = self else {
                     return Observable.error(LoginError.authError)
                 }
-                
+
                 return self.recordRepository.getMyRecords(with: accessToken)
                     .map(translator: RecordTranslator())
             })

@@ -15,15 +15,15 @@ protocol LoginUseCaseProtocol {
 
 final class LoginUsecase: LoginUseCaseProtocol {
     private let repository: LoginRepositoryProtocol
-    
+
     init(repository: LoginRepositoryProtocol) {
         self.repository = repository
     }
-    
+
     func checkAccessToken() -> Observable<String> {
         return repository.getAccessToken()
     }
-    
+
     func login(email: String, password: String) -> Observable<TokenEntity> {
         return repository.getToken(email: email, password: password)
     }

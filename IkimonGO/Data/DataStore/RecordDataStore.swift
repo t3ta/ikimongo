@@ -21,9 +21,9 @@ protocol RecordDataStoreProtocol {
 final class RecordDataStore: RecordDataStoreProtocol {
     func getMyRecords(with accessToken: String) -> Observable<[RecordEntity]> {
         let provider = MoyaProvider<RecordAPI>(plugins: [AuthPlugin(tokenClosure: { return accessToken })])
-        
+
         return Observable<[RecordEntity]>.create({ (observer) -> Disposable in
-            let _ = provider.rx
+            _ = provider.rx
                 .request(.get())
                 .filterSuccessfulStatusCodes()
                 .map({ (response) -> [RecordEntity]? in
@@ -38,31 +38,31 @@ final class RecordDataStore: RecordDataStoreProtocol {
                 }, onError: { (error) in
                     observer.onError(error)
                 })
-            
+
             return Disposables.create()
         })
     }
-    
+
     func getRecord(by id: String, with accessToken: String) -> Observable<RecordEntity> {
         let provider = MoyaProvider<RecordAPI>(plugins: [AuthPlugin(tokenClosure: { return accessToken })])
-        
+
         return Observable<RecordEntity>.create({ (observer) -> Disposable in
-            let _ = provider.rx
+            _ = provider.rx
                 .request(.getById(id: id))
                 .filterSuccessfulStatusCodes()
                 .map({ (response) -> RecordEntity? in
                     return try? JSONDecoder().decode(RecordEntity.self, from: response.data)
                 })
-                .subscribe(onSuccess: { (RecordEntity) in
-                    if let RecordEntity = RecordEntity {
-                        observer.onNext(RecordEntity)
+                .subscribe(onSuccess: { (recordEntity) in
+                    if let recordEntity = recordEntity {
+                        observer.onNext(recordEntity)
                     } else {
                         observer.onError(RecordError.parseError)
                     }
                 }, onError: { (error) in
                     observer.onError(error)
                 })
-            
+
             return Disposables.create()
         })
     }
