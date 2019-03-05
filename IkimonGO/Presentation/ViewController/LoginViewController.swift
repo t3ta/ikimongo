@@ -63,8 +63,8 @@ extension SwinjectStoryboard {
         defaultContainer.register(LoginPresenter.self) { (r, vc: LoginViewController) in
             LoginPresenter(useCase: r.resolve(LoginUsecase.self)!, router: r.resolve(LoginRouter.self, argument: vc)!, viewInput: vc)
         }
-        defaultContainer.storyboardInitCompleted(LoginViewController.self) { (r, c) in
-            c.presenter = r.resolve(LoginPresenter.self, argument: c)
+        defaultContainer.storyboardInitCompleted(LoginViewController.self) { (r, vc) in
+            vc.presenter = r.resolve(LoginPresenter.self, argument: vc)
         }
     }
 }
