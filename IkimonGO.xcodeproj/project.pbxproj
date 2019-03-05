@@ -273,11 +273,11 @@
 		3B2FAA882224DF6C00CA8752 /* Entity */ = {
 			isa = PBXGroup;
 			children = (
-				3BE5349B221FB23300C8AEDD /* TokenEntity.swift */,
-				3BA0E50422218A480044F17E /* RecordEntity.swift */,
 				3BA0E50622218A550044F17E /* CatalogEntity.swift */,
-				3BA0E50822218A620044F17E /* MediumEntity.swift */,
 				3BA0E50A22218C8B0044F17E /* FormatEntity.swift */,
+				3BA0E50822218A620044F17E /* MediumEntity.swift */,
+				3BA0E50422218A480044F17E /* RecordEntity.swift */,
+				3BE5349B221FB23300C8AEDD /* TokenEntity.swift */,
 				3BA0E5512221C1BB0044F17E /* UserEntity.swift */,
 			);
 			path = Entity;
@@ -287,11 +287,11 @@
 			isa = PBXGroup;
 			children = (
 				3BE534A4221FBBBF00C8AEDD /* APIClient.swift */,
-				3BA0E50C222197810044F17E /* UserAPI.swift */,
-				3BA0E5492221B6E50044F17E /* RecordAPI.swift */,
+				3BA0E54F2221B9700044F17E /* AuthPlugin.swift */,
 				3BA0E54B2221B6ED0044F17E /* CatalogAPI.swift */,
 				3BA0E54D2221B6F70044F17E /* MediumAPI.swift */,
-				3BA0E54F2221B9700044F17E /* AuthPlugin.swift */,
+				3BA0E5492221B6E50044F17E /* RecordAPI.swift */,
+				3BA0E50C222197810044F17E /* UserAPI.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -299,8 +299,8 @@
 		3BA0E559222250260044F17E /* Application */ = {
 			isa = PBXGroup;
 			children = (
-				3BE53467221FB11700C8AEDD /* AppDelegate.swift */,
 				3BA0E55B222250350044F17E /* Router */,
+				3BE53467221FB11700C8AEDD /* AppDelegate.swift */,
 			);
 			path = Application;
 			sourceTree = "<group>";
@@ -308,10 +308,10 @@
 		3BA0E55B222250350044F17E /* Router */ = {
 			isa = PBXGroup;
 			children = (
-				3BA0E4EA222175850044F17E /* Transitioner.swift */,
+				3BA0E5802222E4E40044F17E /* ARRouter.swift */,
 				3BA0E4EC222177330044F17E /* LoginRouter.swift */,
 				3BA0E5762222DD1D0044F17E /* MapRouter.swift */,
-				3BA0E5802222E4E40044F17E /* ARRouter.swift */,
+				3BA0E4EA222175850044F17E /* Transitioner.swift */,
 			);
 			path = Router;
 			sourceTree = "<group>";
@@ -329,9 +329,9 @@
 		3BA0E55F222250720044F17E /* Presenter */ = {
 			isa = PBXGroup;
 			children = (
+				3BA0E5782222DE490044F17E /* ARPresenter.swift */,
 				3BE53495221FB20D00C8AEDD /* LoginPresenter.swift */,
 				3BA0E4F3222187780044F17E /* MapPresenter.swift */,
-				3BA0E5782222DE490044F17E /* ARPresenter.swift */,
 			);
 			path = Presenter;
 			sourceTree = "<group>";
@@ -339,10 +339,10 @@
 		3BA0E5602222509A0044F17E /* Repository */ = {
 			isa = PBXGroup;
 			children = (
-				3BE534A1221FBA9D00C8AEDD /* LoginRepository.swift */,
-				3BA0E4F7222188A30044F17E /* RecordRepository.swift */,
 				3BA0E4F9222188AD0044F17E /* CatalogRepository.swift */,
+				3BE534A1221FBA9D00C8AEDD /* LoginRepository.swift */,
 				3BA0E4FB222188B30044F17E /* MediumRepository.swift */,
+				3BA0E4F7222188A30044F17E /* RecordRepository.swift */,
 			);
 			path = Repository;
 			sourceTree = "<group>";
@@ -350,8 +350,8 @@
 		3BA0E561222250B20044F17E /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				3BA0E5682222792D0044F17E /* RecordModel.swift */,
 				3BA0E56C22227E060044F17E /* MediaModel.swift */,
+				3BA0E5682222792D0044F17E /* RecordModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -359,8 +359,8 @@
 		3BA0E5632222735A0044F17E /* Translator */ = {
 			isa = PBXGroup;
 			children = (
-				3BA0E564222273730044F17E /* Translator.swift */,
 				3BA0E566222273860044F17E /* RecordTranslator.swift */,
+				3BA0E564222273730044F17E /* Translator.swift */,
 			);
 			path = Translator;
 			sourceTree = "<group>";
@@ -376,9 +376,9 @@
 		3BA0E5872222F9670044F17E /* StoryBoard */ = {
 			isa = PBXGroup;
 			children = (
+				3BA0E57C2222DE610044F17E /* ARViewController.storyboard */,
 				3BE5346B221FB11700C8AEDD /* LoginViewController.storyboard */,
 				3BA0E4F1222186FF0044F17E /* MapViewController.storyboard */,
-				3BA0E57C2222DE610044F17E /* ARViewController.storyboard */,
 			);
 			path = StoryBoard;
 			sourceTree = "<group>";
@@ -404,11 +404,11 @@
 		3BE5345B221FB11700C8AEDD = {
 			isa = PBXGroup;
 			children = (
+				3BBF93E0222D1CE900E23CD1 /* Frameworks */,
 				3BE53466221FB11700C8AEDD /* IkimonGO */,
 				3BE5347B221FB11800C8AEDD /* IkimonGOTests */,
 				3BE53486221FB11800C8AEDD /* IkimonGOUITests */,
 				3BE53465221FB11700C8AEDD /* Products */,
-				3BBF93E0222D1CE900E23CD1 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -425,13 +425,13 @@
 		3BE53466221FB11700C8AEDD /* IkimonGO */ = {
 			isa = PBXGroup;
 			children = (
-				3BA0E55E222250560044F17E /* Presentation */,
 				3BA0E559222250260044F17E /* Application */,
 				3BE534AA2221252300C8AEDD /* Data */,
 				3BE534A82221250200C8AEDD /* Domain */,
+				3BA0E55E222250560044F17E /* Presentation */,
 				3BE5346E221FB11800C8AEDD /* Assets.xcassets */,
-				3BE53470221FB11800C8AEDD /* LaunchScreen.storyboard */,
 				3BE53473221FB11800C8AEDD /* Info.plist */,
+				3BE53470221FB11800C8AEDD /* LaunchScreen.storyboard */,
 			);
 			path = IkimonGO;
 			sourceTree = "<group>";
@@ -457,9 +457,9 @@
 		3BE534A82221250200C8AEDD /* Domain */ = {
 			isa = PBXGroup;
 			children = (
-				3BE534AD2221255D00C8AEDD /* UseCase */,
-				3BA0E5602222509A0044F17E /* Repository */,
 				3BA0E561222250B20044F17E /* Model */,
+				3BA0E5602222509A0044F17E /* Repository */,
+				3BE534AD2221255D00C8AEDD /* UseCase */,
 			);
 			path = Domain;
 			sourceTree = "<group>";
@@ -468,8 +468,8 @@
 			isa = PBXGroup;
 			children = (
 				3BE534B922214D2000C8AEDD /* DataStore */,
-				3BA0E558222250020044F17E /* Network */,
 				3B2FAA882224DF6C00CA8752 /* Entity */,
+				3BA0E558222250020044F17E /* Network */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -478,9 +478,9 @@
 			isa = PBXGroup;
 			children = (
 				3BA0E5632222735A0044F17E /* Translator */,
+				3BA0E57E2222DF0D0044F17E /* ARUseCase.swift */,
 				3BE53498221FB21900C8AEDD /* LoginUseCase.swift */,
 				3BA0E4F5222187EB0044F17E /* MapUseCase.swift */,
-				3BA0E57E2222DF0D0044F17E /* ARUseCase.swift */,
 			);
 			path = UseCase;
 			sourceTree = "<group>";
@@ -489,9 +489,9 @@
 			isa = PBXGroup;
 			children = (
 				3BA0E5872222F9670044F17E /* StoryBoard */,
+				3BA0E57A2222DE530044F17E /* ARViewController.swift */,
 				3BE53469221FB11700C8AEDD /* LoginViewController.swift */,
 				3BA0E4EE222186ED0044F17E /* MapViewController.swift */,
-				3BA0E57A2222DE530044F17E /* ARViewController.swift */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -499,10 +499,10 @@
 		3BE534B922214D2000C8AEDD /* DataStore */ = {
 			isa = PBXGroup;
 			children = (
-				3BE534BA22214D3E00C8AEDD /* LoginDataStore.swift */,
-				3BA0E4FD2221892C0044F17E /* RecordDataStore.swift */,
 				3BA0E4FF222189330044F17E /* CatalogDataStore.swift */,
+				3BE534BA22214D3E00C8AEDD /* LoginDataStore.swift */,
 				3BA0E5012221893A0044F17E /* MediumDataStore.swift */,
+				3BA0E4FD2221892C0044F17E /* RecordDataStore.swift */,
 			);
 			path = DataStore;
 			sourceTree = "<group>";
@@ -518,7 +518,11 @@
 				3BE53461221FB11700C8AEDD /* Frameworks */,
 				3BE53462221FB11700C8AEDD /* Resources */,
 				3BE534B52221273900C8AEDD /* Embed Frameworks */,
+<<<<<<< HEAD
 				3B9E1B282229126900DAC436 /* ShellScript */,
+=======
+				3BBF9473222E5C2C00E23CD1 /* ShellScript */,
+>>>>>>> d909c980bb356fbf0bc069be64eac835cf174201
 			);
 			buildRules = (
 			);
@@ -638,7 +642,11 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+<<<<<<< HEAD
 		3B9E1B282229126900DAC436 /* ShellScript */ = {
+=======
+		3BBF9473222E5C2C00E23CD1 /* ShellScript */ = {
+>>>>>>> d909c980bb356fbf0bc069be64eac835cf174201
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -653,7 +661,11 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
+<<<<<<< HEAD
 			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint\nelse\n    echo \"SwiftLint does not exist, download from https://github.com/realm/SwiftLint\"\nfi\n";
+=======
+			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint\nelse\n    echo \"SwiftLint does not exist, download from https://github.com/realm/SwiftLint\"\nfi\n\n";
+>>>>>>> d909c980bb356fbf0bc069be64eac835cf174201
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -770,6 +782,7 @@
 				3BE5346C221FB11700C8AEDD /* Base */,
 			);
 			name = LoginViewController.storyboard;
+			path = .;
 			sourceTree = "<group>";
 		};
 		3BE53470221FB11800C8AEDD /* LaunchScreen.storyboard */ = {
@@ -778,6 +791,7 @@
 				3BE53471221FB11800C8AEDD /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			path = .;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -908,7 +922,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
-					"$(PROJECT_DIR)/Frameworks",
 				);
 				INFOPLIST_FILE = IkimonGO/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -931,7 +944,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
-					"$(PROJECT_DIR)/Frameworks",
 				);
 				INFOPLIST_FILE = IkimonGO/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

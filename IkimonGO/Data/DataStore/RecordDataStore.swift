@@ -54,9 +54,9 @@ final class RecordDataStore: RecordDataStoreProtocol {
                 .map({ (response) -> RecordEntity? in
                     return try? JSONDecoder().decode(RecordEntity.self, from: response.data)
                 })
-                .subscribe(onSuccess: { (RecordEntity) in
-                    if let RecordEntity = RecordEntity {
-                        observer.onNext(RecordEntity)
+                .subscribe(onSuccess: { (recordEntity) in
+                    if let recordEntity = recordEntity {
+                        observer.onNext(recordEntity)
                     } else {
                         observer.onError(RecordError.parseError)
                     }
