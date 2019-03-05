@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwinjectStoryboard
 
 protocol LoginViewControllerInput: class {
     func showAlert(with message: String)
@@ -42,11 +43,28 @@ extension LoginViewController: LoginViewControllerInput {
 
 struct LoginViewControllerBuilder {
     func build() -> UIViewController {
-        let useCase = LoginUsecase(repository: LoginRepository(dataStore: LoginDataStore()))
-        let viewController = UIStoryboard(name: "LoginViewController", bundle: nil).instantiateInitialViewController() as! LoginViewController
-        let router = LoginRouter(viewController: viewController)
-        let presenter = LoginPresenter(useCase: useCase, router: router, viewInput: viewController)
-        viewController.inject(presenter: presenter)
-        return viewController
+        let sb = SwinjectStoryboard.create(name: "LoginViewController", bundle: nil, container: SwinjectStoryboard.defaultContainer)
+        return sb.instantiateViewController(withIdentifier: "LoginViewController")
+    }
+}
+
+extension SwinjectStoryboard {
+    class func setup() {
+        defaultContainer.register(LoginDataStore.self) { _ in LoginDataStore() }
+        defaultContainer.register(LoginRepository.self) { r in
+            LoginRepository(dataStore: r.resolve(LoginDataStore.self)!)
+        }
+        defaultContainer.register(LoginUsecase.self) { r in
+            LoginUsecase(repository: r.resolve(LoginRepository.self)!)
+        }
+        defaultContainer.register(LoginRouter.self) { (r, vc: LoginViewController) in
+            LoginRouter(viewController: vc)
+        }
+        defaultContainer.register(LoginPresenter.self) { (r, vc: LoginViewController) in
+            LoginPresenter(useCase: r.resolve(LoginUsecase.self)!, router: r.resolve(LoginRouter.self, argument: vc)!, viewInput: vc)
+        }
+        defaultContainer.storyboardInitCompleted(LoginViewController.self) { (r, c) in
+            c.presenter = r.resolve(LoginPresenter.self, argument: c)
+        }
     }
 }
