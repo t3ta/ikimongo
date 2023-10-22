@@ -197,6 +197,16 @@ export class MiNote {
 	})
 	public hasPoll: boolean;
 
+	@Column('boolean', {
+		default: false,
+	})
+	public hasObservation: boolean;
+
+	@Column('boolean', {
+		default: false,
+	})
+	public hasIdentification: boolean;
+
 	@Index()
 	@Column({
 		...id(),

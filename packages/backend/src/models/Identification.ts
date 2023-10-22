@@ -7,14 +7,20 @@ import { PrimaryColumn, Entity, Index, JoinColumn, Column, ManyToOne, OneToOne }
 import { id } from '@/models/util/id.js';
 import * as IGTypes from '@/IGTypes.js';
 import { MiUser } from '@/models/User.js';
-import { IGObservation } from '@/models/ikimongo/Observation.js';
+import { IGObservation } from '@/models/Observation.js';
 import { MiNote } from '@/models/Note.js';
 
-@Entity('drive_file')
+@Entity('identification')
 @Index(['observationId', 'userId', 'id'])
 export class IGIdentification {
 	@PrimaryColumn(id())
 	public id: string;
+
+	@OneToOne(type => MiNote, {
+		onDelete: 'CASCADE',
+	})
+	@JoinColumn()
+	public note: MiNote | null;
 
 	@Index()
 	@Column('timestamp with time zone', {
@@ -22,21 +28,28 @@ export class IGIdentification {
 	})
 	public createdAt: Date;
 
-	@OneToOne(type => MiNote, {
-		onDelete: 'CASCADE',
+	@Index()
+	@Column({
+		...id(),
+		comment: 'The Observation ID.',
 	})
-	@JoinColumn()
-	public noteId: MiNote;
+	public observationId: IGObservation['id'];
 
 	@ManyToOne(type => IGObservation, {
 		onDelete: 'CASCADE',
 	})
 	@Column({
 		...id(),
-		nullable: true,
 		comment: 'The Observation ID corresponding to the Identification.',
 	})
-	public observation: IGObservation | null;
+	public observation: IGObservation;
+
+	@Index()
+	@Column({
+		...id(),
+		comment: 'The ID of author.',
+	})
+	public userId: MiUser['id'];
 
 	@ManyToOne(type => MiUser, {
 		onDelete: 'SET NULL',
@@ -52,17 +65,17 @@ export class IGIdentification {
 	public userHost: string | null;
 
 	@Column('varchar', {
-		length: 256,
+		length: 128,
 		comment: 'The scientific names of the Observation.',
 	})
-	public scientificNames: [string];
+	public scientificName: string;
 
 	@Index()
 	@Column('varchar', {
 		length: 128,
 		comment: 'The common names of the Observation',
 	})
-	public commonNames: {[key: string]: string};
+	public japaneseName: string;
 
 	@Index()
 	@Column({
@@ -72,8 +85,9 @@ export class IGIdentification {
 	})
 	public taxonomicRank: string;
 
-	@Index()
-	@Column('json')
+	@Column('jsonb', {
+		default: {},
+	})
 	public taxon: IGTypes.Taxon;
 
 	@Column('varchar', {
@@ -83,3 +97,13 @@ export class IGIdentification {
 	public description: string;
 }
 
+export type IIGIdentification = {
+	japaneseName?: string;
+	scientificName?: string;
+	location: {
+		name?: string;
+		latitude?: number;
+		longitude?: number;
+	}
+	date?: Date;
+};

@@ -39,7 +39,7 @@ export type UserDetailed = UserLite & {
 	createdAt: DateString;
 	description: string | null;
 	ffVisibility: 'public' | 'followers' | 'private';
-	fields: {name: string; value: string}[];
+	fields: { name: string; value: string }[];
 	verifiedLinks: string[];
 	followersCount: number;
 	followingCount: number;
@@ -205,6 +205,28 @@ export type Note = {
 			votes: number;
 		}[];
 	};
+	observation?: {
+		date: DateString | null;
+		location: {
+			name: string;
+			latitude: number;
+			longitude: number;
+		}
+	},
+	identification?: {
+		scientificName?: string;
+		japaneseName?: string;
+		taxonomicRank?: string;
+		taxon?: {
+			kingdom?: string;
+			phylum?: string;
+			class?: string;
+			order?: string;
+			family?: string;
+			genus?: string;
+			species?: string;
+		}
+	},
 	emojis: {
 		name: string;
 		url: string;

@@ -68,6 +68,8 @@ import { MiRoleAssignment } from '@/models/RoleAssignment.js';
 import { MiFlash } from '@/models/Flash.js';
 import { MiFlashLike } from '@/models/FlashLike.js';
 import { MiUserListFavorite } from '@/models/UserListFavorite.js';
+import { IGIdentification } from '@/models/Identification.js';
+import { IGObservation } from '@/models/Observation.js';
 import type { Repository } from 'typeorm';
 
 export {
@@ -136,6 +138,8 @@ export {
 	MiFlash,
 	MiFlashLike,
 	MiUserMemo,
+	IGIdentification,
+	IGObservation,
 };
 
 export type AbuseUserReportsRepository = Repository<MiAbuseUserReport>;
@@ -203,3 +207,5 @@ export type RoleAssignmentsRepository = Repository<MiRoleAssignment>;
 export type FlashsRepository = Repository<MiFlash>;
 export type FlashLikesRepository = Repository<MiFlashLike>;
 export type UserMemoRepository = Repository<MiUserMemo>;
+export type IGIdentificationsRepository = Repository<IGIdentification>;
+export type IGObservationsRepository = Repository<IGObservation>;

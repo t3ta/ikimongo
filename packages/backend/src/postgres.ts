@@ -80,6 +80,8 @@ import { MiUserMemo } from '@/models/UserMemo.js';
 import { Config } from '@/config.js';
 import MisskeyLogger from '@/logger.js';
 import { bindThis } from '@/decorators.js';
+import { IGIdentification } from './models/Identification.js';
+import { IGObservation } from './models/Observation.js';
 
 export const dbLogger = new MisskeyLogger('db');
 
@@ -190,6 +192,8 @@ export const entities = [
 	MiFlash,
 	MiFlashLike,
 	MiUserMemo,
+	IGObservation,
+	IGIdentification,
 	...charts,
 ];
 

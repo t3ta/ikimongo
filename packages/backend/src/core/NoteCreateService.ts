@@ -53,6 +53,8 @@ import { DB_MAX_NOTE_TEXT_LENGTH } from '@/const.js';
 import { RoleService } from '@/core/RoleService.js';
 import { MetaService } from '@/core/MetaService.js';
 import { SearchService } from '@/core/SearchService.js';
+import { IGIdentification } from '@/models/Identification.js';
+import { IGObservation } from '@/models/Observation.js';
 
 const mutedWordsCache = new MemorySingleCache<{ userId: MiUserProfile['userId']; mutedWords: MiUserProfile['mutedWords']; }[]>(1000 * 60 * 5);
 
@@ -132,6 +134,8 @@ type Option = {
 	renote?: MiNote | null;
 	files?: MiDriveFile[] | null;
 	poll?: IPoll | null;
+	observation?: IGObservation | null;
+	identification?: IGIdentification | null;
 	localOnly?: boolean | null;
 	reactionAcceptance?: MiNote['reactionAcceptance'];
 	cw?: string | null;
@@ -366,6 +370,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 			name: data.name,
 			text: data.text,
 			hasPoll: data.poll != null,
+			hasIdentification: data.identification != null,
 			cw: data.cw ?? null,
 			tags: tags.map(tag => normalizeForSearch(tag)),
 			emojis,
@@ -428,6 +433,26 @@ export class NoteCreateService implements OnApplicationShutdown {
 
 					await transactionalEntityManager.insert(MiPoll, poll);
 				});
+				/* 			} else if (insert.hasObservation) {
+				await this.db.transaction(async transactionalEntityManager => {
+					await transactionalEntityManager.insert(MiNote, insert);
+
+					const observation = new IGObservation({
+						noteId: insert.id,
+						fileIds: data.files ? data.files.map(file => file.id) : [],
+						userId: user.id,
+						userHost: user.host,
+					});
+
+					const identification = new IGIdentification({
+						noteId: insert.id,
+						userId: user.id,
+						userHost: user.host,
+					});
+
+					await transactionalEntityManager.insert(IGObservation, observation);
+					await transactionalEntityManager.insert(IGOIdentification, identification);
+				}) */
 			} else {
 				await this.notesRepository.insert(insert);
 			}

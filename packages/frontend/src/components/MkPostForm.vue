@@ -71,6 +71,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div v-if="maxTextLength - textLength < 100" :class="['_acrylic', $style.textCount, { [$style.textOver]: textLength > maxTextLength }]">{{ maxTextLength - textLength }}</div>
 	</div>
 	<input v-show="withHashtags" ref="hashtagsInputEl" v-model="hashtags" :class="$style.hashtags" :placeholder="i18n.ts.hashtags" list="hashtags">
+	<IGObservationEditor v-if="observation" v-model="observation" @destroyed="observation = null"/>
 	<XPostFormAttaches v-model="files" @detach="detachFile" @changeSensitive="updateFileSensitive" @changeName="updateFileName" @replaceFile="replaceFile"/>
 	<MkPollEditor v-if="poll" v-model="poll" @destroyed="poll = null"/>
 	<MkNotePreview v-if="showPreview" :class="$style.preview" :text="text"/>
@@ -78,6 +79,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	</div>
 	<footer :class="$style.footer">
 		<div :class="$style.footerLeft">
+			<button v-tooltip="i18n.ts.tag" class="_button" :class="$style.footerButton" @click="toggleObservation"><i class="ti ti-tag"></i></button>
 			<button v-tooltip="i18n.ts.attachFile" class="_button" :class="$style.footerButton" @click="chooseFileFrom"><i class="ti ti-photo-plus"></i></button>
 			<button v-tooltip="i18n.ts.poll" class="_button" :class="[$style.footerButton, { [$style.footerButtonActive]: poll }]" @click="togglePoll"><i class="ti ti-chart-arrows"></i></button>
 			<button v-tooltip="i18n.ts.useCw" class="_button" :class="[$style.footerButton, { [$style.footerButtonActive]: useCw }]" @click="useCw = !useCw"><i class="ti ti-eye-off"></i></button>
@@ -107,6 +109,7 @@ import MkNoteSimple from '@/components/MkNoteSimple.vue';
 import MkNotePreview from '@/components/MkNotePreview.vue';
 import XPostFormAttaches from '@/components/MkPostFormAttaches.vue';
 import MkPollEditor from '@/components/MkPollEditor.vue';
+import IGObservationEditor from '@/components/IGObservationEditor.vue';
 import { host, url } from '@/config.js';
 import { erase, unique } from '@/scripts/array.js';
 import { extractMentions } from '@/scripts/extract-mentions.js';
@@ -169,6 +172,28 @@ let poll = $ref<{
 	multiple: boolean;
 	expiresAt: string | null;
 	expiredAfter: string | null;
+} | null>(null);
+let identification = $ref<{
+	scientificName: string | null;
+	japaneseName: string | null;
+	taxonomicRank: string | null;
+	taxon: {
+		kingdom: string | null;
+		phylum: string | null;
+		class: string | null;
+		order: string | null;
+		family: string | null;
+		genus: string | null;
+		species: string | null;
+	}
+} | null>(null);
+let observation = $ref<{
+	location: {
+		name: string | null;
+		latitude: number | null;
+		longitude: number | null;
+	};
+	date?: Date | null;
 } | null>(null);
 let useCw = $ref(false);
 let showPreview = $ref(defaultStore.state.showPreview);
@@ -381,6 +406,41 @@ function togglePoll() {
 			multiple: false,
 			expiresAt: null,
 			expiredAfter: null,
+		};
+	}
+}
+function toggleObservation() {
+	if (observation) {
+		observation = null;
+	} else {
+		observation = {
+			location: {
+				name: '',
+				latitude: null,
+				longitude: null,
+			},
+			date: null,
+		};
+	}
+}
+
+function toggleIdentification() {
+	if (identification) {
+		identification = null;
+	} else {
+		identification = {
+			scientificName: '',
+			japaneseName: '',
+			taxonomicRank: '',
+			taxon: {
+				kingdom: '',
+				phylum: '',
+				class: '',
+				order: '',
+				family: '',
+				genus: '',
+				species: '',
+			}
 		};
 	}
 }
