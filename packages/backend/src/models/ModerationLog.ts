@@ -5,7 +5,7 @@
 
 import { PrimaryColumn, Entity, Index, JoinColumn, Column, ManyToOne } from 'typeorm';
 import { id } from './util/id.js';
-import { MiUser } from './User.js';
+import { MiUser } from './user/User.js';
 
 @Entity('moderation_log')
 export class MiModerationLog {

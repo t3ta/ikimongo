@@ -12,22 +12,22 @@ import RE2 from 're2';
 import { extractMentions } from '@/misc/extract-mentions.js';
 import { extractCustomEmojisFromMfm } from '@/misc/extract-custom-emojis-from-mfm.js';
 import { extractHashtags } from '@/misc/extract-hashtags.js';
-import type { IMentionedRemoteUsers } from '@/models/Note.js';
-import { MiNote } from '@/models/Note.js';
+import type { IMentionedRemoteUsers } from '@/models/note/Note.js';
+import { MiNote } from '@/models/note/Note.js';
 import type { ChannelsRepository, FollowingsRepository, InstancesRepository, MutedNotesRepository, MutingsRepository, NotesRepository, NoteThreadMutingsRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
-import type { MiDriveFile } from '@/models/DriveFile.js';
+import type { MiDriveFile } from '@/models/drive/DriveFile.js';
 import type { MiApp } from '@/models/App.js';
 import { concat } from '@/misc/prelude/array.js';
 import { IdService } from '@/core/IdService.js';
-import type { MiUser, MiLocalUser, MiRemoteUser } from '@/models/User.js';
-import type { IPoll } from '@/models/Poll.js';
-import { MiPoll } from '@/models/Poll.js';
+import type { MiUser, MiLocalUser, MiRemoteUser } from '@/models/user/User.js';
+import type { IPoll } from '@/models/poll/Poll.js';
+import { MiPoll } from '@/models/poll/Poll.js';
 import { isDuplicateKeyValueError } from '@/misc/is-duplicate-key-value-error.js';
 import { checkWordMute } from '@/misc/check-word-mute.js';
-import type { MiChannel } from '@/models/Channel.js';
+import type { MiChannel } from '@/models/channel/Channel.js';
 import { normalizeForSearch } from '@/misc/normalize-for-search.js';
 import { MemorySingleCache } from '@/misc/cache.js';
-import type { MiUserProfile } from '@/models/UserProfile.js';
+import type { MiUserProfile } from '@/models/user/UserProfile.js';
 import { RelayService } from '@/core/RelayService.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import { DI } from '@/di-symbols.js';
@@ -53,8 +53,8 @@ import { DB_MAX_NOTE_TEXT_LENGTH } from '@/const.js';
 import { RoleService } from '@/core/RoleService.js';
 import { MetaService } from '@/core/MetaService.js';
 import { SearchService } from '@/core/SearchService.js';
-import { IGIdentification } from '@/models/Identification.js';
-import { IGObservation } from '@/models/Observation.js';
+import { IGIdentification, IIGIdentification } from '@/models/ikimongo/Identification.js';
+import { IGObservation, IIGObservation } from '@/models/ikimongo/Observation.js';
 
 const mutedWordsCache = new MemorySingleCache<{ userId: MiUserProfile['userId']; mutedWords: MiUserProfile['mutedWords']; }[]>(1000 * 60 * 5);
 
@@ -134,8 +134,8 @@ type Option = {
 	renote?: MiNote | null;
 	files?: MiDriveFile[] | null;
 	poll?: IPoll | null;
-	observation?: IGObservation | null;
-	identification?: IGIdentification | null;
+	observation?: IIGObservation | null;
+	identification?: IIGIdentification | null;
 	localOnly?: boolean | null;
 	reactionAcceptance?: MiNote['reactionAcceptance'];
 	cw?: string | null;
@@ -371,6 +371,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 			text: data.text,
 			hasPoll: data.poll != null,
 			hasIdentification: data.identification != null,
+			hasObservation: data.observation != null,
 			cw: data.cw ?? null,
 			tags: tags.map(tag => normalizeForSearch(tag)),
 			emojis,
@@ -415,44 +416,40 @@ export class NoteCreateService implements OnApplicationShutdown {
 
 		// 投稿を作成
 		try {
-			if (insert.hasPoll) {
+			if (insert.hasPoll || insert.hasObservation) {
 				// Start transaction
 				await this.db.transaction(async transactionalEntityManager => {
 					await transactionalEntityManager.insert(MiNote, insert);
 
-					const poll = new MiPoll({
-						noteId: insert.id,
-						choices: data.poll!.choices,
-						expiresAt: data.poll!.expiresAt,
-						multiple: data.poll!.multiple,
-						votes: new Array(data.poll!.choices.length).fill(0),
-						noteVisibility: insert.visibility,
-						userId: user.id,
-						userHost: user.host,
-					});
+					if (insert.hasPoll) {
+						const poll = new MiPoll({
+							noteId: insert.id,
+							choices: data.poll!.choices,
+							expiresAt: data.poll!.expiresAt,
+							multiple: data.poll!.multiple,
+							votes: new Array(data.poll!.choices.length).fill(0),
+							noteVisibility: insert.visibility,
+							userId: user.id,
+							userHost: user.host,
+						});
 
-					await transactionalEntityManager.insert(MiPoll, poll);
+						await transactionalEntityManager.insert(MiPoll, poll);
+					}
+
+					if (insert.hasObservation) {
+						const observation = new IGObservation({
+							id: this.idService.genId(data.createdAt!),
+							createdAt: data.createdAt!,
+							fileIds: data.files ? data.files.map(file => file.id) : [],
+							userId: user.id,
+							userHost: user.host,
+							date: data.observation!.date,
+							locationName: data.observation!.locationName,
+						});
+
+						await transactionalEntityManager.insert(IGObservation, observation);
+					}
 				});
-				/* 			} else if (insert.hasObservation) {
-				await this.db.transaction(async transactionalEntityManager => {
-					await transactionalEntityManager.insert(MiNote, insert);
-
-					const observation = new IGObservation({
-						noteId: insert.id,
-						fileIds: data.files ? data.files.map(file => file.id) : [],
-						userId: user.id,
-						userHost: user.host,
-					});
-
-					const identification = new IGIdentification({
-						noteId: insert.id,
-						userId: user.id,
-						userHost: user.host,
-					});
-
-					await transactionalEntityManager.insert(IGObservation, observation);
-					await transactionalEntityManager.insert(IGOIdentification, identification);
-				}) */
 			} else {
 				await this.notesRepository.insert(insert);
 			}

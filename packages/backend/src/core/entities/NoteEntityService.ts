@@ -11,9 +11,9 @@ import { DI } from '@/di-symbols.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { nyaize } from '@/misc/nyaize.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
-import type { MiUser } from '@/models/User.js';
-import type { MiNote } from '@/models/Note.js';
-import type { MiNoteReaction } from '@/models/NoteReaction.js';
+import type { MiUser } from '@/models/user/User.js';
+import type { MiNote } from '@/models/note/Note.js';
+import type { MiNoteReaction } from '@/models/note/NoteReaction.js';
 import type { UsersRepository, NotesRepository, FollowingsRepository, PollsRepository, PollVotesRepository, NoteReactionsRepository, ChannelsRepository } from '@/models/_.js';
 import { bindThis } from '@/decorators.js';
 import { isNotNull } from '@/misc/is-not-null.js';
@@ -70,7 +70,7 @@ export class NoteEntityService implements OnModuleInit {
 
 	@bindThis
 	private async hideNote(packedNote: Packed<'Note'>, meId: MiUser['id'] | null) {
-	// TODO: isVisibleForMe を使うようにしても良さそう(型違うけど)
+		// TODO: isVisibleForMe を使うようにしても良さそう(型違うけど)
 		let hide = false;
 
 		// visibility が specified かつ自分が指定されていなかったら非表示
@@ -80,7 +80,7 @@ export class NoteEntityService implements OnModuleInit {
 			} else if (meId === packedNote.userId) {
 				hide = false;
 			} else {
-			// 指定されているかどうか
+				// 指定されているかどうか
 				const specified = packedNote.visibleUserIds!.some((id: any) => meId === id);
 
 				if (specified) {
@@ -98,13 +98,13 @@ export class NoteEntityService implements OnModuleInit {
 			} else if (meId === packedNote.userId) {
 				hide = false;
 			} else if (packedNote.reply && (meId === packedNote.reply.userId)) {
-			// 自分の投稿に対するリプライ
+				// 自分の投稿に対するリプライ
 				hide = false;
 			} else if (packedNote.mentions && packedNote.mentions.some(id => meId === id)) {
-			// 自分へのメンション
+				// 自分へのメンション
 				hide = false;
 			} else {
-			// フォロワーかどうか
+				// フォロワーかどうか
 				const isFollowing = await this.followingsRepository.exist({
 					where: {
 						followeeId: packedNote.userId,
@@ -122,6 +122,8 @@ export class NoteEntityService implements OnModuleInit {
 			packedNote.files = [];
 			packedNote.text = null;
 			packedNote.poll = undefined;
+			packedNote.observation = undefined;
+			packedNote.identification = undefined;
 			packedNote.cw = null;
 			packedNote.isHidden = true;
 		}
@@ -177,7 +179,7 @@ export class NoteEntityService implements OnModuleInit {
 			} else if (reaction === null) {
 				return undefined;
 			}
-		// 実装上抜けがあるだけかもしれないので、「ヒントに含まれてなかったら(=undefinedなら)return」のようにはしない
+			// 実装上抜けがあるだけかもしれないので、「ヒントに含まれてなかったら(=undefinedなら)return」のようにはしない
 		}
 
 		// パフォーマンスのためノートが作成されてから1秒以上経っていない場合はリアクションを取得しない

@@ -10,7 +10,7 @@ import { DI } from '@/di-symbols.js';
 import { IdService } from '@/core/IdService.js';
 import { EmojiEntityService } from '@/core/entities/EmojiEntityService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
-import type { MiDriveFile } from '@/models/DriveFile.js';
+import type { MiDriveFile } from '@/models/drive/DriveFile.js';
 import type { MiEmoji } from '@/models/Emoji.js';
 import type { EmojisRepository, MiRole, MiUser } from '@/models/_.js';
 import { bindThis } from '@/decorators.js';
@@ -294,11 +294,11 @@ export class CustomEmojiService implements OnApplicationShutdown {
 
 	@bindThis
 	private normalizeHost(src: string | undefined, noteUserHost: string | null): string | null {
-	// クエリに使うホスト
+		// クエリに使うホスト
 		let host = src === '.' ? null	// .はローカルホスト (ここがマッチするのはリアクションのみ)
 			: src === undefined ? noteUserHost	// ノートなどでホスト省略表記の場合はローカルホスト (ここがリアクションにマッチすることはない)
-			: this.utilityService.isSelfHost(src) ? null	// 自ホスト指定
-			: (src || noteUserHost);	// 指定されたホスト || ノートなどの所有者のホスト (こっちがリアクションにマッチすることはない)
+				: this.utilityService.isSelfHost(src) ? null	// 自ホスト指定
+					: (src || noteUserHost);	// 指定されたホスト || ノートなどの所有者のホスト (こっちがリアクションにマッチすることはない)
 
 		host = this.utilityService.toPunyNullable(host);
 

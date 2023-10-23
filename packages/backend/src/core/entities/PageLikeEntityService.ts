@@ -6,9 +6,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { PageLikesRepository } from '@/models/_.js';
-import type { } from '@/models/Blocking.js';
-import type { MiUser } from '@/models/User.js';
-import type { MiPageLike } from '@/models/PageLike.js';
+import type { } from '@/models/mute-block/Blocking.js';
+import type { MiUser } from '@/models/user/User.js';
+import type { MiPageLike } from '@/models/page/PageLike.js';
 import { bindThis } from '@/decorators.js';
 import { PageEntityService } from './PageEntityService.js';
 

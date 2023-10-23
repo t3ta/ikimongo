@@ -4,8 +4,8 @@
  */
 
 import * as WebSocket from 'ws';
-import type { MiUser } from '@/models/User.js';
-import type { MiAccessToken } from '@/models/AccessToken.js';
+import type { MiUser } from '@/models/user/User.js';
+import type { MiAccessToken } from '@/models/auth/AccessToken.js';
 import type { Packed } from '@/misc/json-schema.js';
 import type { NoteReadService } from '@/core/NoteReadService.js';
 import type { NotificationService } from '@/core/NotificationService.js';

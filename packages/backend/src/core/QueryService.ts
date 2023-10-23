@@ -6,7 +6,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Brackets, ObjectLiteral } from 'typeorm';
 import { DI } from '@/di-symbols.js';
-import type { MiUser } from '@/models/User.js';
+import type { MiUser } from '@/models/user/User.js';
 import type { UserProfilesRepository, FollowingsRepository, ChannelFollowingsRepository, MutedNotesRepository, BlockingsRepository, NoteThreadMutingsRepository, MutingsRepository, RenoteMutingsRepository } from '@/models/_.js';
 import { bindThis } from '@/decorators.js';
 import type { SelectQueryBuilder } from 'typeorm';
@@ -78,14 +78,16 @@ export class QueryService {
 		// 投稿の返信先の作者にブロックされていない かつ
 		// 投稿の引用元の作者にブロックされていない
 		q
-			.andWhere(`note.userId NOT IN (${ blockingQuery.getQuery() })`)
-			.andWhere(new Brackets(qb => { qb
-				.where('note.replyUserId IS NULL')
-				.orWhere(`note.replyUserId NOT IN (${ blockingQuery.getQuery() })`);
+			.andWhere(`note.userId NOT IN (${blockingQuery.getQuery()})`)
+			.andWhere(new Brackets(qb => {
+				qb
+					.where('note.replyUserId IS NULL')
+				.orWhere(`note.replyUserId NOT IN (${blockingQuery.getQuery()})`);
 			}))
-			.andWhere(new Brackets(qb => { qb
-				.where('note.renoteUserId IS NULL')
-				.orWhere(`note.renoteUserId NOT IN (${ blockingQuery.getQuery() })`);
+			.andWhere(new Brackets(qb => {
+				qb
+					.where('note.renoteUserId IS NULL')
+				.orWhere(`note.renoteUserId NOT IN (${blockingQuery.getQuery()})`);
 			}));
 
 		q.setParameters(blockingQuery.getParameters());
@@ -101,10 +103,10 @@ export class QueryService {
 			.select('blocking.blockerId')
 			.where('blocking.blockeeId = :blockeeId', { blockeeId: me.id });
 
-		q.andWhere(`user.id NOT IN (${ blockingQuery.getQuery() })`);
+		q.andWhere(`user.id NOT IN (${blockingQuery.getQuery()})`);
 		q.setParameters(blockingQuery.getParameters());
 
-		q.andWhere(`user.id NOT IN (${ blockedQuery.getQuery() })`);
+		q.andWhere(`user.id NOT IN (${blockedQuery.getQuery()})`);
 		q.setParameters(blockedQuery.getParameters());
 	}
 
@@ -119,11 +121,12 @@ export class QueryService {
 				.select('channelFollowing.followeeId')
 				.where('channelFollowing.followerId = :followerId', { followerId: me.id });
 
-			q.andWhere(new Brackets(qb => { qb
-				// チャンネルのノートではない
-				.where('note.channelId IS NULL')
+			q.andWhere(new Brackets(qb => {
+				qb
+					// チャンネルのノートではない
+					.where('note.channelId IS NULL')
 				// または自分がフォローしているチャンネルのノート
-				.orWhere(`note.channelId IN (${ channelFollowingQuery.getQuery() })`);
+				.orWhere(`note.channelId IN (${channelFollowingQuery.getQuery()})`);
 			}));
 
 			q.setParameters(channelFollowingQuery.getParameters());
@@ -136,7 +139,7 @@ export class QueryService {
 			.select('muted.noteId')
 			.where('muted.userId = :userId', { userId: me.id });
 
-		q.andWhere(`note.id NOT IN (${ mutedQuery.getQuery() })`);
+		q.andWhere(`note.id NOT IN (${mutedQuery.getQuery()})`);
 
 		q.setParameters(mutedQuery.getParameters());
 	}
@@ -147,10 +150,11 @@ export class QueryService {
 			.select('threadMuted.threadId')
 			.where('threadMuted.userId = :userId', { userId: me.id });
 
-		q.andWhere(`note.id NOT IN (${ mutedQuery.getQuery() })`);
-		q.andWhere(new Brackets(qb => { qb
-			.where('note.threadId IS NULL')
-			.orWhere(`note.threadId NOT IN (${ mutedQuery.getQuery() })`);
+		q.andWhere(`note.id NOT IN (${mutedQuery.getQuery()})`);
+		q.andWhere(new Brackets(qb => {
+			qb
+				.where('note.threadId IS NULL')
+			.orWhere(`note.threadId NOT IN (${mutedQuery.getQuery()})`);
 		}));
 
 		q.setParameters(mutedQuery.getParameters());
@@ -174,27 +178,32 @@ export class QueryService {
 		// 投稿の返信先の作者をミュートしていない かつ
 		// 投稿の引用元の作者をミュートしていない
 		q
-			.andWhere(`note.userId NOT IN (${ mutingQuery.getQuery() })`)
-			.andWhere(new Brackets(qb => { qb
-				.where('note.replyUserId IS NULL')
-				.orWhere(`note.replyUserId NOT IN (${ mutingQuery.getQuery() })`);
+			.andWhere(`note.userId NOT IN (${mutingQuery.getQuery()})`)
+			.andWhere(new Brackets(qb => {
+				qb
+					.where('note.replyUserId IS NULL')
+				.orWhere(`note.replyUserId NOT IN (${mutingQuery.getQuery()})`);
 			}))
-			.andWhere(new Brackets(qb => { qb
-				.where('note.renoteUserId IS NULL')
-				.orWhere(`note.renoteUserId NOT IN (${ mutingQuery.getQuery() })`);
+			.andWhere(new Brackets(qb => {
+				qb
+					.where('note.renoteUserId IS NULL')
+				.orWhere(`note.renoteUserId NOT IN (${mutingQuery.getQuery()})`);
 			}))
 			// mute instances
-			.andWhere(new Brackets(qb => { qb
-				.andWhere('note.userHost IS NULL')
-				.orWhere(`NOT ((${ mutingInstanceQuery.getQuery() })::jsonb ? note.userHost)`);
+			.andWhere(new Brackets(qb => {
+				qb
+					.andWhere('note.userHost IS NULL')
+				.orWhere(`NOT ((${mutingInstanceQuery.getQuery()})::jsonb ? note.userHost)`);
 			}))
-			.andWhere(new Brackets(qb => { qb
-				.where('note.replyUserHost IS NULL')
-				.orWhere(`NOT ((${ mutingInstanceQuery.getQuery() })::jsonb ? note.replyUserHost)`);
+			.andWhere(new Brackets(qb => {
+				qb
+					.where('note.replyUserHost IS NULL')
+				.orWhere(`NOT ((${mutingInstanceQuery.getQuery()})::jsonb ? note.replyUserHost)`);
 			}))
-			.andWhere(new Brackets(qb => { qb
-				.where('note.renoteUserHost IS NULL')
-				.orWhere(`NOT ((${ mutingInstanceQuery.getQuery() })::jsonb ? note.renoteUserHost)`);
+			.andWhere(new Brackets(qb => {
+				qb
+					.where('note.renoteUserHost IS NULL')
+				.orWhere(`NOT ((${mutingInstanceQuery.getQuery()})::jsonb ? note.renoteUserHost)`);
 			}));
 
 		q.setParameters(mutingQuery.getParameters());
@@ -207,7 +216,7 @@ export class QueryService {
 			.select('muting.muteeId')
 			.where('muting.muterId = :muterId', { muterId: me.id });
 
-		q.andWhere(`user.id NOT IN (${ mutingQuery.getQuery() })`);
+		q.andWhere(`user.id NOT IN (${mutingQuery.getQuery()})`);
 
 		q.setParameters(mutingQuery.getParameters());
 	}
@@ -215,23 +224,28 @@ export class QueryService {
 	@bindThis
 	public generateRepliesQuery(q: SelectQueryBuilder<any>, withReplies: boolean, me?: Pick<MiUser, 'id'> | null): void {
 		if (me == null) {
-			q.andWhere(new Brackets(qb => { qb
-				.where('note.replyId IS NULL') // 返信ではない
-				.orWhere(new Brackets(qb => { qb // 返信だけど投稿者自身への返信
-					.where('note.replyId IS NOT NULL')
+			q.andWhere(new Brackets(qb => {
+				qb
+					.where('note.replyId IS NULL') // 返信ではない
+				.orWhere(new Brackets(qb => {
+					qb // 返信だけど投稿者自身への返信
+						.where('note.replyId IS NOT NULL')
 					.andWhere('note.replyUserId = note.userId');
 				}));
 			}));
 		} else if (!withReplies) {
-			q.andWhere(new Brackets(qb => { qb
-				.where('note.replyId IS NULL') // 返信ではない
+			q.andWhere(new Brackets(qb => {
+				qb
+					.where('note.replyId IS NULL') // 返信ではない
 				.orWhere('note.replyUserId = :meId', { meId: me.id }) // 返信だけど自分のノートへの返信
-				.orWhere(new Brackets(qb => { qb // 返信だけど自分の行った返信
-					.where('note.replyId IS NOT NULL')
+				.orWhere(new Brackets(qb => {
+					qb // 返信だけど自分の行った返信
+						.where('note.replyId IS NOT NULL')
 					.andWhere('note.userId = :meId', { meId: me.id });
 				}))
-				.orWhere(new Brackets(qb => { qb // 返信だけど投稿者自身への返信
-					.where('note.replyId IS NOT NULL')
+				.orWhere(new Brackets(qb => {
+					qb // 返信だけど投稿者自身への返信
+						.where('note.replyId IS NOT NULL')
 					.andWhere('note.replyUserId = note.userId');
 				}));
 			}));
@@ -242,8 +256,9 @@ export class QueryService {
 	public generateVisibilityQuery(q: SelectQueryBuilder<any>, me?: { id: MiUser['id'] } | null): void {
 		// This code must always be synchronized with the checks in Notes.isVisibleForMe.
 		if (me == null) {
-			q.andWhere(new Brackets(qb => { qb
-				.where('note.visibility = \'public\'')
+			q.andWhere(new Brackets(qb => {
+				qb
+					.where('note.visibility = \'public\'')
 				.orWhere('note.visibility = \'home\'');
 			}));
 		} else {
@@ -251,23 +266,27 @@ export class QueryService {
 				.select('following.followeeId')
 				.where('following.followerId = :meId');
 
-			q.andWhere(new Brackets(qb => { qb
-				// 公開投稿である
-				.where(new Brackets(qb => { qb
-					.where('note.visibility = \'public\'')
-					.orWhere('note.visibility = \'home\'');
-				}))
+			q.andWhere(new Brackets(qb => {
+				qb
+					// 公開投稿である
+					.where(new Brackets(qb => {
+						qb
+							.where('note.visibility = \'public\'')
+						.orWhere('note.visibility = \'home\'');
+					}))
 				// または 自分自身
 				.orWhere('note.userId = :meId')
 				// または 自分宛て
 				.orWhere(':meId = ANY(note.visibleUserIds)')
 				.orWhere(':meId = ANY(note.mentions)')
-				.orWhere(new Brackets(qb => { qb
-					// または フォロワー宛ての投稿であり、
-					.where('note.visibility = \'followers\'')
-					.andWhere(new Brackets(qb => { qb
-						// 自分がフォロワーである
-						.where(`note.userId IN (${ followingQuery.getQuery() })`)
+				.orWhere(new Brackets(qb => {
+					qb
+						// または フォロワー宛ての投稿であり、
+						.where('note.visibility = \'followers\'')
+					.andWhere(new Brackets(qb => {
+						qb
+							// 自分がフォロワーである
+							.where(`note.userId IN (${followingQuery.getQuery()})`)
 						// または 自分の投稿へのリプライ
 						.orWhere('note.replyUserId = :meId');
 					}));
@@ -289,7 +308,7 @@ export class QueryService {
 				.where(new Brackets(qb => {
 					qb.where('note.renoteId IS NOT NULL');
 					qb.andWhere('note.text IS NULL');
-					qb.andWhere(`note.userId NOT IN (${ mutingQuery.getQuery() })`);
+					qb.andWhere(`note.userId NOT IN (${mutingQuery.getQuery()})`);
 				}))
 				.orWhere('note.renoteId IS NULL')
 				.orWhere('note.text IS NOT NULL');

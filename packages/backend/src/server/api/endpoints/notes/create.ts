@@ -6,11 +6,11 @@
 import ms from 'ms';
 import { In } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
-import type { MiUser } from '@/models/User.js';
+import type { MiUser } from '@/models/user/User.js';
 import type { UsersRepository, NotesRepository, BlockingsRepository, DriveFilesRepository, ChannelsRepository } from '@/models/_.js';
-import type { MiDriveFile } from '@/models/DriveFile.js';
-import type { MiNote } from '@/models/Note.js';
-import type { MiChannel } from '@/models/Channel.js';
+import type { MiDriveFile } from '@/models/drive/DriveFile.js';
+import type { MiNote } from '@/models/note/Note.js';
+import type { MiChannel } from '@/models/channel/Channel.js';
 import { MAX_NOTE_TEXT_LENGTH } from '@/const.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
@@ -99,9 +99,11 @@ export const paramDef = {
 	type: 'object',
 	properties: {
 		visibility: { type: 'string', enum: ['public', 'home', 'followers', 'specified'], default: 'public' },
-		visibleUserIds: { type: 'array', uniqueItems: true, items: {
-			type: 'string', format: 'misskey:id',
-		} },
+		visibleUserIds: {
+			type: 'array', uniqueItems: true, items: {
+				type: 'string', format: 'misskey:id',
+			},
+		},
 		cw: { type: 'string', nullable: true, maxLength: 100 },
 		localOnly: { type: 'boolean', default: false },
 		reactionAcceptance: { type: 'string', nullable: true, enum: [null, 'likeOnly', 'likeOnlyForRemote', 'nonSensitiveOnly', 'nonSensitiveOnlyForLocalLikeOnlyForRemote'], default: null },
@@ -150,6 +152,21 @@ export const paramDef = {
 				expiredAfter: { type: 'integer', nullable: true, minimum: 1 },
 			},
 			required: ['choices'],
+		},
+		observation: {
+			type: 'object',
+			nullable: true,
+			properties: {
+				location: {
+					type: 'object',
+					nullable: true,
+					properties: {
+						name: { type: 'string', nullable: true },
+						location: { type: 'string', nullable: true },
+					},
+				},
+				date: { type: 'string', nullable: true },
+			},
 		},
 	},
 	// (re)note with text, files and poll are optional
@@ -285,6 +302,17 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					choices: ps.poll.choices,
 					multiple: ps.poll.multiple ?? false,
 					expiresAt: ps.poll.expiresAt ? new Date(ps.poll.expiresAt) : null,
+				} : undefined,
+				observation: ps.observation ? {
+					date: ps.observation.date ? new Date(ps.observation.date) : null,
+					locationName: ps.observation.location?.name ?? null,
+					location: ps.observation.location?.location ?? null,
+				} : undefined,
+				identification: ps.identification ? {
+					japaneseName: ps.identification.japaneseName,
+					scientificName: ps.identification.scientificName,
+					taxonomicRank: ps.identification.taxonomicRank,
+					taxon: ps.identification.taxon,
 				} : undefined,
 				text: ps.text ?? undefined,
 				reply,

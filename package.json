@@ -36,7 +36,9 @@
 		"test-and-coverage": "pnpm -r test-and-coverage",
 		"clean": "node ./scripts/clean.js",
 		"clean-all": "node ./scripts/clean-all.js",
-		"cleanall": "pnpm clean-all"
+		"cleanall": "pnpm clean-all",
+		"kill:master": "ps aux | grep 'Misskey (master)' | head -n 1 | awk '{ print $2 }' | xargs kill -9",
+		"kill:worker": "ps aux | grep 'Misskey (worker)' | head -n 1 | awk '{ print $2 }' | xargs kill -9"
 	},
 	"resolutions": {
 		"chokidar": "3.5.3",

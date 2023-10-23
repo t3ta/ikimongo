@@ -12,9 +12,9 @@ import { extractCustomEmojisFromMfm } from '@/misc/extract-custom-emojis-from-mf
 import { extractHashtags } from '@/misc/extract-hashtags.js';
 import * as Acct from '@/misc/acct.js';
 import type { UsersRepository, DriveFilesRepository, UserProfilesRepository, PagesRepository } from '@/models/_.js';
-import type { MiLocalUser, MiUser } from '@/models/User.js';
-import { birthdaySchema, descriptionSchema, locationSchema, nameSchema } from '@/models/User.js';
-import type { MiUserProfile } from '@/models/UserProfile.js';
+import type { MiLocalUser, MiUser } from '@/models/user/User.js';
+import { birthdaySchema, descriptionSchema, locationSchema, nameSchema } from '@/models/user/User.js';
+import type { MiUserProfile } from '@/models/user/UserProfile.js';
 import { notificationTypes } from '@/types.js';
 import { normalizeForSearch } from '@/misc/normalize-for-search.js';
 import { langmap } from '@/misc/langmap.js';
@@ -162,13 +162,17 @@ export const paramDef = {
 		ffVisibility: { type: 'string', enum: ['public', 'followers', 'private'] },
 		pinnedPageId: { type: 'string', format: 'misskey:id', nullable: true },
 		mutedWords: { type: 'array' },
-		mutedInstances: { type: 'array', items: {
-			type: 'string',
-		} },
+		mutedInstances: {
+			type: 'array', items: {
+				type: 'string',
+			}
+		},
 		notificationRecieveConfig: { type: 'object' },
-		emailNotificationTypes: { type: 'array', items: {
-			type: 'string',
-		} },
+		emailNotificationTypes: {
+			type: 'array', items: {
+				type: 'string',
+			}
+		},
 		alsoKnownAs: {
 			type: 'array',
 			maxItems: 10,

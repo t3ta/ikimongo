@@ -5,17 +5,17 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import * as Redis from 'ioredis';
-import type { MiChannel } from '@/models/Channel.js';
-import type { MiUser } from '@/models/User.js';
-import type { MiUserProfile } from '@/models/UserProfile.js';
-import type { MiNote } from '@/models/Note.js';
+import type { MiChannel } from '@/models/channel/Channel.js';
+import type { MiUser } from '@/models/user/User.js';
+import type { MiUserProfile } from '@/models/user/UserProfile.js';
+import type { MiNote } from '@/models/note/Note.js';
 import type { MiAntenna } from '@/models/Antenna.js';
-import type { MiDriveFile } from '@/models/DriveFile.js';
-import type { MiDriveFolder } from '@/models/DriveFolder.js';
-import type { MiUserList } from '@/models/UserList.js';
+import type { MiDriveFile } from '@/models/drive/DriveFile.js';
+import type { MiDriveFolder } from '@/models/drive/DriveFolder.js';
+import type { MiUserList } from '@/models/user/UserList.js';
 import type { MiAbuseUserReport } from '@/models/AbuseUserReport.js';
-import type { MiSignin } from '@/models/Signin.js';
-import type { MiPage } from '@/models/Page.js';
+import type { MiSignin } from '@/models/auth/Signin.js';
+import type { MiPage } from '@/models/page/Page.js';
 import type { MiWebhook } from '@/models/Webhook.js';
 import type { MiMeta } from '@/models/Meta.js';
 import { MiRole, MiRoleAssignment } from '@/models/_.js';

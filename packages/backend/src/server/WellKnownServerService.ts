@@ -11,7 +11,7 @@ import { DI } from '@/di-symbols.js';
 import type { UsersRepository } from '@/models/_.js';
 import type { Config } from '@/config.js';
 import { escapeAttribute, escapeValue } from '@/misc/prelude/xml.js';
-import type { MiUser } from '@/models/User.js';
+import type { MiUser } from '@/models/user/User.js';
 import * as Acct from '@/misc/acct.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { bindThis } from '@/decorators.js';
@@ -38,10 +38,8 @@ export class WellKnownServerService {
 	public createServer(fastify: FastifyInstance, options: FastifyPluginOptions, done: (err?: Error) => void) {
 		const XRD = (...x: { element: string, value?: string, attributes?: Record<string, string> }[]) =>
 			`<?xml version="1.0" encoding="UTF-8"?><XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0">${x.map(({ element, value, attributes }) =>
-				`<${
-					Object.entries(typeof attributes === 'object' && attributes || {}).reduce((a, [k, v]) => `${a} ${k}="${escapeAttribute(v)}"`, element)
-				}${
-					typeof value === 'string' ? `>${escapeValue(value)}</${element}` : '/'
+				`<${Object.entries(typeof attributes === 'object' && attributes || {}).reduce((a, [k, v]) => `${a} ${k}="${escapeAttribute(v)}"`, element)
+				}${typeof value === 'string' ? `>${escapeValue(value)}</${element}` : '/'
 				}>`).reduce((a, c) => a + c, '')}</XRD>`;
 
 		const allPath = '/.well-known/*';
@@ -65,11 +63,13 @@ export class WellKnownServerService {
 
 		fastify.get('/.well-known/host-meta', async (request, reply) => {
 			reply.header('Content-Type', xrd);
-			return XRD({ element: 'Link', attributes: {
-				rel: 'lrdd',
-				type: xrd,
-				template: `${this.config.url}${webFingerPath}?resource={uri}`,
-			} });
+			return XRD({
+				element: 'Link', attributes: {
+					rel: 'lrdd',
+					type: xrd,
+					template: `${this.config.url}${webFingerPath}?resource={uri}`,
+				}
+			});
 		});
 
 		fastify.get('/.well-known/host-meta.json', async (request, reply) => {
@@ -104,8 +104,8 @@ fastify.get('/.well-known/change-password', async (request, reply) => {
 					fromId(resource.split('/').pop()!) :
 					fromAcct(Acct.parse(
 						resource.startsWith(`${this.config.url.toLowerCase()}/@`) ? resource.split('/').pop()! :
-						resource.startsWith('acct:') ? resource.slice('acct:'.length) :
-						resource));
+							resource.startsWith('acct:') ? resource.slice('acct:'.length) :
+								resource));
 
 			const fromAcct = (acct: Acct.Acct): FindOptionsWhere<MiUser> | number =>
 				!acct.host || acct.host === this.config.host.toLowerCase() ? {

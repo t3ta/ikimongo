@@ -6,7 +6,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Brackets } from 'typeorm';
 import { DI } from '@/di-symbols.js';
-import type { MiUser } from '@/models/User.js';
+import type { MiUser } from '@/models/user/User.js';
 import type { AnnouncementReadsRepository, AnnouncementsRepository, MiAnnouncement, MiAnnouncementRead, UsersRepository } from '@/models/_.js';
 import { bindThis } from '@/decorators.js';
 import { Packed } from '@/misc/json-schema.js';
@@ -55,7 +55,7 @@ export class AnnouncementService {
 				qb.orWhere('announcement.forExistingUsers = false');
 				qb.orWhere('announcement.createdAt > :createdAt', { createdAt: user.createdAt });
 			}))
-			.andWhere(`announcement.id NOT IN (${ readsQuery.getQuery() })`);
+			.andWhere(`announcement.id NOT IN (${readsQuery.getQuery()})`);
 
 		q.setParameters(readsQuery.getParameters());
 

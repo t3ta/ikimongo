@@ -7,7 +7,7 @@ import ms from 'ms';
 import { Inject, Injectable } from '@nestjs/common';
 import type { DriveFilesRepository, PagesRepository } from '@/models/_.js';
 import { IdService } from '@/core/IdService.js';
-import { MiPage } from '@/models/Page.js';
+import { MiPage } from '@/models/page/Page.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { PageEntityService } from '@/core/entities/PageEntityService.js';
 import { DI } from '@/di-symbols.js';
@@ -53,12 +53,16 @@ export const paramDef = {
 		title: { type: 'string' },
 		name: { type: 'string', minLength: 1 },
 		summary: { type: 'string', nullable: true },
-		content: { type: 'array', items: {
-			type: 'object', additionalProperties: true,
-		} },
-		variables: { type: 'array', items: {
-			type: 'object', additionalProperties: true,
-		} },
+		content: {
+			type: 'array', items: {
+				type: 'object', additionalProperties: true,
+			}
+		},
+		variables: {
+			type: 'array', items: {
+				type: 'object', additionalProperties: true,
+			}
+		},
 		script: { type: 'string' },
 		eyeCatchingImageId: { type: 'string', format: 'misskey:id', nullable: true },
 		font: { type: 'string', enum: ['serif', 'sans-serif'], default: 'sans-serif' },

@@ -14,7 +14,7 @@ import { NotificationEntityService } from '@/core/entities/NotificationEntitySer
 import { NotificationService } from '@/core/NotificationService.js';
 import { DI } from '@/di-symbols.js';
 import { IdService } from '@/core/IdService.js';
-import { MiNotification } from '@/models/Notification.js';
+import { MiNotification } from '@/models/note/Notification.js';
 
 export const meta = {
 	tags: ['account', 'notifications'],
@@ -47,12 +47,16 @@ export const paramDef = {
 		untilId: { type: 'string', format: 'misskey:id' },
 		markAsRead: { type: 'boolean', default: true },
 		// 後方互換のため、廃止された通知タイプも受け付ける
-		includeTypes: { type: 'array', items: {
-			type: 'string', enum: [...notificationTypes, ...obsoleteNotificationTypes],
-		} },
-		excludeTypes: { type: 'array', items: {
-			type: 'string', enum: [...notificationTypes, ...obsoleteNotificationTypes],
-		} },
+		includeTypes: {
+			type: 'array', items: {
+				type: 'string', enum: [...notificationTypes, ...obsoleteNotificationTypes],
+			}
+		},
+		excludeTypes: {
+			type: 'array', items: {
+				type: 'string', enum: [...notificationTypes, ...obsoleteNotificationTypes],
+			}
+		},
 	},
 	required: [],
 } as const;

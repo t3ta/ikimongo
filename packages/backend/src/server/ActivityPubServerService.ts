@@ -16,11 +16,11 @@ import * as url from '@/misc/prelude/url.js';
 import type { Config } from '@/config.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { QueueService } from '@/core/QueueService.js';
-import type { MiLocalUser, MiRemoteUser, MiUser } from '@/models/User.js';
+import type { MiLocalUser, MiRemoteUser, MiUser } from '@/models/user/User.js';
 import { UserKeypairService } from '@/core/UserKeypairService.js';
-import type { MiFollowing } from '@/models/Following.js';
+import type { MiFollowing } from '@/models/following/Following.js';
 import { countIf } from '@/misc/prelude/array.js';
-import type { MiNote } from '@/models/Note.js';
+import type { MiNote } from '@/models/note/Note.js';
 import { QueryService } from '@/core/QueryService.js';
 import { UtilityService } from '@/core/UtilityService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
@@ -379,9 +379,10 @@ export class ActivityPubServerService {
 		if (page) {
 			const query = this.queryService.makePaginationQuery(this.notesRepository.createQueryBuilder('note'), sinceId, untilId)
 				.andWhere('note.userId = :userId', { userId: user.id })
-				.andWhere(new Brackets(qb => { qb
-					.where('note.visibility = \'public\'')
-					.orWhere('note.visibility = \'home\'');
+				.andWhere(new Brackets(qb => {
+					qb
+						.where('note.visibility = \'public\'')
+						.orWhere('note.visibility = \'home\'');
 				}))
 				.andWhere('note.localOnly = FALSE');
 
@@ -661,7 +662,7 @@ export class ActivityPubServerService {
 		});
 
 		// follow
-		fastify.get<{ Params: { followRequestId: string ; } }>('/follows/:followRequestId', async (request, reply) => {
+		fastify.get<{ Params: { followRequestId: string; } }>('/follows/:followRequestId', async (request, reply) => {
 			// This may be used before the follow is completed, so we do not
 			// check if the following exists and only check if the follow request exists.
 

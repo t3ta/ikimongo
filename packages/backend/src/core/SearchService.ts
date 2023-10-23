@@ -8,7 +8,7 @@ import { In } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import { bindThis } from '@/decorators.js';
-import { MiNote } from '@/models/Note.js';
+import { MiNote } from '@/models/note/Note.js';
 import { MiUser } from '@/models/_.js';
 import type { NotesRepository } from '@/models/_.js';
 import { sqlLikeEscape } from '@/misc/sql-like-escape.js';
@@ -25,8 +25,8 @@ type Q =
 	{ op: '<', k: K, v: number } |
 	{ op: '>=', k: K, v: number } |
 	{ op: '<=', k: K, v: number } |
-	{ op: 'is null', k: K} |
-	{ op: 'is not null', k: K} |
+	{ op: 'is null', k: K } |
+	{ op: 'is not null', k: K } |
 	{ op: 'and', qs: Q[] } |
 	{ op: 'or', qs: Q[] } |
 	{ op: 'not', q: Q };
@@ -50,8 +50,8 @@ function compileQuery(q: Q): string {
 		case '<': return `(${q.k} < ${compileValue(q.v)})`;
 		case '>=': return `(${q.k} >= ${compileValue(q.v)})`;
 		case '<=': return `(${q.k} <= ${compileValue(q.v)})`;
-		case 'and': return q.qs.length === 0 ? '' : `(${ q.qs.map(_q => compileQuery(_q)).join(' AND ') })`;
-		case 'or': return q.qs.length === 0 ? '' : `(${ q.qs.map(_q => compileQuery(_q)).join(' OR ') })`;
+		case 'and': return q.qs.length === 0 ? '' : `(${q.qs.map(_q => compileQuery(_q)).join(' AND ')})`;
+		case 'or': return q.qs.length === 0 ? '' : `(${q.qs.map(_q => compileQuery(_q)).join(' OR ')})`;
 		case 'is null': return `(${q.k} IS NULL)`;
 		case 'is not null': return `(${q.k} IS NOT NULL)`;
 		case 'not': return `(NOT ${compileQuery(q.q)})`;
@@ -201,7 +201,7 @@ export class SearchService {
 			}
 
 			query
-				.andWhere('note.text ILIKE :q', { q: `%${ sqlLikeEscape(q) }%` })
+				.andWhere('note.text ILIKE :q', { q: `%${sqlLikeEscape(q)}%` })
 				.innerJoinAndSelect('note.user', 'user')
 				.leftJoinAndSelect('note.reply', 'reply')
 				.leftJoinAndSelect('note.renote', 'renote')

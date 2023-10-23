@@ -7,8 +7,8 @@ import ms from 'ms';
 import { Inject, Injectable } from '@nestjs/common';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import type { DriveFilesRepository, GalleryPostsRepository } from '@/models/_.js';
-import { MiGalleryPost } from '@/models/GalleryPost.js';
-import type { MiDriveFile } from '@/models/DriveFile.js';
+import { MiGalleryPost } from '@/models/gallery/GalleryPost.js';
+import type { MiDriveFile } from '@/models/drive/DriveFile.js';
 import { IdService } from '@/core/IdService.js';
 import { GalleryPostEntityService } from '@/core/entities/GalleryPostEntityService.js';
 import { DI } from '@/di-symbols.js';
@@ -43,9 +43,11 @@ export const paramDef = {
 	properties: {
 		title: { type: 'string', minLength: 1 },
 		description: { type: 'string', nullable: true },
-		fileIds: { type: 'array', uniqueItems: true, minItems: 1, maxItems: 32, items: {
-			type: 'string', format: 'misskey:id',
-		} },
+		fileIds: {
+			type: 'array', uniqueItems: true, minItems: 1, maxItems: 32, items: {
+				type: 'string', format: 'misskey:id',
+			},
+		},
 		isSensitive: { type: 'boolean', default: false },
 	},
 	required: ['title', 'fileIds'],

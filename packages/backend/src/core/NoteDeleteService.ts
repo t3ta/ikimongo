@@ -5,8 +5,8 @@
 
 import { Brackets, In } from 'typeorm';
 import { Injectable, Inject } from '@nestjs/common';
-import type { MiUser, MiLocalUser, MiRemoteUser } from '@/models/User.js';
-import type { MiNote, IMentionedRemoteUsers } from '@/models/Note.js';
+import type { MiUser, MiLocalUser, MiRemoteUser } from '@/models/user/User.js';
+import type { MiNote, IMentionedRemoteUsers } from '@/models/note/Note.js';
 import type { InstancesRepository, NotesRepository, UsersRepository } from '@/models/_.js';
 import { RelayService } from '@/core/RelayService.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
@@ -53,7 +53,7 @@ export class NoteDeleteService {
 		private notesChart: NotesChart,
 		private perUserNotesChart: PerUserNotesChart,
 		private instanceChart: InstanceChart,
-	) {}
+	) { }
 
 	/**
 	 * 投稿を削除します。

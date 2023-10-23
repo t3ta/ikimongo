@@ -6,9 +6,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { FollowRequestsRepository } from '@/models/_.js';
-import type { } from '@/models/Blocking.js';
-import type { MiUser } from '@/models/User.js';
-import type { MiFollowRequest } from '@/models/FollowRequest.js';
+import type { } from '@/models/mute-block/Blocking.js';
+import type { MiUser } from '@/models/user/User.js';
+import type { MiFollowRequest } from '@/models/following/FollowRequest.js';
 import { bindThis } from '@/decorators.js';
 import { UserEntityService } from './UserEntityService.js';
 

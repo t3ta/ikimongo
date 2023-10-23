@@ -10,7 +10,7 @@ import { Window } from 'happy-dom';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import { intersperse } from '@/misc/prelude/array.js';
-import type { IMentionedRemoteUsers } from '@/models/Note.js';
+import type { IMentionedRemoteUsers } from '@/models/note/Note.js';
 import { bindThis } from '@/decorators.js';
 import * as TreeAdapter from '../../node_modules/parse5/dist/tree-adapters/default.js';
 import type * as mfm from 'mfm-js';
@@ -79,96 +79,96 @@ export class MfmService {
 				}
 
 				case 'a':
-				{
-					const txt = getText(node);
-					const rel = node.attrs.find(x => x.name === 'rel');
-					const href = node.attrs.find(x => x.name === 'href');
+					{
+						const txt = getText(node);
+						const rel = node.attrs.find(x => x.name === 'rel');
+						const href = node.attrs.find(x => x.name === 'href');
 
-					// ハッシュタグ
-					if (hashtagNames && href && hashtagNames.map(x => x.toLowerCase()).includes(txt.toLowerCase())) {
-						text += txt;
-					// メンション
-					} else if (txt.startsWith('@') && !(rel && rel.value.startsWith('me '))) {
-						const part = txt.split('@');
-
-						if (part.length === 2 && href) {
-							//#region ホスト名部分が省略されているので復元する
-							const acct = `${txt}@${(new URL(href.value)).hostname}`;
-							text += acct;
-							//#endregion
-						} else if (part.length === 3) {
+						// ハッシュタグ
+						if (hashtagNames && href && hashtagNames.map(x => x.toLowerCase()).includes(txt.toLowerCase())) {
 							text += txt;
-						}
-					// その他
-					} else {
-						const generateLink = () => {
-							if (!href && !txt) {
-								return '';
-							}
-							if (!href) {
-								return txt;
-							}
-							if (!txt || txt === href.value) {	// #6383: Missing text node
-								if (href.value.match(urlRegexFull)) {
-									return href.value;
-								} else {
-									return `<${href.value}>`;
-								}
-							}
-							if (href.value.match(urlRegex) && !href.value.match(urlRegexFull)) {
-								return `[${txt}](<${href.value}>)`;	// #6846
-							} else {
-								return `[${txt}](${href.value})`;
-							}
-						};
+							// メンション
+						} else if (txt.startsWith('@') && !(rel && rel.value.startsWith('me '))) {
+							const part = txt.split('@');
 
-						text += generateLink();
+							if (part.length === 2 && href) {
+								//#region ホスト名部分が省略されているので復元する
+								const acct = `${txt}@${(new URL(href.value)).hostname}`;
+								text += acct;
+								//#endregion
+							} else if (part.length === 3) {
+								text += txt;
+							}
+							// その他
+						} else {
+							const generateLink = () => {
+								if (!href && !txt) {
+									return '';
+								}
+								if (!href) {
+									return txt;
+								}
+								if (!txt || txt === href.value) {	// #6383: Missing text node
+									if (href.value.match(urlRegexFull)) {
+										return href.value;
+									} else {
+										return `<${href.value}>`;
+									}
+								}
+								if (href.value.match(urlRegex) && !href.value.match(urlRegexFull)) {
+									return `[${txt}](<${href.value}>)`;	// #6846
+								} else {
+									return `[${txt}](${href.value})`;
+								}
+							};
+
+							text += generateLink();
+						}
+						break;
 					}
-					break;
-				}
 
 				case 'h1':
-				{
-					text += '【';
-					appendChildren(node.childNodes);
-					text += '】\n';
-					break;
-				}
+					{
+						text += '【';
+						appendChildren(node.childNodes);
+						text += '】\n';
+						break;
+					}
 
 				case 'b':
 				case 'strong':
-				{
-					text += '**';
-					appendChildren(node.childNodes);
-					text += '**';
-					break;
-				}
+					{
+						text += '**';
+						appendChildren(node.childNodes);
+						text += '**';
+						break;
+					}
 
 				case 'small':
-				{
-					text += '<small>';
-					appendChildren(node.childNodes);
-					text += '</small>';
-					break;
-				}
+					{
+						text += '<small>';
+						appendChildren(node.childNodes);
+						text += '</small>';
+						break;
+					}
 
 				case 's':
 				case 'del':
-				{
-					text += '~~';
-					appendChildren(node.childNodes);
-					text += '~~';
-					break;
-				}
+					{
+						text += '~~';
+						appendChildren(node.childNodes);
+						text += '~~';
+						break;
+					}
 
 				case 'i':
 				case 'em':
-				{
-					text += '<i>';
-					appendChildren(node.childNodes);
-					text += '</i>';
-					break;
-				}
+					{
+						text += '<i>';
+						appendChildren(node.childNodes);
+						text += '</i>';
+						break;
+					}
 
 				// block code (<pre><code>)
 				case 'pre': {
@@ -205,11 +205,11 @@ export class MfmService {
 				case 'h4':
 				case 'h5':
 				case 'h6':
-				{
-					text += '\n\n';
-					appendChildren(node.childNodes);
-					break;
-				}
+					{
+						text += '\n\n';
+						appendChildren(node.childNodes);
+						break;
+					}
 
 				// other block elements
 				case 'div':
@@ -219,17 +219,17 @@ export class MfmService {
 				case 'li':
 				case 'dt':
 				case 'dd':
-				{
-					text += '\n';
-					appendChildren(node.childNodes);
-					break;
-				}
+					{
+						text += '\n';
+						appendChildren(node.childNodes);
+						break;
+					}
 
 				default:	// includes inline elements
-				{
-					appendChildren(node.childNodes);
-					break;
-				}
+					{
+						appendChildren(node.childNodes);
+						break;
+					}
 			}
 		}
 	}

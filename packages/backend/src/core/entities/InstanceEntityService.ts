@@ -5,7 +5,7 @@
 
 import { Injectable } from '@nestjs/common';
 import type { Packed } from '@/misc/json-schema.js';
-import type { } from '@/models/Blocking.js';
+import type { } from '@/models/mute-block/Blocking.js';
 import type { MiInstance } from '@/models/Instance.js';
 import { MetaService } from '@/core/MetaService.js';
 import { bindThis } from '@/decorators.js';

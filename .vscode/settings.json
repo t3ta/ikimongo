@@ -7,5 +7,8 @@
         "*.test.ts": "typescript"
     },
     "jest.jestCommandLine": "pnpm run jest",
-    "jest.autoRun": "off"
+    "jest.autoRun": "off",
+    "editor.insertSpaces": false,
+    "editor.tabSize": 2,
+    "workbench.tree.indent": 16,
 }

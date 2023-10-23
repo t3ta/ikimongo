@@ -5,7 +5,7 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
-import type { MiUser } from '@/models/User.js';
+import type { MiUser } from '@/models/user/User.js';
 import { normalizeForSearch } from '@/misc/normalize-for-search.js';
 import { IdService } from '@/core/IdService.js';
 import type { MiHashtag } from '@/models/Hashtag.js';
@@ -58,7 +58,7 @@ export class HashtagService {
 
 			if (isUserAttached) {
 				if (inc) {
-				// 自分が初めてこのタグを使ったなら
+					// 自分が初めてこのタグを使ったなら
 					if (!index.attachedUserIds.some(id => id === user.id)) {
 						set.attachedUserIds = () => `array_append("attachedUserIds", '${user.id}')`;
 						set.attachedUsersCount = () => '"attachedUsersCount" + 1';
@@ -85,7 +85,7 @@ export class HashtagService {
 					}
 				}
 			} else {
-			// 自分が初めてこのタグを使ったなら
+				// 自分が初めてこのタグを使ったなら
 				if (!index.mentionedUserIds.some(id => id === user.id)) {
 					set.mentionedUserIds = () => `array_append("mentionedUserIds", '${user.id}')`;
 					set.mentionedUsersCount = () => '"mentionedUsersCount" + 1';

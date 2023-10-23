@@ -8,8 +8,8 @@ import { DI } from '@/di-symbols.js';
 import type { DriveFilesRepository, DriveFoldersRepository } from '@/models/_.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
 import type { Packed } from '@/misc/json-schema.js';
-import type { } from '@/models/Blocking.js';
-import type { MiDriveFolder } from '@/models/DriveFolder.js';
+import type { } from '@/models/mute-block/Blocking.js';
+import type { MiDriveFolder } from '@/models/drive/DriveFolder.js';
 import { bindThis } from '@/decorators.js';
 
 @Injectable()

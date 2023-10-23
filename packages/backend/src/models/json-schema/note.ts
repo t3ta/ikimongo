@@ -123,6 +123,14 @@ export const packedNoteSchema = {
 			type: 'object',
 			optional: true, nullable: true,
 		},
+		observation: {
+			type: 'object',
+			optional: true, nullable: true,
+		},
+		identification: {
+			type: 'object',
+			optional: true, nullable: true,
+		},
 		channelId: {
 			type: 'string',
 			optional: true, nullable: true,

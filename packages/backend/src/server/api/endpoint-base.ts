@@ -6,8 +6,8 @@
 import * as fs from 'node:fs';
 import _Ajv from 'ajv';
 import type { Schema, SchemaType } from '@/misc/json-schema.js';
-import type { MiLocalUser } from '@/models/User.js';
-import type { MiAccessToken } from '@/models/AccessToken.js';
+import type { MiLocalUser } from '@/models/user/User.js';
+import type { MiAccessToken } from '@/models/auth/AccessToken.js';
 import { ApiError } from './error.js';
 import type { IEndpointMeta } from './endpoints.js';
 
@@ -42,7 +42,7 @@ export abstract class Endpoint<T extends IEndpointMeta, Ps extends Schema> {
 
 			if (meta.requireFile) {
 				cleanup = () => {
-					if (file) fs.unlink(file.path, () => {});
+					if (file) fs.unlink(file.path, () => { });
 				};
 
 				if (file == null) return Promise.reject(new ApiError({

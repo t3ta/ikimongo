@@ -8,8 +8,8 @@ import { Brackets } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import type { RoleAssignmentsRepository, RolesRepository } from '@/models/_.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
-import type { MiUser } from '@/models/User.js';
-import type { MiRole } from '@/models/Role.js';
+import type { MiUser } from '@/models/user/User.js';
+import type { MiRole } from '@/models/role/Role.js';
 import { bindThis } from '@/decorators.js';
 import { DEFAULT_POLICIES } from '@/core/RoleService.js';
 
@@ -33,8 +33,9 @@ export class RoleEntityService {
 
 		const assignedCount = await this.roleAssignmentsRepository.createQueryBuilder('assign')
 			.where('assign.roleId = :roleId', { roleId: role.id })
-			.andWhere(new Brackets(qb => { qb
-				.where('assign.expiresAt IS NULL')
+			.andWhere(new Brackets(qb => {
+				qb
+					.where('assign.expiresAt IS NULL')
 				.orWhere('assign.expiresAt > :now', { now: new Date() });
 			}))
 			.getCount();

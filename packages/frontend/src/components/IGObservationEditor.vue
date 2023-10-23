@@ -7,22 +7,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 <div class="igobservationeditor">
 	<ul>
 		<li>
-			<MkInput v-model="japaneseName" small type="text" class="input">
-				<template #label>和名</template>
-			</MkInput>
-		</li>
-		<li>
-			<MkInput v-model="scientificName" small type="text" class="input">
-				<template #label>学名</template>
-			</MkInput>
-		</li>
-		<li>
 			<MkInput v-model="locationName" small type="text" class="input">
 				<template #label>場所</template>
 			</MkInput>
 		</li>
 		<li>
-			<MkInput v-model="date" small type="text" class="input">
+			<MkInput v-model="date" small type="date" class="input">
 				<template #label>日付</template>
 			</MkInput>
 		</li>
@@ -36,37 +26,29 @@ import MkInput from './MkInput.vue';
 
 const props = defineProps<{
 	modelValue: {
-		scientificName: string;
-		japaneseName: string;
 		location: {
 			name: string;
 			latitude?: number;
 			longitude?: number;
 		},
-		date?: Date;
+		date: Date;
 	};
 }>();
 const emit = defineEmits<{
 	(ev: 'update:modelValue', v: {
-		scientificName: string;
-		japaneseName: string;
 		location: {
 			name: string;
 			latitude?: number;
 			longitude?: number;
 		},
-		date?: Date;
+		date: Date;
 	}): void;
 }>();
 
-const scientificName = ref(props.modelValue.scientificName);
-const japaneseName = ref(props.modelValue.japaneseName);
 const locationName = ref(props.modelValue.location.name);
 const date = ref(props.modelValue.date);
 
-watch([scientificName, japaneseName, locationName], () => emit('update:modelValue', {
-	scientificName: scientificName.value,
-	japaneseName: japaneseName.value,
+watch([locationName, date], () => emit('update:modelValue', {
 	location: {
 		name: locationName.value,
 	},

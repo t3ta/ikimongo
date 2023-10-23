@@ -7,7 +7,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import * as Redis from 'ioredis';
 import type { BlockingsRepository, ChannelFollowingsRepository, FollowingsRepository, MutingsRepository, RenoteMutingsRepository, MiUserProfile, UserProfilesRepository, UsersRepository } from '@/models/_.js';
 import { MemoryKVCache, RedisKVCache } from '@/misc/cache.js';
-import type { MiLocalUser, MiUser } from '@/models/User.js';
+import type { MiLocalUser, MiUser } from '@/models/user/User.js';
 import { DI } from '@/di-symbols.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { bindThis } from '@/decorators.js';
@@ -61,7 +61,7 @@ export class CacheService implements OnApplicationShutdown {
 		//this.onMessage = this.onMessage.bind(this);
 
 		const localUserByIdCache = new MemoryKVCache<MiLocalUser>(1000 * 60 * 60 * 6 /* 6h */);
-		this.localUserByIdCache	= localUserByIdCache;
+		this.localUserByIdCache = localUserByIdCache;
 
 		// ローカルユーザーならlocalUserByIdCacheにデータを追加し、こちらにはid(文字列)だけを追加する
 		const userByIdCache = new MemoryKVCache<MiUser, MiUser | string>(1000 * 60 * 60 * 6 /* 6h */, {

@@ -5,7 +5,7 @@
 
 import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { id } from './util/id.js';
-import { MiUser } from './User.js';
+import { MiUser } from './user/User.js';
 
 @Entity('meta')
 export class MiMeta {
@@ -450,7 +450,7 @@ export class MiMeta {
 	public enableIdenticonGeneration: boolean;
 
 	@Column('jsonb', {
-		default: { },
+		default: {},
 	})
 	public policies: Record<string, any>;
 

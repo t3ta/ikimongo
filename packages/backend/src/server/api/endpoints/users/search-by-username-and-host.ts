@@ -7,7 +7,7 @@ import { Brackets } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
 import type { UsersRepository, FollowingsRepository } from '@/models/_.js';
 import type { Config } from '@/config.js';
-import type { MiUser } from '@/models/User.js';
+import type { MiUser } from '@/models/user/User.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { DI } from '@/di-symbols.js';
@@ -89,11 +89,12 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					.where('following.followerId = :followerId', { followerId: me.id });
 
 				const query = setUsernameAndHostQuery()
-					.andWhere(`user.id IN (${ followingQuery.getQuery() })`)
+					.andWhere(`user.id IN (${followingQuery.getQuery()})`)
 					.andWhere('user.id != :meId', { meId: me.id })
 					.andWhere('user.isSuspended = FALSE')
-					.andWhere(new Brackets(qb => { qb
-						.where('user.updatedAt IS NULL')
+					.andWhere(new Brackets(qb => {
+						qb
+							.where('user.updatedAt IS NULL')
 						.orWhere('user.updatedAt > :activeThreshold', { activeThreshold: activeThreshold });
 					}));
 
@@ -106,7 +107,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 				if (users.length < ps.limit) {
 					const otherQuery = setUsernameAndHostQuery()
-						.andWhere(`user.id NOT IN (${ followingQuery.getQuery() })`)
+						.andWhere(`user.id NOT IN (${followingQuery.getQuery()})`)
 						.andWhere('user.isSuspended = FALSE')
 						.andWhere('user.updatedAt IS NOT NULL');
 

@@ -6,9 +6,9 @@
 import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
 import * as Redis from 'ioredis';
 import type { UserListJoiningsRepository } from '@/models/_.js';
-import type { MiUser } from '@/models/User.js';
-import type { MiUserList } from '@/models/UserList.js';
-import type { MiUserListJoining } from '@/models/UserListJoining.js';
+import type { MiUser } from '@/models/user/User.js';
+import type { MiUserList } from '@/models/user/UserList.js';
+import type { MiUserListJoining } from '@/models/user/UserListJoining.js';
 import { IdService } from '@/core/IdService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { DI } from '@/di-symbols.js';
@@ -22,7 +22,7 @@ import type { GlobalEvents } from '@/core/GlobalEventService.js';
 
 @Injectable()
 export class UserListService implements OnApplicationShutdown {
-	public static TooManyUsersError = class extends Error {};
+	public static TooManyUsersError = class extends Error { };
 
 	public membersCache: RedisKVCache<Set<string>>;
 

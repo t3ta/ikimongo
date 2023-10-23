@@ -9,8 +9,8 @@ import { DI } from '@/di-symbols.js';
 import type { DriveFilesRepository, NotesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
 import type Logger from '@/logger.js';
 import { DriveService } from '@/core/DriveService.js';
-import type { MiDriveFile } from '@/models/DriveFile.js';
-import type { MiNote } from '@/models/Note.js';
+import type { MiDriveFile } from '@/models/drive/DriveFile.js';
+import type { MiNote } from '@/models/note/Note.js';
 import { EmailService } from '@/core/EmailService.js';
 import { bindThis } from '@/decorators.js';
 import { SearchService } from '@/core/SearchService.js';
@@ -123,7 +123,7 @@ export class DeleteAccountProcessorService {
 
 		// soft指定されている場合は物理削除しない
 		if (job.data.soft) {
-		// nop
+			// nop
 		} else {
 			await this.usersRepository.delete(job.data.user.id);
 		}

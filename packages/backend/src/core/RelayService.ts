@@ -5,7 +5,7 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import { IsNull } from 'typeorm';
-import type { MiLocalUser, MiUser } from '@/models/User.js';
+import type { MiLocalUser, MiUser } from '@/models/user/User.js';
 import type { RelaysRepository, UsersRepository } from '@/models/_.js';
 import { IdService } from '@/core/IdService.js';
 import { MemorySingleCache } from '@/misc/cache.js';

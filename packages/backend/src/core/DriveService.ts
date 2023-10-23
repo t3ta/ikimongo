@@ -14,9 +14,9 @@ import { DI } from '@/di-symbols.js';
 import type { DriveFilesRepository, UsersRepository, DriveFoldersRepository, UserProfilesRepository } from '@/models/_.js';
 import type { Config } from '@/config.js';
 import Logger from '@/logger.js';
-import type { MiRemoteUser, MiUser } from '@/models/User.js';
+import type { MiRemoteUser, MiUser } from '@/models/user/User.js';
 import { MetaService } from '@/core/MetaService.js';
-import { MiDriveFile } from '@/models/DriveFile.js';
+import { MiDriveFile } from '@/models/drive/DriveFile.js';
 import { IdService } from '@/core/IdService.js';
 import { isDuplicateKeyValueError } from '@/misc/is-duplicate-key-value-error.js';
 import { FILE_TYPE_BROWSERSAFE } from '@/const.js';
@@ -27,7 +27,7 @@ import { VideoProcessingService } from '@/core/VideoProcessingService.js';
 import { ImageProcessingService } from '@/core/ImageProcessingService.js';
 import type { IImage } from '@/core/ImageProcessingService.js';
 import { QueueService } from '@/core/QueueService.js';
-import type { MiDriveFolder } from '@/models/DriveFolder.js';
+import type { MiDriveFolder } from '@/models/drive/DriveFolder.js';
 import { createTemp } from '@/misc/create-temp.js';
 import DriveChart from '@/core/chart/charts/drive.js';
 import PerUserDriveChart from '@/core/chart/charts/per-user-drive.js';
@@ -87,9 +87,9 @@ type UploadFromUrlArgs = {
 
 @Injectable()
 export class DriveService {
-	public static NoSuchFolderError = class extends Error {};
-	public static InvalidFileNameError = class extends Error {};
-	public static CannotUnmarkSensitiveError = class extends Error {};
+	public static NoSuchFolderError = class extends Error { };
+	public static InvalidFileNameError = class extends Error { };
+	public static CannotUnmarkSensitiveError = class extends Error { };
 	private registerLogger: Logger;
 	private downloaderLogger: Logger;
 	private deleteLogger: Logger;
@@ -144,13 +144,13 @@ export class DriveService {
 	 */
 	@bindThis
 	private async save(file: MiDriveFile, path: string, name: string, type: string, hash: string, size: number): Promise<MiDriveFile> {
-	// thunbnail, webpublic を必要なら生成
+		// thunbnail, webpublic を必要なら生成
 		const alts = await this.generateAlts(path, type, !file.uri);
 
 		const meta = await this.metaService.fetch();
 
 		if (meta.useObjectStorage) {
-		//#region ObjectStorage params
+			//#region ObjectStorage params
 			let [ext] = (name.match(/\.([a-zA-Z0-9_-]+)$/) ?? ['']);
 
 			if (ext === '') {
@@ -169,11 +169,11 @@ export class DriveService {
 			}
 
 			const baseUrl = meta.objectStorageBaseUrl
-				?? `${ meta.objectStorageUseSSL ? 'https' : 'http' }://${ meta.objectStorageEndpoint }${ meta.objectStoragePort ? `:${meta.objectStoragePort}` : '' }/${ meta.objectStorageBucket }`;
+				?? `${meta.objectStorageUseSSL ? 'https' : 'http'}://${meta.objectStorageEndpoint}${meta.objectStoragePort ? `:${meta.objectStoragePort}` : ''}/${meta.objectStorageBucket}`;
 
 			// for original
 			const key = `${meta.objectStoragePrefix}/${randomUUID()}${ext}`;
-			const url = `${ baseUrl }/${ key }`;
+			const url = `${baseUrl}/${key}`;
 
 			// for alts
 			let webpublicKey: string | null = null;
@@ -190,7 +190,7 @@ export class DriveService {
 
 			if (alts.webpublic) {
 				webpublicKey = `${meta.objectStoragePrefix}/webpublic-${randomUUID()}.${alts.webpublic.ext}`;
-				webpublicUrl = `${ baseUrl }/${ webpublicKey }`;
+				webpublicUrl = `${baseUrl}/${webpublicKey}`;
 
 				this.registerLogger.info(`uploading webpublic: ${webpublicKey}`);
 				uploads.push(this.upload(webpublicKey, alts.webpublic.data, alts.webpublic.type, alts.webpublic.ext, name));
@@ -198,7 +198,7 @@ export class DriveService {
 
 			if (alts.thumbnail) {
 				thumbnailKey = `${meta.objectStoragePrefix}/thumbnail-${randomUUID()}.${alts.thumbnail.ext}`;
-				thumbnailUrl = `${ baseUrl }/${ thumbnailKey }`;
+				thumbnailUrl = `${baseUrl}/${thumbnailKey}`;
 
 				this.registerLogger.info(`uploading thumbnail: ${thumbnailKey}`);
 				uploads.push(this.upload(thumbnailKey, alts.thumbnail.data, alts.thumbnail.type, alts.thumbnail.ext, `${name}.thumbnail`));
@@ -310,9 +310,9 @@ export class DriveService {
 			satisfyWebpublic = !!(
 				type !== 'image/svg+xml' && // security reason
 				type !== 'image/avif' && // not supported by Mastodon and MS Edge
-			!(metadata.exif ?? metadata.iptc ?? metadata.xmp ?? metadata.tifftagPhotoshop) &&
-			metadata.width && metadata.width <= 2048 &&
-			metadata.height && metadata.height <= 2048
+				!(metadata.exif ?? metadata.iptc ?? metadata.xmp ?? metadata.tifftagPhotoshop) &&
+				metadata.width && metadata.width <= 2048 &&
+				metadata.height && metadata.height <= 2048
 			);
 		} catch (err) {
 			this.registerLogger.warn(`sharp failed: ${err}`);
@@ -472,11 +472,11 @@ export class DriveService {
 		const info = await this.fileInfoService.getFileInfo(path, {
 			skipSensitiveDetection: skipNsfwCheck,
 			sensitiveThreshold: // 感度が高いほどしきい値は低くすることになる
-			instance.sensitiveMediaDetectionSensitivity === 'veryHigh' ? 0.1 :
-			instance.sensitiveMediaDetectionSensitivity === 'high' ? 0.3 :
-			instance.sensitiveMediaDetectionSensitivity === 'low' ? 0.7 :
-			instance.sensitiveMediaDetectionSensitivity === 'veryLow' ? 0.9 :
-			0.5,
+				instance.sensitiveMediaDetectionSensitivity === 'veryHigh' ? 0.1 :
+					instance.sensitiveMediaDetectionSensitivity === 'high' ? 0.3 :
+						instance.sensitiveMediaDetectionSensitivity === 'low' ? 0.7 :
+							instance.sensitiveMediaDetectionSensitivity === 'veryLow' ? 0.9 :
+								0.5,
 			sensitiveThresholdForPorn: 0.75,
 			enableSensitiveMediaDetectionForVideos: instance.enableSensitiveMediaDetectionForVideos,
 		});
@@ -496,7 +496,7 @@ export class DriveService {
 		);
 
 		if (user && !force) {
-		// Check if there is a file with the same hash
+			// Check if there is a file with the same hash
 			const much = await this.driveFilesRepository.findOneBy({
 				md5: info.md5,
 				userId: user.id,
@@ -579,7 +579,7 @@ export class DriveService {
 		file.maybePorn = info.porn;
 		file.isSensitive = user
 			? this.userEntityService.isLocalUser(user) && profile!.alwaysMarkNsfw ? true :
-			sensitive ?? false
+				sensitive ?? false
 			: false;
 
 		if (info.sensitive && profile!.autoSensitive) file.isSensitive = true;
@@ -612,7 +612,7 @@ export class DriveService {
 
 				file = await this.driveFilesRepository.insert(file).then(x => this.driveFilesRepository.findOneByOrFail(x.identifiers[0]));
 			} catch (err) {
-			// duplicate key error (when already registered)
+				// duplicate key error (when already registered)
 				if (isDuplicateKeyValueError(err)) {
 					this.registerLogger.info(`already registered ${file.uri}`);
 

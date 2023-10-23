@@ -11,15 +11,15 @@ import { bindThis } from '@/decorators.js';
 import { isDuplicateKeyValueError } from '@/misc/is-duplicate-key-value-error.js';
 import { RoleService } from '@/core/RoleService.js';
 import { IdService } from '@/core/IdService.js';
-import type { MiLocalUser } from '@/models/User.js';
+import type { MiLocalUser } from '@/models/user/User.js';
 
 @Injectable()
 export class ClipService {
-	public static NoSuchNoteError = class extends Error {};
-	public static NoSuchClipError = class extends Error {};
-	public static AlreadyAddedError = class extends Error {};
-	public static TooManyClipNotesError = class extends Error {};
-	public static TooManyClipsError = class extends Error {};
+	public static NoSuchNoteError = class extends Error { };
+	public static NoSuchClipError = class extends Error { };
+	public static AlreadyAddedError = class extends Error { };
+	public static TooManyClipNotesError = class extends Error { };
+	public static TooManyClipsError = class extends Error { };
 
 	constructor(
 		@Inject(DI.clipsRepository)

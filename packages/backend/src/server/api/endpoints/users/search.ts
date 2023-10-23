@@ -6,7 +6,7 @@
 import { Brackets } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
 import type { UsersRepository, UserProfilesRepository } from '@/models/_.js';
-import type { MiUser } from '@/models/User.js';
+import type { MiUser } from '@/models/user/User.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { DI } from '@/di-symbols.js';
@@ -64,8 +64,9 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			if (isUsername) {
 				const usernameQuery = this.usersRepository.createQueryBuilder('user')
 					.where('user.usernameLower LIKE :username', { username: sqlLikeEscape(ps.query.replace('@', '').toLowerCase()) + '%' })
-					.andWhere(new Brackets(qb => { qb
-						.where('user.updatedAt IS NULL')
+					.andWhere(new Brackets(qb => {
+						qb
+							.where('user.updatedAt IS NULL')
 						.orWhere('user.updatedAt > :activeThreshold', { activeThreshold: activeThreshold });
 					}))
 					.andWhere('user.isSuspended = FALSE');
@@ -91,8 +92,9 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 							qb.orWhere('user.usernameLower LIKE :username', { username: '%' + sqlLikeEscape(ps.query.toLowerCase()) + '%' });
 						}
 					}))
-					.andWhere(new Brackets(qb => { qb
-						.where('user.updatedAt IS NULL')
+					.andWhere(new Brackets(qb => {
+						qb
+							.where('user.updatedAt IS NULL')
 						.orWhere('user.updatedAt > :activeThreshold', { activeThreshold: activeThreshold });
 					}))
 					.andWhere('user.isSuspended = FALSE');
@@ -121,9 +123,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					}
 
 					const query = this.usersRepository.createQueryBuilder('user')
-						.where(`user.id IN (${ profQuery.getQuery() })`)
-						.andWhere(new Brackets(qb => { qb
-							.where('user.updatedAt IS NULL')
+						.where(`user.id IN (${profQuery.getQuery()})`)
+						.andWhere(new Brackets(qb => {
+							qb
+								.where('user.updatedAt IS NULL')
 							.orWhere('user.updatedAt > :activeThreshold', { activeThreshold: activeThreshold });
 						}))
 						.andWhere('user.isSuspended = FALSE')

@@ -440,7 +440,7 @@ function toggleIdentification() {
 				family: '',
 				genus: '',
 				species: '',
-			}
+			},
 		};
 	}
 }
@@ -765,6 +765,8 @@ async function post(ev?: MouseEvent) {
 		renoteId: props.renote ? props.renote.id : quoteId ? quoteId : undefined,
 		channelId: props.channel ? props.channel.id : undefined,
 		poll: poll,
+		observation: observation,
+		identification: identification,
 		cw: useCw ? cw ?? '' : null,
 		localOnly: localOnly,
 		visibility: visibility,

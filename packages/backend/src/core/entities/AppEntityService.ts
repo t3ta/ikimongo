@@ -8,7 +8,7 @@ import { DI } from '@/di-symbols.js';
 import type { AccessTokensRepository, AppsRepository } from '@/models/_.js';
 import type { Packed } from '@/misc/json-schema.js';
 import type { MiApp } from '@/models/App.js';
-import type { MiUser } from '@/models/User.js';
+import type { MiUser } from '@/models/user/User.js';
 import { bindThis } from '@/decorators.js';
 
 @Injectable()
