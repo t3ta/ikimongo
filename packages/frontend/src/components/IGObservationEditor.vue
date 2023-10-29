@@ -7,13 +7,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 <div class="igobservationeditor">
 	<ul>
 		<li>
-			<MkInput v-model="locationName" small type="text" class="input">
-				<template #label>場所</template>
+			<MkInput v-model="date" small type="date" class="input">
+				<template #label>日付</template>
 			</MkInput>
 		</li>
 		<li>
-			<MkInput v-model="date" small type="date" class="input">
-				<template #label>日付</template>
+			<MkInput v-model="latitude" small type="number" class="input">
+				<template #label>緯度</template>
+			</MkInput>
+			<MkInput v-model="longitude" small type="number" class="input">
+				<template #label>緯度</template>
 			</MkInput>
 		</li>
 	</ul>
@@ -27,7 +30,7 @@ import MkInput from './MkInput.vue';
 const props = defineProps<{
 	modelValue: {
 		location: {
-			name: string;
+			name?: string;
 			latitude?: number;
 			longitude?: number;
 		},
@@ -37,7 +40,7 @@ const props = defineProps<{
 const emit = defineEmits<{
 	(ev: 'update:modelValue', v: {
 		location: {
-			name: string;
+			name?: string;
 			latitude?: number;
 			longitude?: number;
 		},
@@ -45,12 +48,14 @@ const emit = defineEmits<{
 	}): void;
 }>();
 
-const locationName = ref(props.modelValue.location.name);
+const latitude = ref(props.modelValue.location.latitude);
+const longitude = ref(props.modelValue.location.longitude);
 const date = ref(props.modelValue.date);
 
-watch([locationName, date], () => emit('update:modelValue', {
+watch([date, latitude, longitude], () => emit('update:modelValue', {
 	location: {
-		name: locationName.value,
+		latitude: latitude.value,
+		longitude: longitude.value,
 	},
 	date: date.value,
 }), {
@@ -80,6 +85,7 @@ watch([locationName, date], () => emit('update:modelValue', {
 
 		> li {
 			display: flex;
+			gap: 8px;
 			margin: 8px 0;
 			padding: 0;
 			width: 100%;
