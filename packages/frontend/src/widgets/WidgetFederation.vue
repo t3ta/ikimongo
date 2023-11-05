@@ -4,43 +4,72 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkContainer :showHeader="widgetProps.showHeader" :foldable="foldable" :scrollable="scrollable" data-cy-mkw-federation class="mkw-federation">
-	<template #icon><i class="ti ti-whirl"></i></template>
-	<template #header>{{ i18n.ts._widgets.federation }}</template>
+	<MkContainer
+		:showHeader="widgetProps.showHeader"
+		:foldable="foldable"
+		:scrollable="scrollable"
+		data-cy-mkw-federation
+		class="mkw-federation"
+	>
+		<template #icon><i class="ti ti-whirl"></i></template>
+		<template #header>{{ i18n.ts._widgets.federation }}</template>
 
-	<div class="wbrkwalb">
-		<MkLoading v-if="fetching"/>
-		<TransitionGroup v-else tag="div" :name="defaultStore.state.animation ? 'chart' : ''" class="instances">
-			<div v-for="(instance, i) in instances" :key="instance.id" class="instance">
-				<img :src="getInstanceIcon(instance)" alt=""/>
-				<div class="body">
-					<MkA class="a" :to="`/instance-info/${instance.host}`" behavior="window" :title="instance.host">{{ instance.host }}</MkA>
-					<p>{{ instance.softwareName || '?' }} {{ instance.softwareVersion }}</p>
+		<div class="wbrkwalb">
+			<MkLoading v-if="fetching" />
+			<TransitionGroup
+				v-else
+				tag="div"
+				:name="defaultStore.state.animation ? 'chart' : ''"
+				class="instances"
+			>
+				<div
+					v-for="(instance, i) in instances"
+					:key="instance.id"
+					class="instance"
+				>
+					<img :src="getInstanceIcon(instance)" alt="" />
+					<div class="body">
+						<MkA
+							class="a"
+							:to="`/instance-info/${instance.host}`"
+							behavior="window"
+							:title="instance.host"
+							>{{ instance.host }}</MkA
+						>
+						<p>
+							{{ instance.softwareName || "?" }} {{ instance.softwareVersion }}
+						</p>
+					</div>
+					<MkMiniChart class="chart" :src="charts[i].requests.received" />
 				</div>
-				<MkMiniChart class="chart" :src="charts[i].requests.received"/>
-			</div>
-		</TransitionGroup>
-	</div>
-</MkContainer>
+			</TransitionGroup>
+		</div>
+	</MkContainer>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
-import { useWidgetPropsManager, Widget, WidgetComponentEmits, WidgetComponentExpose, WidgetComponentProps } from './widget.js';
-import { GetFormResultType } from '@/scripts/form.js';
-import MkContainer from '@/components/MkContainer.vue';
-import MkMiniChart from '@/components/MkMiniChart.vue';
-import * as os from '@/os.js';
-import { useInterval } from '@/scripts/use-interval.js';
-import { i18n } from '@/i18n.js';
-import { getProxiedImageUrlNullable } from '@/scripts/media-proxy.js';
-import { defaultStore } from '@/store.js';
+import { ref } from "vue";
+import {
+	useWidgetPropsManager,
+	Widget,
+	WidgetComponentEmits,
+	WidgetComponentExpose,
+	WidgetComponentProps,
+} from "./widget.js";
+import { GetFormResultType } from "@/scripts/form.js";
+import MkContainer from "@/components/mk_components/MkContainer.vue";
+import MkMiniChart from "@/components/mk_components/MkMiniChart.vue";
+import * as os from "@/os.js";
+import { useInterval } from "@/scripts/use-interval.js";
+import { i18n } from "@/i18n.js";
+import { getProxiedImageUrlNullable } from "@/scripts/media-proxy.js";
+import { defaultStore } from "@/store.js";
 
-const name = 'federation';
+const name = "federation";
 
 const widgetPropsDef = {
 	showHeader: {
-		type: 'boolean' as const,
+		type: "boolean" as const,
 		default: true,
 	},
 };
@@ -50,7 +79,8 @@ type WidgetProps = GetFormResultType<typeof widgetPropsDef>;
 const props = defineProps<WidgetComponentProps<WidgetProps>>();
 const emit = defineEmits<WidgetComponentEmits<WidgetProps>>();
 
-const { widgetProps, configure } = useWidgetPropsManager(name,
+const { widgetProps, configure } = useWidgetPropsManager(
+	name,
 	widgetPropsDef,
 	props,
 	emit,
@@ -61,11 +91,15 @@ const charts = ref([]);
 const fetching = ref(true);
 
 const fetch = async () => {
-	const fetchedInstances = await os.api('federation/instances', {
-		sort: '+latestRequestReceivedAt',
+	const fetchedInstances = await os.api("federation/instances", {
+		sort: "+latestRequestReceivedAt",
 		limit: 5,
 	});
-	const fetchedCharts = await Promise.all(fetchedInstances.map(i => os.apiGet('charts/instance', { host: i.host, limit: 16, span: 'hour' })));
+	const fetchedCharts = await Promise.all(
+		fetchedInstances.map((i) =>
+			os.apiGet("charts/instance", { host: i.host, limit: 16, span: "hour" }),
+		),
+	);
 	instances.value = fetchedInstances;
 	charts.value = fetchedCharts;
 	fetching.value = false;
@@ -77,7 +111,11 @@ useInterval(fetch, 1000 * 60, {
 });
 
 function getInstanceIcon(instance): string {
-	return getProxiedImageUrlNullable(instance.iconUrl, 'preview') ?? getProxiedImageUrlNullable(instance.faviconUrl, 'preview') ?? '/client-assets/dummy.png';
+	return (
+		getProxiedImageUrlNullable(instance.iconUrl, "preview") ??
+		getProxiedImageUrlNullable(instance.faviconUrl, "preview") ??
+		"/client-assets/dummy.png"
+	);
 }
 
 defineExpose<WidgetComponentExpose>({

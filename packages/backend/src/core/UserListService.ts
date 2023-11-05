@@ -3,26 +3,26 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
-import * as Redis from 'ioredis';
-import type { UserListJoiningsRepository } from '@/models/_.js';
-import type { MiUser } from '@/models/user/User.js';
-import type { MiUserList } from '@/models/user/UserList.js';
-import type { MiUserListJoining } from '@/models/user/UserListJoining.js';
-import { IdService } from '@/core/IdService.js';
-import { GlobalEventService } from '@/core/GlobalEventService.js';
-import { DI } from '@/di-symbols.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { ProxyAccountService } from '@/core/ProxyAccountService.js';
-import { bindThis } from '@/decorators.js';
-import { RoleService } from '@/core/RoleService.js';
-import { QueueService } from '@/core/QueueService.js';
-import { RedisKVCache } from '@/misc/cache.js';
-import type { GlobalEvents } from '@/core/GlobalEventService.js';
+import { Inject, Injectable, OnApplicationShutdown } from "@nestjs/common";
+import * as Redis from "ioredis";
+import type { UserListJoiningsRepository } from "@/models/_.js";
+import type { MiUser } from "@/models/user/User.js";
+import type { MiUserList } from "@/models/user/UserList.js";
+import type { MiUserListJoining } from "@/models/user/UserListJoining.js";
+import { IdService } from "@/core/IdService.js";
+import { GlobalEventService } from "@/core/GlobalEventService.js";
+import { DI } from "@/di-symbols.js";
+import { UserEntityService } from "@/core/entities/UserEntityService.js";
+import { ProxyAccountService } from "@/core/ProxyAccountService.js";
+import { bindThis } from "@/decorators.js";
+import { RoleService } from "@/core/RoleService.js";
+import { QueueService } from "@/core/QueueService.js";
+import { RedisKVCache } from "@/misc/cache.js";
+import type { GlobalEvents } from "@/core/GlobalEventService.js";
 
 @Injectable()
 export class UserListService implements OnApplicationShutdown {
-	public static TooManyUsersError = class extends Error { };
+	public static TooManyUsersError = class extends Error {};
 
 	public membersCache: RedisKVCache<Set<string>>;
 
@@ -43,25 +43,32 @@ export class UserListService implements OnApplicationShutdown {
 		private proxyAccountService: ProxyAccountService,
 		private queueService: QueueService,
 	) {
-		this.membersCache = new RedisKVCache<Set<string>>(this.redisClient, 'userListMembers', {
-			lifetime: 1000 * 60 * 30, // 30m
-			memoryCacheLifetime: 1000 * 60, // 1m
-			fetcher: (key) => this.userListJoiningsRepository.find({ where: { userListId: key }, select: ['userId'] }).then(xs => new Set(xs.map(x => x.userId))),
-			toRedisConverter: (value) => JSON.stringify(Array.from(value)),
-			fromRedisConverter: (value) => new Set(JSON.parse(value)),
-		});
+		this.membersCache = new RedisKVCache<Set<string>>(
+			this.redisClient,
+			"userListMembers",
+			{
+				lifetime: 1000 * 60 * 30, // 30m
+				memoryCacheLifetime: 1000 * 60, // 1m
+				fetcher: (key) =>
+					this.userListJoiningsRepository
+						.find({ where: { userListId: key }, select: ["userId"] })
+						.then((xs) => new Set(xs.map((x) => x.userId))),
+				toRedisConverter: (value) => JSON.stringify(Array.from(value)),
+				fromRedisConverter: (value) => new Set(JSON.parse(value)),
+			},
+		);
 
-		this.redisForSub.on('message', this.onMessage);
+		this.redisForSub.on("message", this.onMessage);
 	}
 
 	@bindThis
 	private async onMessage(_: string, data: string): Promise<void> {
 		const obj = JSON.parse(data);
 
-		if (obj.channel === 'internal') {
-			const { type, body } = obj.message as GlobalEvents['internal']['payload'];
+		if (obj.channel === "internal") {
+			const { type, body } = obj.message as GlobalEvents["internal"]["payload"];
 			switch (type) {
-				case 'userListMemberAdded': {
+				case "userListMemberAdded": {
 					const { userListId, memberId } = body;
 					const members = await this.membersCache.get(userListId);
 					if (members) {
@@ -69,7 +76,7 @@ export class UserListService implements OnApplicationShutdown {
 					}
 					break;
 				}
-				case 'userListMemberRemoved': {
+				case "userListMemberRemoved": {
 					const { userListId, memberId } = body;
 					const members = await this.membersCache.get(userListId);
 					if (members) {
@@ -88,7 +95,10 @@ export class UserListService implements OnApplicationShutdown {
 		const currentCount = await this.userListJoiningsRepository.countBy({
 			userListId: list.id,
 		});
-		if (currentCount > (await this.roleService.getUserPolicies(me.id)).userEachUserListsLimit) {
+		if (
+			currentCount >
+			(await this.roleService.getUserPolicies(me.id)).userEachUserListsLimit
+		) {
 			throw new UserListService.TooManyUsersError();
 		}
 
@@ -99,14 +109,23 @@ export class UserListService implements OnApplicationShutdown {
 			userListId: list.id,
 		} as MiUserListJoining);
 
-		this.globalEventService.publishInternalEvent('userListMemberAdded', { userListId: list.id, memberId: target.id });
-		this.globalEventService.publishUserListStream(list.id, 'userAdded', await this.userEntityService.pack(target));
+		this.globalEventService.publishInternalEvent("userListMemberAdded", {
+			userListId: list.id,
+			memberId: target.id,
+		});
+		this.globalEventService.publishUserListStream(
+			list.id,
+			"userAdded",
+			await this.userEntityService.pack(target),
+		);
 
 		// このインスタンス内にこのリモートユーザーをフォローしているユーザーがいなくても投稿を受け取るためにダミーのユーザーがフォローしたということにする
 		if (this.userEntityService.isRemoteUser(target)) {
 			const proxy = await this.proxyAccountService.fetch();
 			if (proxy) {
-				this.queueService.createFollowJob([{ from: { id: proxy.id }, to: { id: target.id } }]);
+				this.queueService.createFollowJob([
+					{ from: { id: proxy.id }, to: { id: target.id } },
+				]);
 			}
 		}
 	}
@@ -118,13 +137,20 @@ export class UserListService implements OnApplicationShutdown {
 			userListId: list.id,
 		});
 
-		this.globalEventService.publishInternalEvent('userListMemberRemoved', { userListId: list.id, memberId: target.id });
-		this.globalEventService.publishUserListStream(list.id, 'userRemoved', await this.userEntityService.pack(target));
+		this.globalEventService.publishInternalEvent("userListMemberRemoved", {
+			userListId: list.id,
+			memberId: target.id,
+		});
+		this.globalEventService.publishUserListStream(
+			list.id,
+			"userRemoved",
+			await this.userEntityService.pack(target),
+		);
 	}
 
 	@bindThis
 	public dispose(): void {
-		this.redisForSub.off('message', this.onMessage);
+		this.redisForSub.off("message", this.onMessage);
 		this.membersCache.dispose();
 	}
 

@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import * as os from '@/os.js';
-import { i18n } from '@/i18n.js';
-import { mainRouter } from '@/router.js';
-import { Router } from '@/nirax.js';
+import * as os from "@/os.js";
+import { i18n } from "@/i18n.js";
+import { mainRouter } from "@/router.js";
+import { Router } from "@/nirax.js";
 
 export async function lookup(router?: Router) {
 	const _router = router ?? mainRouter;
@@ -14,21 +14,21 @@ export async function lookup(router?: Router) {
 	const { canceled, result: temp } = await os.inputText({
 		title: i18n.ts.lookup,
 	});
-	const query = temp ? temp.trim() : '';
+	const query = temp ? temp.trim() : "";
 	if (canceled) return;
 
-	if (query.startsWith('@') && !query.includes(' ')) {
+	if (query.startsWith("@") && !query.includes(" ")) {
 		_router.push(`/${query}`);
 		return;
 	}
 
-	if (query.startsWith('#')) {
+	if (query.startsWith("#")) {
 		_router.push(`/tags/${encodeURIComponent(query.substring(1))}`);
 		return;
 	}
 
-	if (query.startsWith('https://')) {
-		const promise = os.api('ap/show', {
+	if (query.startsWith("https://")) {
+		const promise = os.api("ap/show", {
 			uri: query,
 		});
 
@@ -36,9 +36,9 @@ export async function lookup(router?: Router) {
 
 		const res = await promise;
 
-		if (res.type === 'User') {
+		if (res.type === "User") {
 			_router.push(`/@${res.object.username}@${res.object.host}`);
-		} else if (res.type === 'Note') {
+		} else if (res.type === "Note") {
 			_router.push(`/notes/${res.object.id}`);
 		}
 

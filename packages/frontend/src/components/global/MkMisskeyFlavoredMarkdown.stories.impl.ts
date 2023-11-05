@@ -4,10 +4,10 @@
  */
 
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { StoryObj } from '@storybook/vue3';
-import { within } from '@storybook/testing-library';
-import { expect } from '@storybook/jest';
-import MkMisskeyFlavoredMarkdown from './MkMisskeyFlavoredMarkdown.ts';
+import { StoryObj } from "@storybook/vue3";
+import { within } from "@storybook/testing-library";
+import { expect } from "@storybook/jest";
+import MkMisskeyFlavoredMarkdown from "./MkMisskeyFlavoredMarkdown.ts";
 export const Default = {
 	render(args) {
 		return {
@@ -32,28 +32,31 @@ export const Default = {
 	async play({ canvasElement, args }) {
 		const canvas = within(canvasElement);
 		if (args.plain) {
-			const aiHelloMiskist = canvas.getByText('@ai *Hello*, #Miskist!');
+			const aiHelloMiskist = canvas.getByText("@ai *Hello*, #Miskist!");
 			await expect(aiHelloMiskist).toBeInTheDocument();
 		} else {
-			const ai = canvas.getByText('@ai');
+			const ai = canvas.getByText("@ai");
 			await expect(ai).toBeInTheDocument();
-			await expect(ai.closest('a')).toHaveAttribute('href', '/@ai');
-			const hello = canvas.getByText('Hello');
+			await expect(ai.closest("a")).toHaveAttribute("href", "/@ai");
+			const hello = canvas.getByText("Hello");
 			await expect(hello).toBeInTheDocument();
-			await expect(hello.style.fontStyle).toBe('oblique');
-			const miskist = canvas.getByText('#Miskist');
+			await expect(hello.style.fontStyle).toBe("oblique");
+			const miskist = canvas.getByText("#Miskist");
 			await expect(miskist).toBeInTheDocument();
-			await expect(miskist).toHaveAttribute('href', args.isNote ?? true ? '/tags/Miskist' : '/user-tags/Miskist');
+			await expect(miskist).toHaveAttribute(
+				"href",
+				args.isNote ?? true ? "/tags/Miskist" : "/user-tags/Miskist",
+			);
 		}
-		const heart = canvas.getByAltText('❤');
+		const heart = canvas.getByAltText("❤");
 		await expect(heart).toBeInTheDocument();
-		await expect(heart).toHaveAttribute('src', '/twemoji/2764.svg');
+		await expect(heart).toHaveAttribute("src", "/twemoji/2764.svg");
 	},
 	args: {
-		text: '@ai *Hello*, #Miskist! ❤',
+		text: "@ai *Hello*, #Miskist! ❤",
 	},
 	parameters: {
-		layout: 'centered',
+		layout: "centered",
 	},
 } satisfies StoryObj<typeof MkMisskeyFlavoredMarkdown>;
 export const Plain = {

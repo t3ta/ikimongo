@@ -12,7 +12,7 @@ export class IdentifiableError extends Error {
 
 	constructor(id: string, message?: string) {
 		super(message);
-		this.message = message ?? '';
+		this.message = message ?? "";
 		this.id = id;
 	}
 }

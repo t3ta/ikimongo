@@ -3,16 +3,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import { DI } from '@/di-symbols.js';
-import type { FollowingsRepository } from '@/models/_.js';
-import { awaitAll } from '@/misc/prelude/await-all.js';
-import type { Packed } from '@/misc/json-schema.js';
-import type { } from '@/models/mute-block/Blocking.js';
-import type { MiUser } from '@/models/user/User.js';
-import type { MiFollowing } from '@/models/following/Following.js';
-import { bindThis } from '@/decorators.js';
-import { UserEntityService } from './UserEntityService.js';
+import { Inject, Injectable } from "@nestjs/common";
+import { DI } from "@/di-symbols.js";
+import type { FollowingsRepository } from "@/models/_.js";
+import { awaitAll } from "@/misc/prelude/await-all.js";
+import type { Packed } from "@/misc/json-schema.js";
+import type {} from "@/models/mute-block/Blocking.js";
+import type { MiUser } from "@/models/user/User.js";
+import type { MiFollowing } from "@/models/following/Following.js";
+import { bindThis } from "@/decorators.js";
+import { UserEntityService } from "./UserEntityService.js";
 
 type LocalFollowerFollowing = MiFollowing & {
 	followerHost: null;
@@ -45,39 +45,49 @@ export class FollowingEntityService {
 		private followingsRepository: FollowingsRepository,
 
 		private userEntityService: UserEntityService,
-	) {
-	}
+	) {}
 
 	@bindThis
-	public isLocalFollower(following: MiFollowing): following is LocalFollowerFollowing {
+	public isLocalFollower(
+		following: MiFollowing,
+	): following is LocalFollowerFollowing {
 		return following.followerHost == null;
 	}
 
 	@bindThis
-	public isRemoteFollower(following: MiFollowing): following is RemoteFollowerFollowing {
+	public isRemoteFollower(
+		following: MiFollowing,
+	): following is RemoteFollowerFollowing {
 		return following.followerHost != null;
 	}
 
 	@bindThis
-	public isLocalFollowee(following: MiFollowing): following is LocalFolloweeFollowing {
+	public isLocalFollowee(
+		following: MiFollowing,
+	): following is LocalFolloweeFollowing {
 		return following.followeeHost == null;
 	}
 
 	@bindThis
-	public isRemoteFollowee(following: MiFollowing): following is RemoteFolloweeFollowing {
+	public isRemoteFollowee(
+		following: MiFollowing,
+	): following is RemoteFolloweeFollowing {
 		return following.followeeHost != null;
 	}
 
 	@bindThis
 	public async pack(
-		src: MiFollowing['id'] | MiFollowing,
-		me?: { id: MiUser['id'] } | null | undefined,
+		src: MiFollowing["id"] | MiFollowing,
+		me?: { id: MiUser["id"] } | null | undefined,
 		opts?: {
 			populateFollowee?: boolean;
 			populateFollower?: boolean;
 		},
-	): Promise<Packed<'Following'>> {
-		const following = typeof src === 'object' ? src : await this.followingsRepository.findOneByOrFail({ id: src });
+	): Promise<Packed<"Following">> {
+		const following =
+			typeof src === "object"
+				? src
+				: await this.followingsRepository.findOneByOrFail({ id: src });
 
 		if (opts == null) opts = {};
 
@@ -86,25 +96,36 @@ export class FollowingEntityService {
 			createdAt: following.createdAt.toISOString(),
 			followeeId: following.followeeId,
 			followerId: following.followerId,
-			followee: opts.populateFollowee ? this.userEntityService.pack(following.followee ?? following.followeeId, me, {
-				detail: true,
-			}) : undefined,
-			follower: opts.populateFollower ? this.userEntityService.pack(following.follower ?? following.followerId, me, {
-				detail: true,
-			}) : undefined,
+			followee: opts.populateFollowee
+				? this.userEntityService.pack(
+						following.followee ?? following.followeeId,
+						me,
+						{
+							detail: true,
+						},
+				  )
+				: undefined,
+			follower: opts.populateFollower
+				? this.userEntityService.pack(
+						following.follower ?? following.followerId,
+						me,
+						{
+							detail: true,
+						},
+				  )
+				: undefined,
 		});
 	}
 
 	@bindThis
 	public packMany(
 		followings: any[],
-		me?: { id: MiUser['id'] } | null | undefined,
+		me?: { id: MiUser["id"] } | null | undefined,
 		opts?: {
 			populateFollowee?: boolean;
 			populateFollower?: boolean;
 		},
 	) {
-		return Promise.all(followings.map(x => this.pack(x, me, opts)));
+		return Promise.all(followings.map((x) => this.pack(x, me, opts)));
 	}
 }
-

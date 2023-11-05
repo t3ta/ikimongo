@@ -3,15 +3,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
-import * as Redis from 'ioredis';
-import type { InstancesRepository } from '@/models/_.js';
-import type { MiInstance } from '@/models/Instance.js';
-import { MemoryKVCache, RedisKVCache } from '@/misc/cache.js';
-import { IdService } from '@/core/IdService.js';
-import { DI } from '@/di-symbols.js';
-import { UtilityService } from '@/core/UtilityService.js';
-import { bindThis } from '@/decorators.js';
+import { Inject, Injectable, OnApplicationShutdown } from "@nestjs/common";
+import * as Redis from "ioredis";
+import type { InstancesRepository } from "@/models/_.js";
+import type { MiInstance } from "@/models/Instance.js";
+import { MemoryKVCache, RedisKVCache } from "@/misc/cache.js";
+import { IdService } from "@/core/IdService.js";
+import { DI } from "@/di-symbols.js";
+import { UtilityService } from "@/core/UtilityService.js";
+import { bindThis } from "@/decorators.js";
 
 @Injectable()
 export class FederatedInstanceService implements OnApplicationShutdown {
@@ -27,22 +27,30 @@ export class FederatedInstanceService implements OnApplicationShutdown {
 		private utilityService: UtilityService,
 		private idService: IdService,
 	) {
-		this.federatedInstanceCache = new RedisKVCache<MiInstance | null>(this.redisClient, 'federatedInstance', {
-			lifetime: 1000 * 60 * 30, // 30m
-			memoryCacheLifetime: 1000 * 60 * 3, // 3m
-			fetcher: (key) => this.instancesRepository.findOneBy({ host: key }),
-			toRedisConverter: (value) => JSON.stringify(value),
-			fromRedisConverter: (value) => {
-				const parsed = JSON.parse(value);
-				if (parsed == null) return null;
-				return {
-					...parsed,
-					firstRetrievedAt: new Date(parsed.firstRetrievedAt),
-					latestRequestReceivedAt: parsed.latestRequestReceivedAt ? new Date(parsed.latestRequestReceivedAt) : null,
-					infoUpdatedAt: parsed.infoUpdatedAt ? new Date(parsed.infoUpdatedAt) : null,
-				};
+		this.federatedInstanceCache = new RedisKVCache<MiInstance | null>(
+			this.redisClient,
+			"federatedInstance",
+			{
+				lifetime: 1000 * 60 * 30, // 30m
+				memoryCacheLifetime: 1000 * 60 * 3, // 3m
+				fetcher: (key) => this.instancesRepository.findOneBy({ host: key }),
+				toRedisConverter: (value) => JSON.stringify(value),
+				fromRedisConverter: (value) => {
+					const parsed = JSON.parse(value);
+					if (parsed == null) return null;
+					return {
+						...parsed,
+						firstRetrievedAt: new Date(parsed.firstRetrievedAt),
+						latestRequestReceivedAt: parsed.latestRequestReceivedAt
+							? new Date(parsed.latestRequestReceivedAt)
+							: null,
+						infoUpdatedAt: parsed.infoUpdatedAt
+							? new Date(parsed.infoUpdatedAt)
+							: null,
+					};
+				},
 			},
-		});
+		);
 	}
 
 	@bindThis
@@ -55,11 +63,15 @@ export class FederatedInstanceService implements OnApplicationShutdown {
 		const index = await this.instancesRepository.findOneBy({ host });
 
 		if (index == null) {
-			const i = await this.instancesRepository.insert({
-				id: this.idService.genId(),
-				host,
-				firstRetrievedAt: new Date(),
-			}).then(x => this.instancesRepository.findOneByOrFail(x.identifiers[0]));
+			const i = await this.instancesRepository
+				.insert({
+					id: this.idService.genId(),
+					host,
+					firstRetrievedAt: new Date(),
+				})
+				.then((x) =>
+					this.instancesRepository.findOneByOrFail(x.identifiers[0]),
+				);
 
 			this.federatedInstanceCache.set(host, i);
 			return i;
@@ -70,11 +82,16 @@ export class FederatedInstanceService implements OnApplicationShutdown {
 	}
 
 	@bindThis
-	public async update(id: MiInstance['id'], data: Partial<MiInstance>): Promise<void> {
-		const result = await this.instancesRepository.createQueryBuilder().update()
+	public async update(
+		id: MiInstance["id"],
+		data: Partial<MiInstance>,
+	): Promise<void> {
+		const result = await this.instancesRepository
+			.createQueryBuilder()
+			.update()
 			.set(data)
-			.where('id = :id', { id })
-			.returning('*')
+			.where("id = :id", { id })
+			.returning("*")
 			.execute()
 			.then((response) => {
 				return response.raw[0];

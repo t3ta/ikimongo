@@ -4,64 +4,80 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div class="_gaps_m">
-	<MkTab v-model="tab">
-		<option value="soft">{{ i18n.ts._wordMute.soft }}</option>
-		<option value="hard">{{ i18n.ts._wordMute.hard }}</option>
-	</MkTab>
-	<div>
-		<div v-show="tab === 'soft'" class="_gaps_m">
-			<MkInfo>{{ i18n.ts._wordMute.softDescription }}</MkInfo>
-			<MkTextarea v-model="softMutedWords">
-				<span>{{ i18n.ts._wordMute.muteWords }}</span>
-				<template #caption>{{ i18n.ts._wordMute.muteWordsDescription }}<br>{{ i18n.ts._wordMute.muteWordsDescription2 }}</template>
-			</MkTextarea>
+	<div class="_gaps_m">
+		<MkTab v-model="tab">
+			<option value="soft">{{ i18n.ts._wordMute.soft }}</option>
+			<option value="hard">{{ i18n.ts._wordMute.hard }}</option>
+		</MkTab>
+		<div>
+			<div v-show="tab === 'soft'" class="_gaps_m">
+				<MkInfo>{{ i18n.ts._wordMute.softDescription }}</MkInfo>
+				<MkTextarea v-model="softMutedWords">
+					<span>{{ i18n.ts._wordMute.muteWords }}</span>
+					<template #caption
+						>{{ i18n.ts._wordMute.muteWordsDescription }}<br />{{
+							i18n.ts._wordMute.muteWordsDescription2
+						}}</template
+					>
+				</MkTextarea>
+			</div>
+			<div v-show="tab === 'hard'" class="_gaps_m">
+				<MkInfo
+					>{{ i18n.ts._wordMute.hardDescription }}
+					{{ i18n.ts.reflectMayTakeTime }}</MkInfo
+				>
+				<MkTextarea v-model="hardMutedWords">
+					<span>{{ i18n.ts._wordMute.muteWords }}</span>
+					<template #caption
+						>{{ i18n.ts._wordMute.muteWordsDescription }}<br />{{
+							i18n.ts._wordMute.muteWordsDescription2
+						}}</template
+					>
+				</MkTextarea>
+				<MkKeyValue v-if="hardWordMutedNotesCount != null">
+					<template #key>{{ i18n.ts._wordMute.mutedNotes }}</template>
+					<template #value>{{ number(hardWordMutedNotesCount) }}</template>
+				</MkKeyValue>
+			</div>
 		</div>
-		<div v-show="tab === 'hard'" class="_gaps_m">
-			<MkInfo>{{ i18n.ts._wordMute.hardDescription }} {{ i18n.ts.reflectMayTakeTime }}</MkInfo>
-			<MkTextarea v-model="hardMutedWords">
-				<span>{{ i18n.ts._wordMute.muteWords }}</span>
-				<template #caption>{{ i18n.ts._wordMute.muteWordsDescription }}<br>{{ i18n.ts._wordMute.muteWordsDescription2 }}</template>
-			</MkTextarea>
-			<MkKeyValue v-if="hardWordMutedNotesCount != null">
-				<template #key>{{ i18n.ts._wordMute.mutedNotes }}</template>
-				<template #value>{{ number(hardWordMutedNotesCount) }}</template>
-			</MkKeyValue>
-		</div>
+		<MkButton primary inline :disabled="!changed" @click="save()"
+			><i class="ti ti-device-floppy"></i> {{ i18n.ts.save }}</MkButton
+		>
 	</div>
-	<MkButton primary inline :disabled="!changed" @click="save()"><i class="ti ti-device-floppy"></i> {{ i18n.ts.save }}</MkButton>
-</div>
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
-import MkTextarea from '@/components/MkTextarea.vue';
-import MkKeyValue from '@/components/MkKeyValue.vue';
-import MkButton from '@/components/MkButton.vue';
-import MkInfo from '@/components/MkInfo.vue';
-import MkTab from '@/components/MkTab.vue';
-import * as os from '@/os.js';
-import number from '@/filters/number.js';
-import { defaultStore } from '@/store.js';
-import { $i } from '@/account.js';
-import { i18n } from '@/i18n.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
+import { ref, watch } from "vue";
+import MkTextarea from "@/components/mk_components/MkTextarea.vue";
+import MkKeyValue from "@/components/mk_components/MkKeyValue.vue";
+import MkButton from "@/components/mk_components/MkButton.vue";
+import MkInfo from "@/components/mk_components/MkInfo.vue";
+import MkTab from "@/components/mk_components/MkTab.vue";
+import * as os from "@/os.js";
+import number from "@/filters/number.js";
+import { defaultStore } from "@/store.js";
+import { $i } from "@/account.js";
+import { i18n } from "@/i18n.js";
+import { definePageMetadata } from "@/scripts/page-metadata.js";
 
-const render = (mutedWords) => mutedWords.map(x => {
-	if (Array.isArray(x)) {
-		return x.join(' ');
-	} else {
-		return x;
-	}
-}).join('\n');
+const render = (mutedWords) =>
+	mutedWords
+		.map((x) => {
+			if (Array.isArray(x)) {
+				return x.join(" ");
+			} else {
+				return x;
+			}
+		})
+		.join("\n");
 
-const tab = ref('soft');
+const tab = ref("soft");
 const softMutedWords = ref(render(defaultStore.state.mutedWords));
 const hardMutedWords = ref(render($i!.mutedWords));
 const hardWordMutedNotesCount = ref(null);
 const changed = ref(false);
 
-os.api('i/get-word-muted-notes-count', {}).then(response => {
+os.api("i/get-word-muted-notes-count", {}).then((response) => {
 	hardWordMutedNotesCount.value = response?.count;
 });
 
@@ -76,7 +92,11 @@ watch(hardMutedWords, () => {
 async function save() {
 	const parseMutes = (mutes, tab) => {
 		// split into lines, remove empty lines and unnecessary whitespace
-		let lines = mutes.trim().split('\n').map(line => line.trim()).filter(line => line !== '');
+		let lines = mutes
+			.trim()
+			.split("\n")
+			.map((line) => line.trim())
+			.filter((line) => line !== "");
 
 		// check each line if it is a RegExp or not
 		for (let i = 0; i < lines.length; i++) {
@@ -90,15 +110,18 @@ async function save() {
 				} catch (err: any) {
 					// invalid syntax: do not save, do not reset changed flag
 					os.alert({
-						type: 'error',
+						type: "error",
 						title: i18n.ts.regexpError,
-						text: i18n.t('regexpErrorDescription', { tab, line: i + 1 }) + '\n' + err.toString(),
+						text:
+							i18n.t("regexpErrorDescription", { tab, line: i + 1 }) +
+							"\n" +
+							err.toString(),
 					});
 					// re-throw error so these invalid settings are not saved
 					throw err;
 				}
 			} else {
-				lines[i] = line.split(' ');
+				lines[i] = line.split(" ");
 			}
 		}
 
@@ -114,8 +137,8 @@ async function save() {
 		return;
 	}
 
-	defaultStore.set('mutedWords', softMutes);
-	await os.api('i/update', {
+	defaultStore.set("mutedWords", softMutes);
+	await os.api("i/update", {
 		mutedWords: hardMutes,
 	});
 
@@ -128,6 +151,6 @@ const headerTabs = $computed(() => []);
 
 definePageMetadata({
 	title: i18n.ts.wordMute,
-	icon: 'ti ti-message-off',
+	icon: "ti ti-message-off",
 });
 </script>

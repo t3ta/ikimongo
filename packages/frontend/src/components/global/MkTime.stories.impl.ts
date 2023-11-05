@@ -4,12 +4,12 @@
  */
 
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { expect } from '@storybook/jest';
-import { StoryObj } from '@storybook/vue3';
-import MkTime from './MkTime.vue';
-import { i18n } from '@/i18n.js';
-import { dateTimeFormat } from '@/scripts/intl-const.js';
-const now = new Date('2023-04-01T00:00:00.000Z');
+import { expect } from "@storybook/jest";
+import { StoryObj } from "@storybook/vue3";
+import MkTime from "./MkTime.vue";
+import { i18n } from "@/i18n.js";
+import { dateTimeFormat } from "@/scripts/intl-const.js";
+const now = new Date("2023-04-01T00:00:00.000Z");
 const future = new Date(8640000000000000);
 const oneHourAgo = new Date(now.getTime() - 3600000);
 const oneDayAgo = new Date(now.getTime() - 86400000);
@@ -40,10 +40,9 @@ export const Empty = {
 	async play({ canvasElement }) {
 		await expect(canvasElement).toHaveTextContent(i18n.ts._ago.invalid);
 	},
-	args: {
-	},
+	args: {},
 	parameters: {
-		layout: 'centered',
+		layout: "centered",
 	},
 } satisfies StoryObj<typeof MkTime>;
 export const RelativeFuture = {
@@ -59,26 +58,28 @@ export const RelativeFuture = {
 export const AbsoluteFuture = {
 	...Empty,
 	async play({ canvasElement, args }) {
-		await expect(canvasElement).toHaveTextContent(dateTimeFormat.format(args.time));
+		await expect(canvasElement).toHaveTextContent(
+			dateTimeFormat.format(args.time),
+		);
 	},
 	args: {
 		...Empty.args,
 		time: future,
-		mode: 'absolute',
+		mode: "absolute",
 	},
 } satisfies StoryObj<typeof MkTime>;
 export const DetailFuture = {
 	...Empty,
 	async play(context) {
 		await AbsoluteFuture.play(context);
-		await expect(context.canvasElement).toHaveTextContent(' (');
+		await expect(context.canvasElement).toHaveTextContent(" (");
 		await RelativeFuture.play(context);
-		await expect(context.canvasElement).toHaveTextContent(')');
+		await expect(context.canvasElement).toHaveTextContent(")");
 	},
 	args: {
 		...Empty.args,
 		time: future,
-		mode: 'detail',
+		mode: "detail",
 	},
 } satisfies StoryObj<typeof MkTime>;
 export const RelativeNow = {
@@ -90,228 +91,250 @@ export const RelativeNow = {
 		...Empty.args,
 		time: now,
 		origin: now,
-		mode: 'relative',
+		mode: "relative",
 	},
 } satisfies StoryObj<typeof MkTime>;
 export const AbsoluteNow = {
 	...Empty,
 	async play({ canvasElement, args }) {
-		await expect(canvasElement).toHaveTextContent(dateTimeFormat.format(args.time));
+		await expect(canvasElement).toHaveTextContent(
+			dateTimeFormat.format(args.time),
+		);
 	},
 	args: {
 		...Empty.args,
 		time: now,
 		origin: now,
-		mode: 'absolute',
+		mode: "absolute",
 	},
 } satisfies StoryObj<typeof MkTime>;
 export const DetailNow = {
 	...Empty,
 	async play(context) {
 		await AbsoluteNow.play(context);
-		await expect(context.canvasElement).toHaveTextContent(' (');
+		await expect(context.canvasElement).toHaveTextContent(" (");
 		await RelativeNow.play(context);
-		await expect(context.canvasElement).toHaveTextContent(')');
+		await expect(context.canvasElement).toHaveTextContent(")");
 	},
 	args: {
 		...Empty.args,
 		time: now,
 		origin: now,
-		mode: 'detail',
+		mode: "detail",
 	},
 } satisfies StoryObj<typeof MkTime>;
 export const RelativeOneHourAgo = {
 	...Empty,
 	async play({ canvasElement }) {
-		await expect(canvasElement).toHaveTextContent(i18n.t('_ago.hoursAgo', { n: 1 }));
+		await expect(canvasElement).toHaveTextContent(
+			i18n.t("_ago.hoursAgo", { n: 1 }),
+		);
 	},
 	args: {
 		...Empty.args,
 		time: oneHourAgo,
 		origin: now,
-		mode: 'relative',
+		mode: "relative",
 	},
 } satisfies StoryObj<typeof MkTime>;
 export const AbsoluteOneHourAgo = {
 	...Empty,
 	async play({ canvasElement, args }) {
-		await expect(canvasElement).toHaveTextContent(dateTimeFormat.format(args.time));
+		await expect(canvasElement).toHaveTextContent(
+			dateTimeFormat.format(args.time),
+		);
 	},
 	args: {
 		...Empty.args,
 		time: oneHourAgo,
 		origin: now,
-		mode: 'absolute',
+		mode: "absolute",
 	},
 } satisfies StoryObj<typeof MkTime>;
 export const DetailOneHourAgo = {
 	...Empty,
 	async play(context) {
 		await AbsoluteOneHourAgo.play(context);
-		await expect(context.canvasElement).toHaveTextContent(' (');
+		await expect(context.canvasElement).toHaveTextContent(" (");
 		await RelativeOneHourAgo.play(context);
-		await expect(context.canvasElement).toHaveTextContent(')');
+		await expect(context.canvasElement).toHaveTextContent(")");
 	},
 	args: {
 		...Empty.args,
 		time: oneHourAgo,
 		origin: now,
-		mode: 'detail',
+		mode: "detail",
 	},
 } satisfies StoryObj<typeof MkTime>;
 export const RelativeOneDayAgo = {
 	...Empty,
 	async play({ canvasElement }) {
-		await expect(canvasElement).toHaveTextContent(i18n.t('_ago.daysAgo', { n: 1 }));
+		await expect(canvasElement).toHaveTextContent(
+			i18n.t("_ago.daysAgo", { n: 1 }),
+		);
 	},
 	args: {
 		...Empty.args,
 		time: oneDayAgo,
 		origin: now,
-		mode: 'relative',
+		mode: "relative",
 	},
 } satisfies StoryObj<typeof MkTime>;
 export const AbsoluteOneDayAgo = {
 	...Empty,
 	async play({ canvasElement, args }) {
-		await expect(canvasElement).toHaveTextContent(dateTimeFormat.format(args.time));
+		await expect(canvasElement).toHaveTextContent(
+			dateTimeFormat.format(args.time),
+		);
 	},
 	args: {
 		...Empty.args,
 		time: oneDayAgo,
 		origin: now,
-		mode: 'absolute',
+		mode: "absolute",
 	},
 } satisfies StoryObj<typeof MkTime>;
 export const DetailOneDayAgo = {
 	...Empty,
 	async play(context) {
 		await AbsoluteOneDayAgo.play(context);
-		await expect(context.canvasElement).toHaveTextContent(' (');
+		await expect(context.canvasElement).toHaveTextContent(" (");
 		await RelativeOneDayAgo.play(context);
-		await expect(context.canvasElement).toHaveTextContent(')');
+		await expect(context.canvasElement).toHaveTextContent(")");
 	},
 	args: {
 		...Empty.args,
 		time: oneDayAgo,
 		origin: now,
-		mode: 'detail',
+		mode: "detail",
 	},
 } satisfies StoryObj<typeof MkTime>;
 export const RelativeOneWeekAgo = {
 	...Empty,
 	async play({ canvasElement }) {
-		await expect(canvasElement).toHaveTextContent(i18n.t('_ago.weeksAgo', { n: 1 }));
+		await expect(canvasElement).toHaveTextContent(
+			i18n.t("_ago.weeksAgo", { n: 1 }),
+		);
 	},
 	args: {
 		...Empty.args,
 		time: oneWeekAgo,
 		origin: now,
-		mode: 'relative',
+		mode: "relative",
 	},
 } satisfies StoryObj<typeof MkTime>;
 export const AbsoluteOneWeekAgo = {
 	...Empty,
 	async play({ canvasElement, args }) {
-		await expect(canvasElement).toHaveTextContent(dateTimeFormat.format(args.time));
+		await expect(canvasElement).toHaveTextContent(
+			dateTimeFormat.format(args.time),
+		);
 	},
 	args: {
 		...Empty.args,
 		time: oneWeekAgo,
 		origin: now,
-		mode: 'absolute',
+		mode: "absolute",
 	},
 } satisfies StoryObj<typeof MkTime>;
 export const DetailOneWeekAgo = {
 	...Empty,
 	async play(context) {
 		await AbsoluteOneWeekAgo.play(context);
-		await expect(context.canvasElement).toHaveTextContent(' (');
+		await expect(context.canvasElement).toHaveTextContent(" (");
 		await RelativeOneWeekAgo.play(context);
-		await expect(context.canvasElement).toHaveTextContent(')');
+		await expect(context.canvasElement).toHaveTextContent(")");
 	},
 	args: {
 		...Empty.args,
 		time: oneWeekAgo,
 		origin: now,
-		mode: 'detail',
+		mode: "detail",
 	},
 } satisfies StoryObj<typeof MkTime>;
 export const RelativeOneMonthAgo = {
 	...Empty,
 	async play({ canvasElement }) {
-		await expect(canvasElement).toHaveTextContent(i18n.t('_ago.monthsAgo', { n: 1 }));
+		await expect(canvasElement).toHaveTextContent(
+			i18n.t("_ago.monthsAgo", { n: 1 }),
+		);
 	},
 	args: {
 		...Empty.args,
 		time: oneMonthAgo,
 		origin: now,
-		mode: 'relative',
+		mode: "relative",
 	},
 } satisfies StoryObj<typeof MkTime>;
 export const AbsoluteOneMonthAgo = {
 	...Empty,
 	async play({ canvasElement, args }) {
-		await expect(canvasElement).toHaveTextContent(dateTimeFormat.format(args.time));
+		await expect(canvasElement).toHaveTextContent(
+			dateTimeFormat.format(args.time),
+		);
 	},
 	args: {
 		...Empty.args,
 		time: oneMonthAgo,
 		origin: now,
-		mode: 'absolute',
+		mode: "absolute",
 	},
 } satisfies StoryObj<typeof MkTime>;
 export const DetailOneMonthAgo = {
 	...Empty,
 	async play(context) {
 		await AbsoluteOneMonthAgo.play(context);
-		await expect(context.canvasElement).toHaveTextContent(' (');
+		await expect(context.canvasElement).toHaveTextContent(" (");
 		await RelativeOneMonthAgo.play(context);
-		await expect(context.canvasElement).toHaveTextContent(')');
+		await expect(context.canvasElement).toHaveTextContent(")");
 	},
 	args: {
 		...Empty.args,
 		time: oneMonthAgo,
 		origin: now,
-		mode: 'detail',
+		mode: "detail",
 	},
 } satisfies StoryObj<typeof MkTime>;
 export const RelativeOneYearAgo = {
 	...Empty,
 	async play({ canvasElement }) {
-		await expect(canvasElement).toHaveTextContent(i18n.t('_ago.yearsAgo', { n: 1 }));
+		await expect(canvasElement).toHaveTextContent(
+			i18n.t("_ago.yearsAgo", { n: 1 }),
+		);
 	},
 	args: {
 		...Empty.args,
 		time: oneYearAgo,
 		origin: now,
-		mode: 'relative',
+		mode: "relative",
 	},
 } satisfies StoryObj<typeof MkTime>;
 export const AbsoluteOneYearAgo = {
 	...Empty,
 	async play({ canvasElement, args }) {
-		await expect(canvasElement).toHaveTextContent(dateTimeFormat.format(args.time));
+		await expect(canvasElement).toHaveTextContent(
+			dateTimeFormat.format(args.time),
+		);
 	},
 	args: {
 		...Empty.args,
 		time: oneYearAgo,
 		origin: now,
-		mode: 'absolute',
+		mode: "absolute",
 	},
 } satisfies StoryObj<typeof MkTime>;
 export const DetailOneYearAgo = {
 	...Empty,
 	async play(context) {
 		await AbsoluteOneYearAgo.play(context);
-		await expect(context.canvasElement).toHaveTextContent(' (');
+		await expect(context.canvasElement).toHaveTextContent(" (");
 		await RelativeOneYearAgo.play(context);
-		await expect(context.canvasElement).toHaveTextContent(')');
+		await expect(context.canvasElement).toHaveTextContent(")");
 	},
 	args: {
 		...Empty.args,
 		time: oneYearAgo,
 		origin: now,
-		mode: 'detail',
+		mode: "detail",
 	},
 } satisfies StoryObj<typeof MkTime>;

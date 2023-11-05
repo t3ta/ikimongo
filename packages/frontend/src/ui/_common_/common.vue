@@ -4,71 +4,107 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<component
-	:is="popup.component"
-	v-for="popup in popups"
-	:key="popup.id"
-	v-bind="popup.props"
-	v-on="popup.events"
-/>
+	<component
+		:is="popup.component"
+		v-for="popup in popups"
+		:key="popup.id"
+		v-bind="popup.props"
+		v-on="popup.events"
+	/>
 
-<XUpload v-if="uploads.length > 0"/>
+	<XUpload v-if="uploads.length > 0" />
 
-<TransitionGroup
-	tag="div"
-	:class="[$style.notifications, {
-		[$style.notificationsPosition_leftTop]: defaultStore.state.notificationPosition === 'leftTop',
-		[$style.notificationsPosition_leftBottom]: defaultStore.state.notificationPosition === 'leftBottom',
-		[$style.notificationsPosition_rightTop]: defaultStore.state.notificationPosition === 'rightTop',
-		[$style.notificationsPosition_rightBottom]: defaultStore.state.notificationPosition === 'rightBottom',
-		[$style.notificationsStackAxis_vertical]: defaultStore.state.notificationStackAxis === 'vertical',
-		[$style.notificationsStackAxis_horizontal]: defaultStore.state.notificationStackAxis === 'horizontal',
-	}]"
-	:moveClass="defaultStore.state.animation ? $style.transition_notification_move : ''"
-	:enterActiveClass="defaultStore.state.animation ? $style.transition_notification_enterActive : ''"
-	:leaveActiveClass="defaultStore.state.animation ? $style.transition_notification_leaveActive : ''"
-	:enterFromClass="defaultStore.state.animation ? $style.transition_notification_enterFrom : ''"
-	:leaveToClass="defaultStore.state.animation ? $style.transition_notification_leaveTo : ''"
->
-	<div v-for="notification in notifications" :key="notification.id" :class="$style.notification">
-		<XNotification :notification="notification"/>
+	<TransitionGroup
+		tag="div"
+		:class="[
+			$style.notifications,
+			{
+				[$style.notificationsPosition_leftTop]:
+					defaultStore.state.notificationPosition === 'leftTop',
+				[$style.notificationsPosition_leftBottom]:
+					defaultStore.state.notificationPosition === 'leftBottom',
+				[$style.notificationsPosition_rightTop]:
+					defaultStore.state.notificationPosition === 'rightTop',
+				[$style.notificationsPosition_rightBottom]:
+					defaultStore.state.notificationPosition === 'rightBottom',
+				[$style.notificationsStackAxis_vertical]:
+					defaultStore.state.notificationStackAxis === 'vertical',
+				[$style.notificationsStackAxis_horizontal]:
+					defaultStore.state.notificationStackAxis === 'horizontal',
+			},
+		]"
+		:moveClass="
+			defaultStore.state.animation ? $style.transition_notification_move : ''
+		"
+		:enterActiveClass="
+			defaultStore.state.animation
+				? $style.transition_notification_enterActive
+				: ''
+		"
+		:leaveActiveClass="
+			defaultStore.state.animation
+				? $style.transition_notification_leaveActive
+				: ''
+		"
+		:enterFromClass="
+			defaultStore.state.animation
+				? $style.transition_notification_enterFrom
+				: ''
+		"
+		:leaveToClass="
+			defaultStore.state.animation ? $style.transition_notification_leaveTo : ''
+		"
+	>
+		<div
+			v-for="notification in notifications"
+			:key="notification.id"
+			:class="$style.notification"
+		>
+			<XNotification :notification="notification" />
+		</div>
+	</TransitionGroup>
+
+	<XStreamIndicator />
+
+	<div v-if="pendingApiRequestsCount > 0" id="wait"></div>
+
+	<div v-if="dev" id="devTicker"><span>DEV BUILD</span></div>
+
+	<div v-if="$i && $i.isBot" id="botWarn">
+		<span>{{ i18n.ts.loggedInAsBot }}</span>
 	</div>
-</TransitionGroup>
-
-<XStreamIndicator/>
-
-<div v-if="pendingApiRequestsCount > 0" id="wait"></div>
-
-<div v-if="dev" id="devTicker"><span>DEV BUILD</span></div>
-
-<div v-if="$i && $i.isBot" id="botWarn"><span>{{ i18n.ts.loggedInAsBot }}</span></div>
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, ref } from 'vue';
-import * as Misskey from 'misskey-js';
-import { swInject } from './sw-inject';
-import XNotification from './notification.vue';
-import { popups, pendingApiRequestsCount } from '@/os.js';
-import { uploads } from '@/scripts/upload.js';
-import * as sound from '@/scripts/sound.js';
-import { $i } from '@/account.js';
-import { useStream } from '@/stream.js';
-import { i18n } from '@/i18n.js';
-import { defaultStore } from '@/store.js';
-import { globalEvents } from '@/events';
+import { defineAsyncComponent } from "vue";
+import * as Misskey from "misskey-js";
+import { swInject } from "./sw-inject.js";
+import XNotification from "./notification.vue";
+import { popups, pendingApiRequestsCount } from "@/os.js";
+import { uploads } from "@/scripts/upload.js";
+import * as sound from "@/scripts/sound.js";
+import { $i } from "@/account.js";
+import { useStream } from "@/stream.js";
+import { i18n } from "@/i18n.js";
+import { defaultStore } from "@/store.js";
+import { globalEvents } from "@/events.js";
 
-const XStreamIndicator = defineAsyncComponent(() => import('./stream-indicator.vue'));
-const XUpload = defineAsyncComponent(() => import('./upload.vue'));
+const XStreamIndicator = defineAsyncComponent(
+	() => import("./stream-indicator.vue"),
+);
+const XUpload = defineAsyncComponent(() => import("./upload.vue"));
 
 const dev = _DEV_;
 
 let notifications = $ref<Misskey.entities.Notification[]>([]);
 
-function onNotification(notification: Misskey.entities.Notification, isClient = false) {
-	if (document.visibilityState === 'visible') {
+function onNotification(
+	notification: Misskey.entities.Notification,
+	isClient = false,
+) {
+	if (document.visibilityState === "visible") {
 		if (!isClient) {
-			useStream().send('readNotification');
+			useStream().send("readNotification");
 		}
 
 		notifications.unshift(notification);
@@ -77,20 +113,22 @@ function onNotification(notification: Misskey.entities.Notification, isClient = 
 		}, 500);
 
 		window.setTimeout(() => {
-			notifications = notifications.filter(x => x.id !== notification.id);
+			notifications = notifications.filter((x) => x.id !== notification.id);
 		}, 6000);
 	}
 
-	sound.play('notification');
+	sound.play("notification");
 }
 
 if ($i) {
-	const connection = useStream().useChannel('main', null, 'UI');
-	connection.on('notification', onNotification);
-	globalEvents.on('clientNotification', notification => onNotification(notification, true));
+	const connection = useStream().useChannel("main", null, "UI");
+	connection.on("notification", onNotification);
+	globalEvents.on("clientNotification", (notification) =>
+		onNotification(notification, true),
+	);
 
 	//#region Listen message from SW
-	if ('serviceWorker' in navigator) {
+	if ("serviceWorker" in navigator) {
 		swInject();
 	}
 }
@@ -100,7 +138,9 @@ if ($i) {
 .transition_notification_move,
 .transition_notification_enterActive,
 .transition_notification_leaveActive {
-	transition: opacity 0.3s, transform 0.3s !important;
+	transition:
+		opacity 0.3s,
+		transform 0.3s !important;
 }
 .transition_notification_enterFrom {
 	opacity: 0;
@@ -203,9 +243,15 @@ if ($i) {
 
 <style lang="scss">
 @keyframes dev-ticker-blink {
-	0% { opacity: 1; }
-	50% { opacity: 0; }
-	100% { opacity: 1; }
+	0% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
 }
 
 @keyframes progress-spinner {

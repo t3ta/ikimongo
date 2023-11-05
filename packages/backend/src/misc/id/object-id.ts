@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-const CHARS = '0123456789abcdef';
+const CHARS = "0123456789abcdef";
 
 // same as meid
 export const objectIdRegExp = /^[0-9a-f]{24}$/;
@@ -20,7 +20,7 @@ function getTime(time: number) {
 }
 
 function getRandom() {
-	let str = '';
+	let str = "";
 
 	for (let i = 0; i < 16; i++) {
 		str += CHARS[Math.floor(Math.random() * CHARS.length)];
@@ -33,7 +33,7 @@ export function genObjectId(date: Date): string {
 	return getTime(date.getTime()) + getRandom();
 }
 
-export function parseObjectId(id: string): { date: Date; } {
+export function parseObjectId(id: string): { date: Date } {
 	return {
 		date: new Date(parseInt(id.slice(0, 8), 16) * 1000),
 	};

@@ -4,45 +4,59 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkStickyContainer>
-	<template #header><MkPageHeader :actions="headerActions" :tabs="headerTabs"/></template>
-	<MkSpacer :contentMax="700">
-		<div class="_gaps">
-			<MkInput v-model="title">
-				<template #label>{{ i18n.ts._play.title }}</template>
-			</MkInput>
-			<MkTextarea v-model="summary">
-				<template #label>{{ i18n.ts._play.summary }}</template>
-			</MkTextarea>
-			<MkButton primary @click="selectPreset">{{ i18n.ts.selectFromPresets }}<i class="ti ti-chevron-down"></i></MkButton>
-			<MkTextarea v-model="script" class="_monospace" tall spellcheck="false">
-				<template #label>{{ i18n.ts._play.script }}</template>
-			</MkTextarea>
-			<div class="_buttons">
-				<MkButton primary @click="save"><i class="ti ti-check"></i> {{ i18n.ts.save }}</MkButton>
-				<MkButton @click="show"><i class="ti ti-eye"></i> {{ i18n.ts.show }}</MkButton>
-				<MkButton v-if="flash" danger @click="del"><i class="ti ti-trash"></i> {{ i18n.ts.delete }}</MkButton>
+	<MkStickyContainer>
+		<template #header
+			><MkPageHeader :actions="headerActions" :tabs="headerTabs"
+		/></template>
+		<MkSpacer :contentMax="700">
+			<div class="_gaps">
+				<MkInput v-model="title">
+					<template #label>{{ i18n.ts._play.title }}</template>
+				</MkInput>
+				<MkTextarea v-model="summary">
+					<template #label>{{ i18n.ts._play.summary }}</template>
+				</MkTextarea>
+				<MkButton primary @click="selectPreset"
+					>{{ i18n.ts.selectFromPresets }}<i class="ti ti-chevron-down"></i
+				></MkButton>
+				<MkTextarea v-model="script" class="_monospace" tall spellcheck="false">
+					<template #label>{{ i18n.ts._play.script }}</template>
+				</MkTextarea>
+				<div class="_buttons">
+					<MkButton primary @click="save"
+						><i class="ti ti-check"></i> {{ i18n.ts.save }}</MkButton
+					>
+					<MkButton @click="show"
+						><i class="ti ti-eye"></i> {{ i18n.ts.show }}</MkButton
+					>
+					<MkButton v-if="flash" danger @click="del"
+						><i class="ti ti-trash"></i> {{ i18n.ts.delete }}</MkButton
+					>
+				</div>
+				<MkSelect v-model="visibility">
+					<template #label>{{ i18n.ts.visibility }}</template>
+					<option :key="'public'" :value="'public'">
+						{{ i18n.ts.public }}
+					</option>
+					<option :key="'private'" :value="'private'">
+						{{ i18n.ts.private }}
+					</option>
+				</MkSelect>
 			</div>
-			<MkSelect v-model="visibility">
-				<template #label>{{ i18n.ts.visibility }}</template>
-				<option :key="'public'" :value="'public'">{{ i18n.ts.public }}</option>
-				<option :key="'private'" :value="'private'">{{ i18n.ts.private }}</option>
-			</MkSelect>
-		</div>
-	</MkSpacer>
-</MkStickyContainer>
+		</MkSpacer>
+	</MkStickyContainer>
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue';
-import MkButton from '@/components/MkButton.vue';
-import * as os from '@/os.js';
-import { i18n } from '@/i18n.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
-import MkTextarea from '@/components/MkTextarea.vue';
-import MkInput from '@/components/MkInput.vue';
-import MkSelect from '@/components/MkSelect.vue';
-import { useRouter } from '@/router.js';
+import { computed } from "vue";
+import MkButton from "@/components/mk_components/MkButton.vue";
+import * as os from "@/os.js";
+import { i18n } from "@/i18n.js";
+import { definePageMetadata } from "@/scripts/page-metadata.js";
+import MkTextarea from "@/components/mk_components/MkTextarea.vue";
+import MkInput from "@/components/mk_components/MkInput.vue";
+import MkSelect from "@/components/mk_components/MkSelect.vue";
+import { useRouter } from "@/router.js";
 
 const PRESET_DEFAULT = `/// @ 0.16.0
 
@@ -364,46 +378,54 @@ const props = defineProps<{
 }>();
 
 let flash = $ref(null);
-let visibility = $ref('public');
+let visibility = $ref("public");
 
 if (props.id) {
-	flash = await os.api('flash/show', {
+	flash = await os.api("flash/show", {
 		flashId: props.id,
 	});
 }
 
-let title = $ref(flash?.title ?? 'New Play');
-let summary = $ref(flash?.summary ?? '');
+let title = $ref(flash?.title ?? "New Play");
+let summary = $ref(flash?.summary ?? "");
 let permissions = $ref(flash?.permissions ?? []);
 let script = $ref(flash?.script ?? PRESET_DEFAULT);
 
 function selectPreset(ev: MouseEvent) {
-	os.popupMenu([{
-		text: 'Omikuji',
-		action: () => {
-			script = PRESET_OMIKUJI;
-		},
-	}, {
-		text: 'Shuffle',
-		action: () => {
-			script = PRESET_SHUFFLE;
-		},
-	}, {
-		text: 'Quiz',
-		action: () => {
-			script = PRESET_QUIZ;
-		},
-	}, {
-		text: 'Timeline viewer',
-		action: () => {
-			script = PRESET_TIMELINE;
-		},
-	}], ev.currentTarget ?? ev.target);
+	os.popupMenu(
+		[
+			{
+				text: "Omikuji",
+				action: () => {
+					script = PRESET_OMIKUJI;
+				},
+			},
+			{
+				text: "Shuffle",
+				action: () => {
+					script = PRESET_SHUFFLE;
+				},
+			},
+			{
+				text: "Quiz",
+				action: () => {
+					script = PRESET_QUIZ;
+				},
+			},
+			{
+				text: "Timeline viewer",
+				action: () => {
+					script = PRESET_TIMELINE;
+				},
+			},
+		],
+		ev.currentTarget ?? ev.target,
+	);
 }
 
 async function save() {
 	if (flash) {
-		os.apiWithDialog('flash/update', {
+		os.apiWithDialog("flash/update", {
 			flashId: props.id,
 			title,
 			summary,
@@ -412,20 +434,20 @@ async function save() {
 			visibility,
 		});
 	} else {
-		const created = await os.apiWithDialog('flash/create', {
+		const created = await os.apiWithDialog("flash/create", {
 			title,
 			summary,
 			permissions,
 			script,
 		});
-		router.push('/play/' + created.id + '/edit');
+		router.push("/play/" + created.id + "/edit");
 	}
 }
 
 function show() {
 	if (flash == null) {
 		os.alert({
-			text: 'Please save',
+			text: "Please save",
 		});
 	} else {
 		os.pageWindow(`/play/${flash.id}`);
@@ -434,24 +456,30 @@ function show() {
 
 async function del() {
 	const { canceled } = await os.confirm({
-		type: 'warning',
-		text: i18n.t('deleteAreYouSure', { x: flash.title }),
+		type: "warning",
+		text: i18n.t("deleteAreYouSure", { x: flash.title }),
 	});
 	if (canceled) return;
 
-	await os.apiWithDialog('flash/delete', {
+	await os.apiWithDialog("flash/delete", {
 		flashId: props.id,
 	});
-	router.push('/play');
+	router.push("/play");
 }
 
 const headerActions = $computed(() => []);
 
 const headerTabs = $computed(() => []);
 
-definePageMetadata(computed(() => flash ? {
-	title: i18n.ts._play.edit + ': ' + flash.title,
-} : {
-	title: i18n.ts._play.new,
-}));
+definePageMetadata(
+	computed(() =>
+		flash
+			? {
+					title: i18n.ts._play.edit + ": " + flash.title,
+			  }
+			: {
+					title: i18n.ts._play.new,
+			  },
+	),
+);
 </script>

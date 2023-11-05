@@ -4,8 +4,8 @@
  */
 
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { StoryObj } from '@storybook/vue3';
-import MkCustomEmoji from './MkCustomEmoji.vue';
+import { StoryObj } from "@storybook/vue3";
+import MkCustomEmoji from "./MkCustomEmoji.vue";
 export const Default = {
 	render(args) {
 		return {
@@ -28,11 +28,11 @@ export const Default = {
 		};
 	},
 	args: {
-		name: 'mi',
-		url: 'https://github.com/misskey-dev/misskey/blob/master/packages/frontend/assets/about-icon.png?raw=true',
+		name: "mi",
+		url: "https://github.com/misskey-dev/misskey/blob/master/packages/frontend/assets/about-icon.png?raw=true",
 	},
 	parameters: {
-		layout: 'centered',
+		layout: "centered",
 	},
 } satisfies StoryObj<typeof MkCustomEmoji>;
 export const Normal = {

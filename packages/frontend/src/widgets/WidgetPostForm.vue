@@ -4,26 +4,37 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkPostForm data-cy-mkw-postForm class="_panel mkw-post-form" :fixed="true" :autofocus="false"/>
+	<MkPostForm
+		data-cy-mkw-postForm
+		class="_panel mkw-post-form"
+		:fixed="true"
+		:autofocus="false"
+	/>
 </template>
 
 <script lang="ts" setup>
-import { } from 'vue';
-import { useWidgetPropsManager, Widget, WidgetComponentEmits, WidgetComponentExpose, WidgetComponentProps } from './widget.js';
-import { GetFormResultType } from '@/scripts/form.js';
-import MkPostForm from '@/components/MkPostForm.vue';
+import {} from "vue";
+import {
+	useWidgetPropsManager,
+	Widget,
+	WidgetComponentEmits,
+	WidgetComponentExpose,
+	WidgetComponentProps,
+} from "./widget.js";
+import { GetFormResultType } from "@/scripts/form.js";
+import MkPostForm from "@/components/mk_components/MkPostForm.vue";
 
-const name = 'postForm';
+const name = "postForm";
 
-const widgetPropsDef = {
-};
+const widgetPropsDef = {};
 
 type WidgetProps = GetFormResultType<typeof widgetPropsDef>;
 
 const props = defineProps<WidgetComponentProps<WidgetProps>>();
 const emit = defineEmits<WidgetComponentEmits<WidgetProps>>();
 
-const { widgetProps, configure } = useWidgetPropsManager(name,
+const { widgetProps, configure } = useWidgetPropsManager(
+	name,
 	widgetPropsDef,
 	props,
 	emit,

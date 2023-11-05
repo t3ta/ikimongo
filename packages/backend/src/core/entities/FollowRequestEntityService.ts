@@ -3,14 +3,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import { DI } from '@/di-symbols.js';
-import type { FollowRequestsRepository } from '@/models/_.js';
-import type { } from '@/models/mute-block/Blocking.js';
-import type { MiUser } from '@/models/user/User.js';
-import type { MiFollowRequest } from '@/models/following/FollowRequest.js';
-import { bindThis } from '@/decorators.js';
-import { UserEntityService } from './UserEntityService.js';
+import { Inject, Injectable } from "@nestjs/common";
+import { DI } from "@/di-symbols.js";
+import type { FollowRequestsRepository } from "@/models/_.js";
+import type {} from "@/models/mute-block/Blocking.js";
+import type { MiUser } from "@/models/user/User.js";
+import type { MiFollowRequest } from "@/models/following/FollowRequest.js";
+import { bindThis } from "@/decorators.js";
+import { UserEntityService } from "./UserEntityService.js";
 
 @Injectable()
 export class FollowRequestEntityService {
@@ -19,15 +19,17 @@ export class FollowRequestEntityService {
 		private followRequestsRepository: FollowRequestsRepository,
 
 		private userEntityService: UserEntityService,
-	) {
-	}
+	) {}
 
 	@bindThis
 	public async pack(
-		src: MiFollowRequest['id'] | MiFollowRequest,
-		me?: { id: MiUser['id'] } | null | undefined,
+		src: MiFollowRequest["id"] | MiFollowRequest,
+		me?: { id: MiUser["id"] } | null | undefined,
 	) {
-		const request = typeof src === 'object' ? src : await this.followRequestsRepository.findOneByOrFail({ id: src });
+		const request =
+			typeof src === "object"
+				? src
+				: await this.followRequestsRepository.findOneByOrFail({ id: src });
 
 		return {
 			id: request.id,
@@ -36,4 +38,3 @@ export class FollowRequestEntityService {
 		};
 	}
 }
-

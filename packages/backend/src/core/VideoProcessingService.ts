@@ -3,15 +3,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import FFmpeg from 'fluent-ffmpeg';
-import { DI } from '@/di-symbols.js';
-import type { Config } from '@/config.js';
-import { ImageProcessingService } from '@/core/ImageProcessingService.js';
-import type { IImage } from '@/core/ImageProcessingService.js';
-import { createTempDir } from '@/misc/create-temp.js';
-import { bindThis } from '@/decorators.js';
-import { appendQuery, query } from '@/misc/prelude/url.js';
+import { Inject, Injectable } from "@nestjs/common";
+import FFmpeg from "fluent-ffmpeg";
+import { DI } from "@/di-symbols.js";
+import type { Config } from "@/config.js";
+import { ImageProcessingService } from "@/core/ImageProcessingService.js";
+import type { IImage } from "@/core/ImageProcessingService.js";
+import { createTempDir } from "@/misc/create-temp.js";
+import { bindThis } from "@/decorators.js";
+import { appendQuery, query } from "@/misc/prelude/url.js";
 
 @Injectable()
 export class VideoProcessingService {
@@ -20,8 +20,7 @@ export class VideoProcessingService {
 		private config: Config,
 
 		private imageProcessingService: ImageProcessingService,
-	) {
-	}
+	) {}
 
 	@bindThis
 	public async generateVideoThumbnail(source: string): Promise<IImage> {
@@ -32,17 +31,21 @@ export class VideoProcessingService {
 				FFmpeg({
 					source,
 				})
-					.on('end', res)
-					.on('error', rej)
+					.on("end", res)
+					.on("error", rej)
 					.screenshot({
 						folder: dir,
-						filename: 'out.png',	// must have .png extension
+						filename: "out.png", // must have .png extension
 						count: 1,
-						timestamps: ['5%'],
+						timestamps: ["5%"],
 					});
 			});
 
-			return await this.imageProcessingService.convertToWebp(`${dir}/out.png`, 498, 422);
+			return await this.imageProcessingService.convertToWebp(
+				`${dir}/out.png`,
+				498,
+				422,
+			);
 		} finally {
 			cleanup();
 		}
@@ -55,10 +58,9 @@ export class VideoProcessingService {
 		return appendQuery(
 			`${this.config.videoThumbnailGenerator}/thumbnail.webp`,
 			query({
-				thumbnail: '1',
+				thumbnail: "1",
 				url,
 			}),
 		);
 	}
 }
-

@@ -4,23 +4,23 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div ref="rootEl">
-	<div ref="headerEl">
-		<slot name="header"></slot>
+	<div ref="rootEl">
+		<div ref="headerEl">
+			<slot name="header"></slot>
+		</div>
+		<div ref="bodyEl" :data-sticky-container-header-height="headerHeight">
+			<slot></slot>
+		</div>
+		<div ref="footerEl">
+			<slot name="footer"></slot>
+		</div>
 	</div>
-	<div ref="bodyEl" :data-sticky-container-header-height="headerHeight">
-		<slot></slot>
-	</div>
-	<div ref="footerEl">
-		<slot name="footer"></slot>
-	</div>
-</div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, provide, inject, Ref, ref, watch } from 'vue';
-import { $$ } from 'vue/macros';
-import { CURRENT_STICKY_BOTTOM, CURRENT_STICKY_TOP } from '@/const';
+import { onMounted, onUnmounted, provide, inject, Ref, ref, watch } from "vue";
+import { $$ } from "vue/macros";
+import { CURRENT_STICKY_BOTTOM, CURRENT_STICKY_TOP } from "@/const";
 
 const rootEl = $shallowRef<HTMLElement>();
 const headerEl = $shallowRef<HTMLElement>();
@@ -62,25 +62,33 @@ onMounted(() => {
 
 	watch([parentStickyTop, parentStickyBottom], calc);
 
-	watch($$(childStickyTop), () => {
-		bodyEl.style.setProperty('--stickyTop', `${childStickyTop}px`);
-	}, {
-		immediate: true,
-	});
+	watch(
+		$$(childStickyTop),
+		() => {
+			bodyEl.style.setProperty("--stickyTop", `${childStickyTop}px`);
+		},
+		{
+			immediate: true,
+		},
+	);
 
-	watch($$(childStickyBottom), () => {
-		bodyEl.style.setProperty('--stickyBottom', `${childStickyBottom}px`);
-	}, {
-		immediate: true,
-	});
+	watch(
+		$$(childStickyBottom),
+		() => {
+			bodyEl.style.setProperty("--stickyBottom", `${childStickyBottom}px`);
+		},
+		{
+			immediate: true,
+		},
+	);
 
-	headerEl.style.position = 'sticky';
-	headerEl.style.top = 'var(--stickyTop, 0)';
-	headerEl.style.zIndex = '1000';
+	headerEl.style.position = "sticky";
+	headerEl.style.top = "var(--stickyTop, 0)";
+	headerEl.style.zIndex = "1000";
 
-	footerEl.style.position = 'sticky';
-	footerEl.style.bottom = 'var(--stickyBottom, 0)';
-	footerEl.style.zIndex = '1000';
+	footerEl.style.position = "sticky";
+	footerEl.style.bottom = "var(--stickyBottom, 0)";
+	footerEl.style.zIndex = "1000";
 
 	observer.observe(headerEl);
 	observer.observe(footerEl);

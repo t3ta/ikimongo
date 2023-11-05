@@ -3,15 +3,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import { Brackets } from 'typeorm';
-import { DI } from '@/di-symbols.js';
-import type { RoleAssignmentsRepository, RolesRepository } from '@/models/_.js';
-import { awaitAll } from '@/misc/prelude/await-all.js';
-import type { MiUser } from '@/models/user/User.js';
-import type { MiRole } from '@/models/role/Role.js';
-import { bindThis } from '@/decorators.js';
-import { DEFAULT_POLICIES } from '@/core/RoleService.js';
+import { Inject, Injectable } from "@nestjs/common";
+import { Brackets } from "typeorm";
+import { DI } from "@/di-symbols.js";
+import type { RoleAssignmentsRepository, RolesRepository } from "@/models/_.js";
+import { awaitAll } from "@/misc/prelude/await-all.js";
+import type { MiUser } from "@/models/user/User.js";
+import type { MiRole } from "@/models/role/Role.js";
+import { bindThis } from "@/decorators.js";
+import { DEFAULT_POLICIES } from "@/core/RoleService.js";
 
 @Injectable()
 export class RoleEntityService {
@@ -21,32 +21,39 @@ export class RoleEntityService {
 
 		@Inject(DI.roleAssignmentsRepository)
 		private roleAssignmentsRepository: RoleAssignmentsRepository,
-	) {
-	}
+	) {}
 
 	@bindThis
 	public async pack(
-		src: MiRole['id'] | MiRole,
-		me?: { id: MiUser['id'] } | null | undefined,
+		src: MiRole["id"] | MiRole,
+		me?: { id: MiUser["id"] } | null | undefined,
 	) {
-		const role = typeof src === 'object' ? src : await this.rolesRepository.findOneByOrFail({ id: src });
+		const role =
+			typeof src === "object"
+				? src
+				: await this.rolesRepository.findOneByOrFail({ id: src });
 
-		const assignedCount = await this.roleAssignmentsRepository.createQueryBuilder('assign')
-			.where('assign.roleId = :roleId', { roleId: role.id })
-			.andWhere(new Brackets(qb => {
-				qb
-					.where('assign.expiresAt IS NULL')
-				.orWhere('assign.expiresAt > :now', { now: new Date() });
-			}))
+		const assignedCount = await this.roleAssignmentsRepository
+			.createQueryBuilder("assign")
+			.where("assign.roleId = :roleId", { roleId: role.id })
+			.andWhere(
+				new Brackets((qb) => {
+					qb.where("assign.expiresAt IS NULL").orWhere(
+						"assign.expiresAt > :now",
+						{ now: new Date() },
+					);
+				}),
+			)
 			.getCount();
 
 		const policies = { ...role.policies };
 		for (const [k, v] of Object.entries(DEFAULT_POLICIES)) {
-			if (policies[k] == null) policies[k] = {
-				useDefault: true,
-				priority: 0,
-				value: v,
-			};
+			if (policies[k] == null)
+				policies[k] = {
+					useDefault: true,
+					priority: 0,
+					value: v,
+				};
 		}
 
 		return await awaitAll({
@@ -72,11 +79,7 @@ export class RoleEntityService {
 	}
 
 	@bindThis
-	public packMany(
-		roles: any[],
-		me: { id: MiUser['id'] },
-	) {
-		return Promise.all(roles.map(x => this.pack(x, me)));
+	public packMany(roles: any[], me: { id: MiUser["id"] }) {
+		return Promise.all(roles.map((x) => this.pack(x, me)));
 	}
 }
-

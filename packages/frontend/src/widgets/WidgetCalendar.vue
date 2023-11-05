@@ -4,51 +4,72 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div :class="[$style.root, { _panel: !widgetProps.transparent }]" data-cy-mkw-calendar>
-	<div :class="[$style.calendar, { [$style.isHoliday]: isHoliday }]">
-		<p :class="$style.monthAndYear">
-			<span :class="$style.year">{{ i18n.t('yearX', { year }) }}</span>
-			<span :class="$style.month">{{ i18n.t('monthX', { month }) }}</span>
-		</p>
-		<p v-if="month === 1 && day === 1" class="day">🎉{{ i18n.t('dayX', { day }) }}<span style="display: inline-block; transform: scaleX(-1);">🎉</span></p>
-		<p v-else :class="$style.day">{{ i18n.t('dayX', { day }) }}</p>
-		<p :class="$style.weekDay">{{ weekDay }}</p>
+	<div
+		:class="[$style.root, { _panel: !widgetProps.transparent }]"
+		data-cy-mkw-calendar
+	>
+		<div :class="[$style.calendar, { [$style.isHoliday]: isHoliday }]">
+			<p :class="$style.monthAndYear">
+				<span :class="$style.year">{{ i18n.t("yearX", { year }) }}</span>
+				<span :class="$style.month">{{ i18n.t("monthX", { month }) }}</span>
+			</p>
+			<p v-if="month === 1 && day === 1" class="day">
+				🎉{{ i18n.t("dayX", { day })
+				}}<span style="display: inline-block; transform: scaleX(-1)">🎉</span>
+			</p>
+			<p v-else :class="$style.day">{{ i18n.t("dayX", { day }) }}</p>
+			<p :class="$style.weekDay">{{ weekDay }}</p>
+		</div>
+		<div :class="$style.info">
+			<div :class="$style.infoSection">
+				<p :class="$style.infoText">
+					{{ i18n.ts.today
+					}}<b :class="$style.percentage">{{ dayP.toFixed(1) }}%</b>
+				</p>
+				<div :class="$style.meter">
+					<div :class="$style.meterVal" :style="{ width: `${dayP}%` }"></div>
+				</div>
+			</div>
+			<div :class="$style.infoSection">
+				<p :class="$style.infoText">
+					{{ i18n.ts.thisMonth
+					}}<b :class="$style.percentage">{{ monthP.toFixed(1) }}%</b>
+				</p>
+				<div :class="$style.meter">
+					<div :class="$style.meterVal" :style="{ width: `${monthP}%` }"></div>
+				</div>
+			</div>
+			<div :class="$style.infoSection">
+				<p :class="$style.infoText">
+					{{ i18n.ts.thisYear
+					}}<b :class="$style.percentage">{{ yearP.toFixed(1) }}%</b>
+				</p>
+				<div :class="$style.meter">
+					<div :class="$style.meterVal" :style="{ width: `${yearP}%` }"></div>
+				</div>
+			</div>
+		</div>
 	</div>
-	<div :class="$style.info">
-		<div :class="$style.infoSection">
-			<p :class="$style.infoText">{{ i18n.ts.today }}<b :class="$style.percentage">{{ dayP.toFixed(1) }}%</b></p>
-			<div :class="$style.meter">
-				<div :class="$style.meterVal" :style="{ width: `${dayP}%` }"></div>
-			</div>
-		</div>
-		<div :class="$style.infoSection">
-			<p :class="$style.infoText">{{ i18n.ts.thisMonth }}<b :class="$style.percentage">{{ monthP.toFixed(1) }}%</b></p>
-			<div :class="$style.meter">
-				<div :class="$style.meterVal" :style="{ width: `${monthP}%` }"></div>
-			</div>
-		</div>
-		<div :class="$style.infoSection">
-			<p :class="$style.infoText">{{ i18n.ts.thisYear }}<b :class="$style.percentage">{{ yearP.toFixed(1) }}%</b></p>
-			<div :class="$style.meter">
-				<div :class="$style.meterVal" :style="{ width: `${yearP}%` }"></div>
-			</div>
-		</div>
-	</div>
-</div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
-import { useWidgetPropsManager, Widget, WidgetComponentEmits, WidgetComponentExpose, WidgetComponentProps } from './widget.js';
-import { GetFormResultType } from '@/scripts/form.js';
-import { i18n } from '@/i18n.js';
-import { useInterval } from '@/scripts/use-interval.js';
+import { ref } from "vue";
+import {
+	useWidgetPropsManager,
+	Widget,
+	WidgetComponentEmits,
+	WidgetComponentExpose,
+	WidgetComponentProps,
+} from "./widget.js";
+import { GetFormResultType } from "@/scripts/form.js";
+import { i18n } from "@/i18n.js";
+import { useInterval } from "@/scripts/use-interval.js";
 
-const name = 'calendar';
+const name = "calendar";
 
 const widgetPropsDef = {
 	transparent: {
-		type: 'boolean' as const,
+		type: "boolean" as const,
 		default: false,
 	},
 };
@@ -58,7 +79,8 @@ type WidgetProps = GetFormResultType<typeof widgetPropsDef>;
 const props = defineProps<WidgetComponentProps<WidgetProps>>();
 const emit = defineEmits<WidgetComponentEmits<WidgetProps>>();
 
-const { widgetProps, configure } = useWidgetPropsManager(name,
+const { widgetProps, configure } = useWidgetPropsManager(
+	name,
 	widgetPropsDef,
 	props,
 	emit,
@@ -67,7 +89,7 @@ const { widgetProps, configure } = useWidgetPropsManager(name,
 const year = ref(0);
 const month = ref(0);
 const day = ref(0);
-const weekDay = ref('');
+const weekDay = ref("");
 const yearP = ref(0);
 const monthP = ref(0);
 const dayP = ref(0);
@@ -92,15 +114,17 @@ const tick = () => {
 	][now.getDay()];
 
 	const dayNumer = now.getTime() - new Date(ny, nm, nd).getTime();
-	const dayDenom = 1000/*ms*/ * 60/*s*/ * 60/*m*/ * 24/*h*/;
+	const dayDenom = 1000 /*ms*/ * 60 /*s*/ * 60 /*m*/ * 24; /*h*/
 	const monthNumer = now.getTime() - new Date(ny, nm, 1).getTime();
-	const monthDenom = new Date(ny, nm + 1, 1).getTime() - new Date(ny, nm, 1).getTime();
+	const monthDenom =
+		new Date(ny, nm + 1, 1).getTime() - new Date(ny, nm, 1).getTime();
 	const yearNumer = now.getTime() - new Date(ny, 0, 1).getTime();
-	const yearDenom = new Date(ny + 1, 0, 1).getTime() - new Date(ny, 0, 1).getTime();
+	const yearDenom =
+		new Date(ny + 1, 0, 1).getTime() - new Date(ny, 0, 1).getTime();
 
-	dayP.value = dayNumer / dayDenom * 100;
-	monthP.value = monthNumer / monthDenom * 100;
-	yearP.value = yearNumer / yearDenom * 100;
+	dayP.value = (dayNumer / dayDenom) * 100;
+	monthP.value = (monthNumer / monthDenom) * 100;
+	yearP.value = (yearNumer / yearDenom) * 100;
 
 	isHoliday.value = now.getDay() === 0 || now.getDay() === 6;
 };
@@ -213,6 +237,6 @@ defineExpose<WidgetComponentExpose>({
 
 .meterVal {
 	height: 4px;
-	transition: width .3s cubic-bezier(0.23, 1, 0.32, 1);
+	transition: width 0.3s cubic-bezier(0.23, 1, 0.32, 1);
 }
 </style>

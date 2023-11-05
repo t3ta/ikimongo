@@ -4,71 +4,97 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkSpacer :contentMax="800">
-	<div :class="$style.root">
-		<div :class="$style.editor" class="_panel">
-			<PrismEditor v-model="code" class="_monospace" :class="$style.code" :highlight="highlighter" :lineNumbers="false"/>
-			<MkButton style="position: absolute; top: 8px; right: 8px;" primary @click="run()"><i class="ti ti-player-play"></i></MkButton>
-		</div>
-
-		<MkContainer v-if="root && components.length > 1" :key="uiKey" :foldable="true">
-			<template #header>UI</template>
-			<div :class="$style.ui">
-				<MkAsUi :component="root" :components="components" size="small"/>
+	<MkSpacer :contentMax="800">
+		<div :class="$style.root">
+			<div :class="$style.editor" class="_panel">
+				<PrismEditor
+					v-model="code"
+					class="_monospace"
+					:class="$style.code"
+					:highlight="highlighter"
+					:lineNumbers="false"
+				/>
+				<MkButton
+					style="position: absolute; top: 8px; right: 8px"
+					primary
+					@click="run()"
+					><i class="ti ti-player-play"></i
+				></MkButton>
 			</div>
-		</MkContainer>
 
-		<MkContainer :foldable="true" class="">
-			<template #header>{{ i18n.ts.output }}</template>
-			<div :class="$style.logs">
-				<div v-for="log in logs" :key="log.id" class="log" :class="{ print: log.print }">{{ log.text }}</div>
+			<MkContainer
+				v-if="root && components.length > 1"
+				:key="uiKey"
+				:foldable="true"
+			>
+				<template #header>UI</template>
+				<div :class="$style.ui">
+					<MkAsUi :component="root" :components="components" size="small" />
+				</div>
+			</MkContainer>
+
+			<MkContainer :foldable="true" class="">
+				<template #header>{{ i18n.ts.output }}</template>
+				<div :class="$style.logs">
+					<div
+						v-for="log in logs"
+						:key="log.id"
+						class="log"
+						:class="{ print: log.print }"
+					>
+						{{ log.text }}
+					</div>
+				</div>
+			</MkContainer>
+
+			<div class="">
+				{{ i18n.ts.scratchpadDescription }}
 			</div>
-		</MkContainer>
-
-		<div class="">
-			{{ i18n.ts.scratchpadDescription }}
 		</div>
-	</div>
-</MkSpacer>
+	</MkSpacer>
 </template>
 
 <script lang="ts" setup>
-import { onDeactivated, onUnmounted, Ref, ref, watch } from 'vue';
-import 'prismjs';
-import { highlight, languages } from 'prismjs/components/prism-core';
-import 'prismjs/components/prism-clike';
-import 'prismjs/components/prism-javascript';
-import 'prismjs/themes/prism-okaidia.css';
-import { PrismEditor } from 'vue-prism-editor';
-import 'vue-prism-editor/dist/prismeditor.min.css';
-import { Interpreter, Parser, utils } from '@syuilo/aiscript';
-import MkContainer from '@/components/MkContainer.vue';
-import MkButton from '@/components/MkButton.vue';
-import { createAiScriptEnv } from '@/scripts/aiscript/api.js';
-import * as os from '@/os.js';
-import { $i } from '@/account.js';
-import { i18n } from '@/i18n.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
-import { AsUiComponent, AsUiRoot, registerAsUiLib } from '@/scripts/aiscript/ui.js';
-import MkAsUi from '@/components/MkAsUi.vue';
-import { miLocalStorage } from '@/local-storage.js';
-import { claimAchievement } from '@/scripts/achievements.js';
+import { onDeactivated, onUnmounted, Ref, ref, watch } from "vue";
+import "prismjs";
+import { highlight, languages } from "prismjs/components/prism-core";
+import "prismjs/components/prism-clike";
+import "prismjs/components/prism-javascript";
+import "prismjs/themes/prism-okaidia.css";
+import { PrismEditor } from "vue-prism-editor";
+import "vue-prism-editor/dist/prismeditor.min.css";
+import { Interpreter, Parser, utils } from "@syuilo/aiscript";
+import MkContainer from "@/components/mk_components/MkContainer.vue";
+import MkButton from "@/components/mk_components/MkButton.vue";
+import { createAiScriptEnv } from "@/scripts/aiscript/api.js";
+import * as os from "@/os.js";
+import { $i } from "@/account.js";
+import { i18n } from "@/i18n.js";
+import { definePageMetadata } from "@/scripts/page-metadata.js";
+import {
+	AsUiComponent,
+	AsUiRoot,
+	registerAsUiLib,
+} from "@/scripts/aiscript/ui.js";
+import MkAsUi from "@/components/mk_components/MkAsUi.vue";
+import { miLocalStorage } from "@/local-storage.js";
+import { claimAchievement } from "@/scripts/achievements.js";
 
 const parser = new Parser();
 let aiscript: Interpreter;
-const code = ref('');
+const code = ref("");
 const logs = ref<any[]>([]);
 const root = ref<AsUiRoot>();
 let components: Ref<AsUiComponent>[] = $ref([]);
 let uiKey = $ref(0);
 
-const saved = miLocalStorage.getItem('scratchpad');
+const saved = miLocalStorage.getItem("scratchpad");
 if (saved) {
 	code.value = saved;
 }
 
 watch(code, () => {
-	miLocalStorage.setItem('scratchpad', code.value);
+	miLocalStorage.setItem("scratchpad", code.value);
 });
 
 async function run() {
@@ -77,64 +103,73 @@ async function run() {
 	components = [];
 	uiKey++;
 	logs.value = [];
-	aiscript = new Interpreter(({
-		...createAiScriptEnv({
-			storageKey: 'widget',
-			token: $i?.token,
-		}),
-		...registerAsUiLib(components, (_root) => {
-			root.value = _root.value;
-		}),
-	}), {
-		in: (q) => {
-			return new Promise(ok => {
-				os.inputText({
-					title: q,
-				}).then(({ canceled, result: a }) => {
-					if (canceled) {
-						ok('');
-					} else {
-						ok(a);
-					}
+	aiscript = new Interpreter(
+		{
+			...createAiScriptEnv({
+				storageKey: "widget",
+				token: $i?.token,
+			}),
+			...registerAsUiLib(components, (_root) => {
+				root.value = _root.value;
+			}),
+		},
+		{
+			in: (q) => {
+				return new Promise((ok) => {
+					os.inputText({
+						title: q,
+					}).then(({ canceled, result: a }) => {
+						if (canceled) {
+							ok("");
+						} else {
+							ok(a);
+						}
+					});
 				});
-			});
-		},
-		out: (value) => {
-			if (value.type === 'str' && value.value.toLowerCase().replace(',', '').includes('hello world')) {
-				claimAchievement('outputHelloWorldOnScratchpad');
-			}
-			logs.value.push({
-				id: Math.random(),
-				text: value.type === 'str' ? value.value : utils.valToString(value),
-				print: true,
-			});
-		},
-		err: (err) => {
-			os.alert({
-				type: 'error',
-				title: 'AiScript Error',
-				text: err.toString(),
-			});
-		},
-		log: (type, params) => {
-			switch (type) {
-				case 'end': logs.value.push({
+			},
+			out: (value) => {
+				if (
+					value.type === "str" &&
+					value.value.toLowerCase().replace(",", "").includes("hello world")
+				) {
+					claimAchievement("outputHelloWorldOnScratchpad");
+				}
+				logs.value.push({
 					id: Math.random(),
-					text: utils.valToString(params.val, true),
-					print: false,
-				}); break;
-				default: break;
-			}
+					text: value.type === "str" ? value.value : utils.valToString(value),
+					print: true,
+				});
+			},
+			err: (err) => {
+				os.alert({
+					type: "error",
+					title: "AiScript Error",
+					text: err.toString(),
+				});
+			},
+			log: (type, params) => {
+				switch (type) {
+					case "end":
+						logs.value.push({
+							id: Math.random(),
+							text: utils.valToString(params.val, true),
+							print: false,
+						});
+						break;
+					default:
+						break;
+				}
+			},
 		},
-	});
+	);
 
 	let ast;
 	try {
 		ast = parser.parse(code.value);
 	} catch (err: any) {
 		os.alert({
-			type: 'error',
-			title: 'Syntax Error',
+			type: "error",
+			title: "Syntax Error",
 			text: err.toString(),
 		});
 		return;
@@ -145,15 +180,15 @@ async function run() {
 		// AiScript runtime errors should be processed by error callback function
 		// so errors caught here are AiScript's internal errors.
 		os.alert({
-			type: 'error',
-			title: 'Internal Error',
+			type: "error",
+			title: "Internal Error",
 			text: err.toString(),
 		});
 	}
 }
 
 function highlighter(code) {
-	return highlight(code, languages.js, 'javascript');
+	return highlight(code, languages.js, "javascript");
 }
 
 onDeactivated(() => {
@@ -170,7 +205,7 @@ const headerTabs = $computed(() => []);
 
 definePageMetadata({
 	title: i18n.ts.scratchpad,
-	icon: 'ti ti-terminal-2',
+	icon: "ti ti-terminal-2",
 });
 </script>
 

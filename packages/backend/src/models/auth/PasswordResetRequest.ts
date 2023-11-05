@@ -3,20 +3,27 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { PrimaryColumn, Entity, Index, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { id } from '../util/id.js';
-import { MiUser } from '../user/User.js';
+import {
+	PrimaryColumn,
+	Entity,
+	Index,
+	Column,
+	ManyToOne,
+	JoinColumn,
+} from "typeorm";
+import { id } from "../util/id.js";
+import { MiUser } from "../user/User.js";
 
-@Entity('password_reset_request')
+@Entity("password_reset_request")
 export class MiPasswordResetRequest {
 	@PrimaryColumn(id())
 	public id: string;
 
-	@Column('timestamp with time zone')
+	@Column("timestamp with time zone")
 	public createdAt: Date;
 
 	@Index({ unique: true })
-	@Column('varchar', {
+	@Column("varchar", {
 		length: 256,
 	})
 	public token: string;
@@ -25,10 +32,10 @@ export class MiPasswordResetRequest {
 	@Column({
 		...id(),
 	})
-	public userId: MiUser['id'];
+	public userId: MiUser["id"];
 
-	@ManyToOne(type => MiUser, {
-		onDelete: 'CASCADE',
+	@ManyToOne((type) => MiUser, {
+		onDelete: "CASCADE",
 	})
 	@JoinColumn()
 	public user: MiUser | null;

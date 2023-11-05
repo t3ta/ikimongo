@@ -4,18 +4,21 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<XColumn :column="column" :isStacked="isStacked">
-	<template #header><i class="ti ti-mail" style="margin-right: 8px;"></i>{{ column.name }}</template>
+	<XColumn :column="column" :isStacked="isStacked">
+		<template #header
+			><i class="ti ti-mail" style="margin-right: 8px"></i
+			>{{ column.name }}</template
+		>
 
-	<MkNotes :pagination="pagination"/>
-</XColumn>
+		<MkNotes :pagination="pagination" />
+	</XColumn>
 </template>
 
 <script lang="ts" setup>
-import { } from 'vue';
-import XColumn from './column.vue';
-import { Column } from './deck-store.js';
-import MkNotes from '@/components/MkNotes.vue';
+import {} from "vue";
+import XColumn from "./column.vue";
+import { Column } from "./deck-store.js";
+import MkNotes from "@/components/mk_components/MkNotes.vue";
 
 defineProps<{
 	column: Column;
@@ -23,10 +26,10 @@ defineProps<{
 }>();
 
 const pagination = {
-	endpoint: 'notes/mentions' as const,
+	endpoint: "notes/mentions" as const,
 	limit: 10,
 	params: {
-		visibility: 'specified',
+		visibility: "specified",
 	},
 };
 </script>

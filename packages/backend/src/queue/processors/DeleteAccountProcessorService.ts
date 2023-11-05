@@ -3,20 +3,25 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import { MoreThan } from 'typeorm';
-import { DI } from '@/di-symbols.js';
-import type { DriveFilesRepository, NotesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
-import type Logger from '@/logger.js';
-import { DriveService } from '@/core/DriveService.js';
-import type { MiDriveFile } from '@/models/drive/DriveFile.js';
-import type { MiNote } from '@/models/note/Note.js';
-import { EmailService } from '@/core/EmailService.js';
-import { bindThis } from '@/decorators.js';
-import { SearchService } from '@/core/SearchService.js';
-import { QueueLoggerService } from '../QueueLoggerService.js';
-import type * as Bull from 'bullmq';
-import type { DbUserDeleteJobData } from '../types.js';
+import { Inject, Injectable } from "@nestjs/common";
+import { MoreThan } from "typeorm";
+import { DI } from "@/di-symbols.js";
+import type {
+	DriveFilesRepository,
+	NotesRepository,
+	UserProfilesRepository,
+	UsersRepository,
+} from "@/models/_.js";
+import type Logger from "@/logger.js";
+import { DriveService } from "@/core/DriveService.js";
+import type { MiDriveFile } from "@/models/drive/DriveFile.js";
+import type { MiNote } from "@/models/note/Note.js";
+import { EmailService } from "@/core/EmailService.js";
+import { bindThis } from "@/decorators.js";
+import { SearchService } from "@/core/SearchService.js";
+import { QueueLoggerService } from "../QueueLoggerService.js";
+import type * as Bull from "bullmq";
+import type { DbUserDeleteJobData } from "../types.js";
 
 @Injectable()
 export class DeleteAccountProcessorService {
@@ -40,11 +45,14 @@ export class DeleteAccountProcessorService {
 		private queueLoggerService: QueueLoggerService,
 		private searchService: SearchService,
 	) {
-		this.logger = this.queueLoggerService.logger.createSubLogger('delete-account');
+		this.logger =
+			this.queueLoggerService.logger.createSubLogger("delete-account");
 	}
 
 	@bindThis
-	public async process(job: Bull.Job<DbUserDeleteJobData>): Promise<string | void> {
+	public async process(
+		job: Bull.Job<DbUserDeleteJobData>,
+	): Promise<string | void> {
 		this.logger.info(`Deleting account of ${job.data.user.id} ...`);
 
 		const user = await this.usersRepository.findOneBy({ id: job.data.user.id });
@@ -52,11 +60,12 @@ export class DeleteAccountProcessorService {
 			return;
 		}
 
-		{ // Delete notes
-			let cursor: MiNote['id'] | null = null;
+		{
+			// Delete notes
+			let cursor: MiNote["id"] | null = null;
 
 			while (true) {
-				const notes = await this.notesRepository.find({
+				const notes = (await this.notesRepository.find({
 					where: {
 						userId: user.id,
 						...(cursor ? { id: MoreThan(cursor) } : {}),
@@ -65,7 +74,7 @@ export class DeleteAccountProcessorService {
 					order: {
 						id: 1,
 					},
-				}) as MiNote[];
+				})) as MiNote[];
 
 				if (notes.length === 0) {
 					break;
@@ -73,21 +82,22 @@ export class DeleteAccountProcessorService {
 
 				cursor = notes.at(-1)?.id ?? null;
 
-				await this.notesRepository.delete(notes.map(note => note.id));
+				await this.notesRepository.delete(notes.map((note) => note.id));
 
 				for (const note of notes) {
 					await this.searchService.unindexNote(note);
 				}
 			}
 
-			this.logger.succ('All of notes deleted');
+			this.logger.succ("All of notes deleted");
 		}
 
-		{ // Delete files
-			let cursor: MiDriveFile['id'] | null = null;
+		{
+			// Delete files
+			let cursor: MiDriveFile["id"] | null = null;
 
 			while (true) {
-				const files = await this.driveFilesRepository.find({
+				const files = (await this.driveFilesRepository.find({
 					where: {
 						userId: user.id,
 						...(cursor ? { id: MoreThan(cursor) } : {}),
@@ -96,7 +106,7 @@ export class DeleteAccountProcessorService {
 					order: {
 						id: 1,
 					},
-				}) as MiDriveFile[];
+				})) as MiDriveFile[];
 
 				if (files.length === 0) {
 					break;
@@ -109,15 +119,21 @@ export class DeleteAccountProcessorService {
 				}
 			}
 
-			this.logger.succ('All of files deleted');
+			this.logger.succ("All of files deleted");
 		}
 
-		{ // Send email notification
-			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: user.id });
+		{
+			// Send email notification
+			const profile = await this.userProfilesRepository.findOneByOrFail({
+				userId: user.id,
+			});
 			if (profile.email && profile.emailVerified) {
-				this.emailService.sendEmail(profile.email, 'Account deleted',
-					'Your account has been deleted.',
-					'Your account has been deleted.');
+				this.emailService.sendEmail(
+					profile.email,
+					"Account deleted",
+					"Your account has been deleted.",
+					"Your account has been deleted.",
+				);
 			}
 		}
 
@@ -128,6 +144,6 @@ export class DeleteAccountProcessorService {
 			await this.usersRepository.delete(job.data.user.id);
 		}
 
-		return 'Account deleted';
+		return "Account deleted";
 	}
 }

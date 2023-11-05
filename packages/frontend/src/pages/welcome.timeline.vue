@@ -4,50 +4,67 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div :class="$style.root">
-	<div ref="scrollEl" :class="[$style.scrollbox, { [$style.scroll]: isScrolling }]">
-		<div v-for="note in notes" :key="note.id" :class="$style.note">
-			<div class="_panel" :class="$style.content">
-				<div>
-					<MkA v-if="note.replyId" class="reply" :to="`/notes/${note.replyId}`"><i class="ti ti-arrow-back-up"></i></MkA>
-					<Mfm v-if="note.text" :text="note.text" :author="note.user" :i="$i"/>
-					<MkA v-if="note.renoteId" class="rp" :to="`/notes/${note.renoteId}`">RN: ...</MkA>
+	<div :class="$style.root">
+		<div
+			ref="scrollEl"
+			:class="[$style.scrollbox, { [$style.scroll]: isScrolling }]"
+		>
+			<div v-for="note in notes" :key="note.id" :class="$style.note">
+				<div class="_panel" :class="$style.content">
+					<div>
+						<MkA
+							v-if="note.replyId"
+							class="reply"
+							:to="`/notes/${note.replyId}`"
+							><i class="ti ti-arrow-back-up"></i
+						></MkA>
+						<Mfm
+							v-if="note.text"
+							:text="note.text"
+							:author="note.user"
+							:i="$i"
+						/>
+						<MkA v-if="note.renoteId" class="rp" :to="`/notes/${note.renoteId}`"
+							>RN: ...</MkA
+						>
+					</div>
+					<div v-if="note.files.length > 0" :class="$style.richcontent">
+						<MkMediaList :mediaList="note.files" />
+					</div>
+					<div v-if="note.poll">
+						<MkPoll :note="note" :readOnly="true" />
+					</div>
 				</div>
-				<div v-if="note.files.length > 0" :class="$style.richcontent">
-					<MkMediaList :mediaList="note.files"/>
-				</div>
-				<div v-if="note.poll">
-					<MkPoll :note="note" :readOnly="true"/>
-				</div>
+				<MkReactionsViewer ref="reactionsViewer" :note="note" />
 			</div>
-			<MkReactionsViewer ref="reactionsViewer" :note="note"/>
 		</div>
 	</div>
-</div>
 </template>
 
 <script lang="ts" setup>
-import * as Misskey from 'misskey-js';
-import { onUpdated } from 'vue';
-import MkReactionsViewer from '@/components/MkReactionsViewer.vue';
-import MkMediaList from '@/components/MkMediaList.vue';
-import MkPoll from '@/components/MkPoll.vue';
-import * as os from '@/os.js';
-import { getScrollContainer } from '@/scripts/scroll.js';
-import { $i } from '@/account.js';
+import * as Misskey from "misskey-js";
+import { onUpdated } from "vue";
+import MkReactionsViewer from "@/components/mk_components/MkReactionsViewer.vue";
+import MkMediaList from "@/components/mk_components/MkMediaList.vue";
+import MkPoll from "@/components/mk_components/MkPoll.vue";
+import * as os from "@/os.js";
+import { getScrollContainer } from "@/scripts/scroll.js";
+import { $i } from "@/account.js";
 
 let notes = $ref<Misskey.entities.Note[]>([]);
 let isScrolling = $ref(false);
 let scrollEl = $shallowRef<HTMLElement>();
 
-os.apiGet('notes/featured').then(_notes => {
+os.apiGet("notes/featured").then((_notes) => {
 	notes = _notes;
 });
 
 onUpdated(() => {
 	if (!scrollEl) return;
 	const container = getScrollContainer(scrollEl);
-	const containerHeight = container ? container.clientHeight : window.innerHeight;
+	const containerHeight = container
+		? container.clientHeight
+		: window.innerHeight;
 	if (scrollEl.offsetHeight > containerHeight) {
 		isScrolling = true;
 	}

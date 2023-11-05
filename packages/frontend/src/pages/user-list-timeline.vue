@@ -4,33 +4,44 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkStickyContainer>
-	<template #header><MkPageHeader :actions="headerActions" :tabs="headerTabs"/></template>
-	<MkSpacer :contentMax="800">
-		<div ref="rootEl">
-			<div v-if="queue > 0" :class="$style.new"><button class="_buttonPrimary" :class="$style.newButton" @click="top()">{{ i18n.ts.newNoteRecived }}</button></div>
-			<div :class="$style.tl">
-				<MkTimeline
-					ref="tlEl" :key="listId"
-					src="list"
-					:list="listId"
-					:sound="true"
-					@queue="queueUpdated"
-				/>
+	<MkStickyContainer>
+		<template #header
+			><MkPageHeader :actions="headerActions" :tabs="headerTabs"
+		/></template>
+		<MkSpacer :contentMax="800">
+			<div ref="rootEl">
+				<div v-if="queue > 0" :class="$style.new">
+					<button
+						class="_buttonPrimary"
+						:class="$style.newButton"
+						@click="top()"
+					>
+						{{ i18n.ts.newNoteRecived }}
+					</button>
+				</div>
+				<div :class="$style.tl">
+					<MkTimeline
+						ref="tlEl"
+						:key="listId"
+						src="list"
+						:list="listId"
+						:sound="true"
+						@queue="queueUpdated"
+					/>
+				</div>
 			</div>
-		</div>
-	</MkSpacer>
-</MkStickyContainer>
+		</MkSpacer>
+	</MkStickyContainer>
 </template>
 
 <script lang="ts" setup>
-import { computed, watch } from 'vue';
-import MkTimeline from '@/components/MkTimeline.vue';
-import { scroll } from '@/scripts/scroll.js';
-import * as os from '@/os.js';
-import { useRouter } from '@/router.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
-import { i18n } from '@/i18n.js';
+import { computed, watch } from "vue";
+import MkTimeline from "@/components/mk_components/MkTimeline.vue";
+import { scroll } from "@/scripts/scroll.js";
+import * as os from "@/os.js";
+import { useRouter } from "@/router.js";
+import { definePageMetadata } from "@/scripts/page-metadata.js";
+import { i18n } from "@/i18n.js";
 
 const router = useRouter();
 
@@ -43,11 +54,15 @@ let queue = $ref(0);
 let tlEl = $shallowRef<InstanceType<typeof MkTimeline>>();
 let rootEl = $shallowRef<HTMLElement>();
 
-watch(() => props.listId, async () => {
-	list = await os.api('users/lists/show', {
-		listId: props.listId,
-	});
-}, { immediate: true });
+watch(
+	() => props.listId,
+	async () => {
+		list = await os.api("users/lists/show", {
+			listId: props.listId,
+		});
+	},
+	{ immediate: true },
+);
 
 function queueUpdated(q) {
 	queue = q;
@@ -70,22 +85,35 @@ async function timetravel() {
 	tlEl.timetravel(date);
 }
 
-const headerActions = $computed(() => list ? [{
-	icon: 'ti ti-calendar-time',
-	text: i18n.ts.jumpToSpecifiedDate,
-	handler: timetravel,
-}, {
-	icon: 'ti ti-settings',
-	text: i18n.ts.settings,
-	handler: settings,
-}] : []);
+const headerActions = $computed(() =>
+	list
+		? [
+				{
+					icon: "ti ti-calendar-time",
+					text: i18n.ts.jumpToSpecifiedDate,
+					handler: timetravel,
+				},
+				{
+					icon: "ti ti-settings",
+					text: i18n.ts.settings,
+					handler: settings,
+				},
+		  ]
+		: [],
+);
 
 const headerTabs = $computed(() => []);
 
-definePageMetadata(computed(() => list ? {
-	title: list.name,
-	icon: 'ti ti-list',
-} : null));
+definePageMetadata(
+	computed(() =>
+		list
+			? {
+					title: list.name,
+					icon: "ti ti-list",
+			  }
+			: null,
+	),
+);
 </script>
 
 <style lang="scss" module>

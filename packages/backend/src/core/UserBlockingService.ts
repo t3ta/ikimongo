@@ -3,23 +3,28 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
-import { IdService } from '@/core/IdService.js';
-import type { MiUser } from '@/models/user/User.js';
-import type { MiBlocking } from '@/models/mute-block/Blocking.js';
-import { QueueService } from '@/core/QueueService.js';
-import { GlobalEventService } from '@/core/GlobalEventService.js';
-import { DI } from '@/di-symbols.js';
-import type { FollowRequestsRepository, BlockingsRepository, UserListsRepository, UserListJoiningsRepository } from '@/models/_.js';
-import Logger from '@/logger.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
-import { LoggerService } from '@/core/LoggerService.js';
-import { WebhookService } from '@/core/WebhookService.js';
-import { bindThis } from '@/decorators.js';
-import { CacheService } from '@/core/CacheService.js';
-import { UserFollowingService } from '@/core/UserFollowingService.js';
+import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
+import { ModuleRef } from "@nestjs/core";
+import { IdService } from "@/core/IdService.js";
+import type { MiUser } from "@/models/user/User.js";
+import type { MiBlocking } from "@/models/mute-block/Blocking.js";
+import { QueueService } from "@/core/QueueService.js";
+import { GlobalEventService } from "@/core/GlobalEventService.js";
+import { DI } from "@/di-symbols.js";
+import type {
+	FollowRequestsRepository,
+	BlockingsRepository,
+	UserListsRepository,
+	UserListJoiningsRepository,
+} from "@/models/_.js";
+import Logger from "@/logger.js";
+import { UserEntityService } from "@/core/entities/UserEntityService.js";
+import { ApRendererService } from "@/core/activitypub/ApRendererService.js";
+import { LoggerService } from "@/core/LoggerService.js";
+import { WebhookService } from "@/core/WebhookService.js";
+import { bindThis } from "@/decorators.js";
+import { CacheService } from "@/core/CacheService.js";
+import { UserFollowingService } from "@/core/UserFollowingService.js";
 
 @Injectable()
 export class UserBlockingService implements OnModuleInit {
@@ -50,11 +55,11 @@ export class UserBlockingService implements OnModuleInit {
 		private apRendererService: ApRendererService,
 		private loggerService: LoggerService,
 	) {
-		this.logger = this.loggerService.getLogger('user-block');
+		this.logger = this.loggerService.getLogger("user-block");
 	}
 
 	onModuleInit() {
-		this.userFollowingService = this.moduleRef.get('UserFollowingService');
+		this.userFollowingService = this.moduleRef.get("UserFollowingService");
 	}
 
 	@bindThis
@@ -81,19 +86,28 @@ export class UserBlockingService implements OnModuleInit {
 		this.cacheService.userBlockingCache.refresh(blocker.id);
 		this.cacheService.userBlockedCache.refresh(blockee.id);
 
-		this.globalEventService.publishInternalEvent('blockingCreated', {
+		this.globalEventService.publishInternalEvent("blockingCreated", {
 			blockerId: blocker.id,
 			blockeeId: blockee.id,
 		});
 
-		if (this.userEntityService.isLocalUser(blocker) && this.userEntityService.isRemoteUser(blockee)) {
-			const content = this.apRendererService.addContext(this.apRendererService.renderBlock(blocking));
+		if (
+			this.userEntityService.isLocalUser(blocker) &&
+			this.userEntityService.isRemoteUser(blockee)
+		) {
+			const content = this.apRendererService.addContext(
+				this.apRendererService.renderBlock(blocking),
+			);
 			this.queueService.deliver(blocker, content, blockee.inbox, false);
 		}
 	}
 
 	@bindThis
-	private async cancelRequest(follower: MiUser, followee: MiUser, silent = false) {
+	private async cancelRequest(
+		follower: MiUser,
+		followee: MiUser,
+		silent = false,
+	) {
 		const request = await this.followRequestsRepository.findOneBy({
 			followeeId: followee.id,
 			followerId: follower.id,
@@ -109,35 +123,73 @@ export class UserBlockingService implements OnModuleInit {
 		});
 
 		if (this.userEntityService.isLocalUser(followee)) {
-			this.userEntityService.pack(followee, followee, {
-				detail: true,
-			}).then(packed => this.globalEventService.publishMainStream(followee.id, 'meUpdated', packed));
+			this.userEntityService
+				.pack(followee, followee, {
+					detail: true,
+				})
+				.then((packed) =>
+					this.globalEventService.publishMainStream(
+						followee.id,
+						"meUpdated",
+						packed,
+					),
+				);
 		}
 
 		if (this.userEntityService.isLocalUser(follower) && !silent) {
-			this.userEntityService.pack(followee, follower, {
-				detail: true,
-			}).then(async packed => {
-				this.globalEventService.publishMainStream(follower.id, 'unfollow', packed);
+			this.userEntityService
+				.pack(followee, follower, {
+					detail: true,
+				})
+				.then(async (packed) => {
+					this.globalEventService.publishMainStream(
+						follower.id,
+						"unfollow",
+						packed,
+					);
 
-				const webhooks = (await this.webhookService.getActiveWebhooks()).filter(x => x.userId === follower.id && x.on.includes('unfollow'));
-				for (const webhook of webhooks) {
-					this.queueService.webhookDeliver(webhook, 'unfollow', {
-						user: packed,
-					});
-				}
-			});
+					const webhooks = (
+						await this.webhookService.getActiveWebhooks()
+					).filter(
+						(x) => x.userId === follower.id && x.on.includes("unfollow"),
+					);
+					for (const webhook of webhooks) {
+						this.queueService.webhookDeliver(webhook, "unfollow", {
+							user: packed,
+						});
+					}
+				});
 		}
 
 		// リモートにフォローリクエストをしていたらUndoFollow送信
-		if (this.userEntityService.isLocalUser(follower) && this.userEntityService.isRemoteUser(followee)) {
-			const content = this.apRendererService.addContext(this.apRendererService.renderUndo(this.apRendererService.renderFollow(follower, followee), follower));
+		if (
+			this.userEntityService.isLocalUser(follower) &&
+			this.userEntityService.isRemoteUser(followee)
+		) {
+			const content = this.apRendererService.addContext(
+				this.apRendererService.renderUndo(
+					this.apRendererService.renderFollow(follower, followee),
+					follower,
+				),
+			);
 			this.queueService.deliver(follower, content, followee.inbox, false);
 		}
 
 		// リモートからフォローリクエストを受けていたらReject送信
-		if (this.userEntityService.isRemoteUser(follower) && this.userEntityService.isLocalUser(followee)) {
-			const content = this.apRendererService.addContext(this.apRendererService.renderReject(this.apRendererService.renderFollow(follower, followee, request.requestId!), followee));
+		if (
+			this.userEntityService.isRemoteUser(follower) &&
+			this.userEntityService.isLocalUser(followee)
+		) {
+			const content = this.apRendererService.addContext(
+				this.apRendererService.renderReject(
+					this.apRendererService.renderFollow(
+						follower,
+						followee,
+						request.requestId!,
+					),
+					followee,
+				),
+			);
 			this.queueService.deliver(followee, content, follower.inbox, false);
 		}
 	}
@@ -164,7 +216,9 @@ export class UserBlockingService implements OnModuleInit {
 		});
 
 		if (blocking == null) {
-			this.logger.warn('ブロック解除がリクエストされましたがブロックしていませんでした');
+			this.logger.warn(
+				"ブロック解除がリクエストされましたがブロックしていませんでした",
+			);
 			return;
 		}
 
@@ -178,20 +232,33 @@ export class UserBlockingService implements OnModuleInit {
 		this.cacheService.userBlockingCache.refresh(blocker.id);
 		this.cacheService.userBlockedCache.refresh(blockee.id);
 
-		this.globalEventService.publishInternalEvent('blockingDeleted', {
+		this.globalEventService.publishInternalEvent("blockingDeleted", {
 			blockerId: blocker.id,
 			blockeeId: blockee.id,
 		});
 
 		// deliver if remote bloking
-		if (this.userEntityService.isLocalUser(blocker) && this.userEntityService.isRemoteUser(blockee)) {
-			const content = this.apRendererService.addContext(this.apRendererService.renderUndo(this.apRendererService.renderBlock(blocking), blocker));
+		if (
+			this.userEntityService.isLocalUser(blocker) &&
+			this.userEntityService.isRemoteUser(blockee)
+		) {
+			const content = this.apRendererService.addContext(
+				this.apRendererService.renderUndo(
+					this.apRendererService.renderBlock(blocking),
+					blocker,
+				),
+			);
 			this.queueService.deliver(blocker, content, blockee.inbox, false);
 		}
 	}
 
 	@bindThis
-	public async checkBlocked(blockerId: MiUser['id'], blockeeId: MiUser['id']): Promise<boolean> {
-		return (await this.cacheService.userBlockingCache.fetch(blockerId)).has(blockeeId);
+	public async checkBlocked(
+		blockerId: MiUser["id"],
+		blockeeId: MiUser["id"],
+	): Promise<boolean> {
+		return (await this.cacheService.userBlockingCache.fetch(blockerId)).has(
+			blockeeId,
+		);
 	}
 }

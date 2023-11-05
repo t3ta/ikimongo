@@ -4,74 +4,132 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div v-if="show" ref="el" :class="[$style.root]" :style="{ background: bg }">
-	<div :class="[$style.upper, { [$style.slim]: narrow, [$style.thin]: thin_ }]">
-		<div v-if="!thin_ && narrow && props.displayMyAvatar && $i" class="_button" :class="$style.buttonsLeft" @click="openAccountMenu">
-			<MkAvatar :class="$style.avatar" :user="$i"/>
-		</div>
-		<div v-else-if="!thin_ && narrow && !hideTitle" :class="$style.buttonsLeft"/>
+	<div v-if="show" ref="el" :class="[$style.root]" :style="{ background: bg }">
+		<div
+			:class="[$style.upper, { [$style.slim]: narrow, [$style.thin]: thin_ }]"
+		>
+			<div
+				v-if="!thin_ && narrow && props.displayMyAvatar && $i"
+				class="_button"
+				:class="$style.buttonsLeft"
+				@click="openAccountMenu"
+			>
+				<MkAvatar :class="$style.avatar" :user="$i" />
+			</div>
+			<div
+				v-else-if="!thin_ && narrow && !hideTitle"
+				:class="$style.buttonsLeft"
+			/>
 
-		<template v-if="metadata">
-			<div v-if="!hideTitle" :class="$style.titleContainer" @click="top">
-				<div v-if="metadata.avatar" :class="$style.titleAvatarContainer">
-					<MkAvatar :class="$style.titleAvatar" :user="metadata.avatar" indicator/>
-				</div>
-				<i v-else-if="metadata.icon" :class="[$style.titleIcon, metadata.icon]"></i>
+			<template v-if="metadata">
+				<div v-if="!hideTitle" :class="$style.titleContainer" @click="top">
+					<div v-if="metadata.avatar" :class="$style.titleAvatarContainer">
+						<MkAvatar
+							:class="$style.titleAvatar"
+							:user="metadata.avatar"
+							indicator
+						/>
+					</div>
+					<i
+						v-else-if="metadata.icon"
+						:class="[$style.titleIcon, metadata.icon]"
+					></i>
 
-				<div :class="$style.title">
-					<MkUserName v-if="metadata.userName" :user="metadata.userName" :nowrap="true"/>
-					<div v-else-if="metadata.title">{{ metadata.title }}</div>
-					<div v-if="metadata.subtitle" :class="$style.subtitle">
-						{{ metadata.subtitle }}
+					<div :class="$style.title">
+						<MkUserName
+							v-if="metadata.userName"
+							:user="metadata.userName"
+							:nowrap="true"
+						/>
+						<div v-else-if="metadata.title">{{ metadata.title }}</div>
+						<div v-if="metadata.subtitle" :class="$style.subtitle">
+							{{ metadata.subtitle }}
+						</div>
 					</div>
 				</div>
-			</div>
-			<XTabs v-if="!narrow || hideTitle" :class="$style.tabs" :tab="tab" :tabs="tabs" :rootEl="el" @update:tab="key => emit('update:tab', key)" @tabClick="onTabClick"/>
-		</template>
-		<div v-if="(!thin_ && narrow && !hideTitle) || (actions && actions.length > 0)" :class="$style.buttonsRight">
-			<template v-for="action in actions">
-				<button v-tooltip.noDelay="action.text" class="_button" :class="[$style.button, { [$style.highlighted]: action.highlighted }]" @click.stop="action.handler" @touchstart="preventDrag"><i :class="action.icon"></i></button>
+				<XTabs
+					v-if="!narrow || hideTitle"
+					:class="$style.tabs"
+					:tab="tab"
+					:tabs="tabs"
+					:rootEl="el"
+					@update:tab="(key) => emit('update:tab', key)"
+					@tabClick="onTabClick"
+				/>
 			</template>
+			<div
+				v-if="
+					(!thin_ && narrow && !hideTitle) || (actions && actions.length > 0)
+				"
+				:class="$style.buttonsRight"
+			>
+				<template v-for="action in actions">
+					<button
+						v-tooltip.noDelay="action.text"
+						class="_button"
+						:class="[
+							$style.button,
+							{ [$style.highlighted]: action.highlighted },
+						]"
+						@click.stop="action.handler"
+						@touchstart="preventDrag"
+					>
+						<i :class="action.icon"></i>
+					</button>
+				</template>
+			</div>
+		</div>
+		<div
+			v-if="narrow && !hideTitle && hasTabs"
+			:class="[$style.lower, { [$style.slim]: narrow, [$style.thin]: thin_ }]"
+		>
+			<XTabs
+				:class="$style.tabs"
+				:tab="tab"
+				:tabs="tabs"
+				:rootEl="el"
+				@update:tab="(key) => emit('update:tab', key)"
+				@tabClick="onTabClick"
+			/>
 		</div>
 	</div>
-	<div v-if="(narrow && !hideTitle) && hasTabs" :class="[$style.lower, { [$style.slim]: narrow, [$style.thin]: thin_ }]">
-		<XTabs :class="$style.tabs" :tab="tab" :tabs="tabs" :rootEl="el" @update:tab="key => emit('update:tab', key)" @tabClick="onTabClick"/>
-	</div>
-</div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref, inject } from 'vue';
-import tinycolor from 'tinycolor2';
-import XTabs, { Tab } from './MkPageHeader.tabs.vue';
-import { scrollToTop } from '@/scripts/scroll.js';
-import { globalEvents } from '@/events.js';
-import { injectPageMetadata } from '@/scripts/page-metadata.js';
-import { $i, openAccountMenu as openAccountMenu_ } from '@/account.js';
+import { onMounted, onUnmounted, ref, inject } from "vue";
+import tinycolor from "tinycolor2";
+import XTabs, { Tab } from "./MkPageHeader.tabs.vue";
+import { scrollToTop } from "@/scripts/scroll.js";
+import { globalEvents } from "@/events.js";
+import { injectPageMetadata } from "@/scripts/page-metadata.js";
+import { $i, openAccountMenu as openAccountMenu_ } from "@/account.js";
 
-const props = withDefaults(defineProps<{
-	tabs?: Tab[];
-	tab?: string;
-	actions?: {
-		text: string;
-		icon: string;
-		highlighted?: boolean;
-		handler: (ev: MouseEvent) => void;
-	}[];
-	thin?: boolean;
-	displayMyAvatar?: boolean;
-}>(), {
-	tabs: () => ([] as Tab[]),
-});
+const props = withDefaults(
+	defineProps<{
+		tabs?: Tab[];
+		tab?: string;
+		actions?: {
+			text: string;
+			icon: string;
+			highlighted?: boolean;
+			handler: (ev: MouseEvent) => void;
+		}[];
+		thin?: boolean;
+		displayMyAvatar?: boolean;
+	}>(),
+	{
+		tabs: () => [] as Tab[],
+	},
+);
 
 const emit = defineEmits<{
-	(ev: 'update:tab', key: string);
+	(ev: "update:tab", key: string);
 }>();
 
 const metadata = injectPageMetadata();
 
-const hideTitle = inject('shouldOmitHeaderTitle', false);
-const thin_ = props.thin || inject('shouldHeaderThin', false);
+const hideTitle = inject("shouldOmitHeaderTitle", false);
+const thin_ = props.thin || inject("shouldHeaderThin", false);
 
 let el = $shallowRef<HTMLElement | undefined>(undefined);
 const bg = ref<string | undefined>(undefined);
@@ -88,14 +146,17 @@ const preventDrag = (ev: TouchEvent) => {
 
 const top = () => {
 	if (el) {
-		scrollToTop(el as HTMLElement, { behavior: 'smooth' });
+		scrollToTop(el as HTMLElement, { behavior: "smooth" });
 	}
 };
 
 function openAccountMenu(ev: MouseEvent) {
-	openAccountMenu_({
-		withExtraOperation: true,
-	}, ev);
+	openAccountMenu_(
+		{
+			withExtraOperation: true,
+		},
+		ev,
+	);
 }
 
 function onTabClick(): void {
@@ -103,8 +164,14 @@ function onTabClick(): void {
 }
 
 const calcBg = () => {
-	const rawBg = 'var(--bg)';
-	const tinyBg = tinycolor(rawBg.startsWith('var(') ? getComputedStyle(document.documentElement).getPropertyValue(rawBg.slice(4, -1)) : rawBg);
+	const rawBg = "var(--bg)";
+	const tinyBg = tinycolor(
+		rawBg.startsWith("var(")
+			? getComputedStyle(document.documentElement).getPropertyValue(
+					rawBg.slice(4, -1),
+			  )
+			: rawBg,
+	);
 	tinyBg.setAlpha(0.85);
 	bg.value = tinyBg.toRgbString();
 };
@@ -113,7 +180,7 @@ let ro: ResizeObserver | null;
 
 onMounted(() => {
 	calcBg();
-	globalEvents.on('themeChanged', calcBg);
+	globalEvents.on("themeChanged", calcBg);
 
 	if (el && el.parentElement) {
 		narrow = el.parentElement.offsetWidth < 500;
@@ -127,7 +194,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-	globalEvents.off('themeChanged', calcBg);
+	globalEvents.off("themeChanged", calcBg);
 	if (ro) ro.disconnect();
 });
 </script>

@@ -3,22 +3,29 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { PrimaryColumn, Entity, Index, JoinColumn, Column, ManyToOne } from 'typeorm';
-import { id } from '../util/id.js';
-import { MiUser } from '../user/User.js';
+import {
+	PrimaryColumn,
+	Entity,
+	Index,
+	JoinColumn,
+	Column,
+	ManyToOne,
+} from "typeorm";
+import { id } from "../util/id.js";
+import { MiUser } from "../user/User.js";
 
-@Entity('clip')
+@Entity("clip")
 export class MiClip {
 	@PrimaryColumn(id())
 	public id: string;
 
-	@Column('timestamp with time zone', {
-		comment: 'The created date of the Clip.',
+	@Column("timestamp with time zone", {
+		comment: "The created date of the Clip.",
 	})
 	public createdAt: Date;
 
 	@Index()
-	@Column('timestamp with time zone', {
+	@Column("timestamp with time zone", {
 		nullable: true,
 	})
 	public lastClippedAt: Date | null;
@@ -26,30 +33,31 @@ export class MiClip {
 	@Index()
 	@Column({
 		...id(),
-		comment: 'The owner ID.',
+		comment: "The owner ID.",
 	})
-	public userId: MiUser['id'];
+	public userId: MiUser["id"];
 
-	@ManyToOne(type => MiUser, {
-		onDelete: 'CASCADE',
+	@ManyToOne((type) => MiUser, {
+		onDelete: "CASCADE",
 	})
 	@JoinColumn()
 	public user: MiUser | null;
 
-	@Column('varchar', {
+	@Column("varchar", {
 		length: 128,
-		comment: 'The name of the Clip.',
+		comment: "The name of the Clip.",
 	})
 	public name: string;
 
-	@Column('boolean', {
+	@Column("boolean", {
 		default: false,
 	})
 	public isPublic: boolean;
 
-	@Column('varchar', {
-		length: 2048, nullable: true,
-		comment: 'The description of the Clip.',
+	@Column("varchar", {
+		length: 2048,
+		nullable: true,
+		comment: "The description of the Clip.",
 	})
 	public description: string | null;
 }

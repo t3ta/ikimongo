@@ -4,92 +4,170 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkStickyContainer>
-	<template #header><MkPageHeader :actions="headerActions" :tabs="headerTabs"/></template>
-	<MkSpacer :contentMax="700">
-		<Transition :name="defaultStore.state.animation ? 'fade' : ''" mode="out-in">
-			<div v-if="page" :key="page.id" class="xcukqgmh">
-				<div class="main">
-					<!--
+	<MkStickyContainer>
+		<template #header
+			><MkPageHeader :actions="headerActions" :tabs="headerTabs"
+		/></template>
+		<MkSpacer :contentMax="700">
+			<Transition
+				:name="defaultStore.state.animation ? 'fade' : ''"
+				mode="out-in"
+			>
+				<div v-if="page" :key="page.id" class="xcukqgmh">
+					<div class="main">
+						<!--
 				<div class="header">
 					<h1>{{ page.title }}</h1>
 				</div>
 				-->
-					<div class="banner">
-						<MkMediaImage
-							v-if="page.eyeCatchingImageId"
-							:image="page.eyeCatchingImage"
-							:cover="true"
-							:disableImageLink="true"
-							class="thumbnail"
-						/>
-					</div>
-					<div class="content">
-						<XPage :page="page"/>
-					</div>
-					<div class="actions">
-						<div class="like">
-							<MkButton v-if="page.isLiked" v-tooltip="i18n.ts._pages.unlike" class="button" asLike primary @click="unlike()"><i class="ti ti-heart-off"></i><span v-if="page.likedCount > 0" class="count">{{ page.likedCount }}</span></MkButton>
-							<MkButton v-else v-tooltip="i18n.ts._pages.like" class="button" asLike @click="like()"><i class="ti ti-heart"></i><span v-if="page.likedCount > 0" class="count">{{ page.likedCount }}</span></MkButton>
+						<div class="banner">
+							<MkMediaImage
+								v-if="page.eyeCatchingImageId"
+								:image="page.eyeCatchingImage"
+								:cover="true"
+								:disableImageLink="true"
+								class="thumbnail"
+							/>
 						</div>
-						<div class="other">
-							<button v-tooltip="i18n.ts.shareWithNote" v-click-anime class="_button" @click="shareWithNote"><i class="ti ti-repeat ti-fw"></i></button>
-							<button v-tooltip="i18n.ts.share" v-click-anime class="_button" @click="share"><i class="ti ti-share ti-fw"></i></button>
+						<div class="content">
+							<XPage :page="page" />
+						</div>
+						<div class="actions">
+							<div class="like">
+								<MkButton
+									v-if="page.isLiked"
+									v-tooltip="i18n.ts._pages.unlike"
+									class="button"
+									asLike
+									primary
+									@click="unlike()"
+									><i class="ti ti-heart-off"></i
+									><span v-if="page.likedCount > 0" class="count">{{
+										page.likedCount
+									}}</span></MkButton
+								>
+								<MkButton
+									v-else
+									v-tooltip="i18n.ts._pages.like"
+									class="button"
+									asLike
+									@click="like()"
+									><i class="ti ti-heart"></i
+									><span v-if="page.likedCount > 0" class="count">{{
+										page.likedCount
+									}}</span></MkButton
+								>
+							</div>
+							<div class="other">
+								<button
+									v-tooltip="i18n.ts.shareWithNote"
+									v-click-anime
+									class="_button"
+									@click="shareWithNote"
+								>
+									<i class="ti ti-repeat ti-fw"></i>
+								</button>
+								<button
+									v-tooltip="i18n.ts.share"
+									v-click-anime
+									class="_button"
+									@click="share"
+								>
+									<i class="ti ti-share ti-fw"></i>
+								</button>
+							</div>
+						</div>
+						<div class="user">
+							<MkAvatar :user="page.user" class="avatar" link preview />
+							<div class="name">
+								<MkUserName :user="page.user" style="display: block" />
+								<MkAcct :user="page.user" />
+							</div>
+							<MkFollowButton
+								v-if="!$i || $i.id != page.user.id"
+								:user="page.user"
+								:inline="true"
+								:transparent="false"
+								:full="true"
+								large
+								class="koudoku"
+							/>
+						</div>
+						<div class="links">
+							<MkA
+								:to="`/@${username}/pages/${pageName}/view-source`"
+								class="link"
+								>{{ i18n.ts._pages.viewSource }}</MkA
+							>
+							<template v-if="$i && $i.id === page.userId">
+								<MkA :to="`/pages/edit/${page.id}`" class="link">{{
+									i18n.ts._pages.editThisPage
+								}}</MkA>
+								<button
+									v-if="$i.pinnedPageId === page.id"
+									class="link _textButton"
+									@click="pin(false)"
+								>
+									{{ i18n.ts.unpin }}
+								</button>
+								<button v-else class="link _textButton" @click="pin(true)">
+									{{ i18n.ts.pin }}
+								</button>
+							</template>
 						</div>
 					</div>
-					<div class="user">
-						<MkAvatar :user="page.user" class="avatar" link preview/>
-						<div class="name">
-							<MkUserName :user="page.user" style="display: block;"/>
-							<MkAcct :user="page.user"/>
+					<div class="footer">
+						<div>
+							<i class="ti ti-clock"></i> {{ i18n.ts.createdAt }}:
+							<MkTime :time="page.createdAt" mode="detail" />
 						</div>
-						<MkFollowButton v-if="!$i || $i.id != page.user.id" :user="page.user" :inline="true" :transparent="false" :full="true" large class="koudoku"/>
+						<div v-if="page.createdAt != page.updatedAt">
+							<i class="ti ti-clock"></i> {{ i18n.ts.updatedAt }}:
+							<MkTime :time="page.updatedAt" mode="detail" />
+						</div>
 					</div>
-					<div class="links">
-						<MkA :to="`/@${username}/pages/${pageName}/view-source`" class="link">{{ i18n.ts._pages.viewSource }}</MkA>
-						<template v-if="$i && $i.id === page.userId">
-							<MkA :to="`/pages/edit/${page.id}`" class="link">{{ i18n.ts._pages.editThisPage }}</MkA>
-							<button v-if="$i.pinnedPageId === page.id" class="link _textButton" @click="pin(false)">{{ i18n.ts.unpin }}</button>
-							<button v-else class="link _textButton" @click="pin(true)">{{ i18n.ts.pin }}</button>
-						</template>
-					</div>
+					<MkAd :prefer="['horizontal', 'horizontal-big']" />
+					<MkContainer :max-height="300" :foldable="true" class="other">
+						<template #icon><i class="ti ti-clock"></i></template>
+						<template #header>{{ i18n.ts.recentPosts }}</template>
+						<MkPagination
+							v-slot="{ items }"
+							:pagination="otherPostsPagination"
+							:class="$style.relatedPagesRoot"
+							class="_gaps"
+						>
+							<MkPagePreview
+								v-for="page in items"
+								:key="page.id"
+								:page="page"
+								:class="$style.relatedPagesItem"
+							/>
+						</MkPagination>
+					</MkContainer>
 				</div>
-				<div class="footer">
-					<div><i class="ti ti-clock"></i> {{ i18n.ts.createdAt }}: <MkTime :time="page.createdAt" mode="detail"/></div>
-					<div v-if="page.createdAt != page.updatedAt"><i class="ti ti-clock"></i> {{ i18n.ts.updatedAt }}: <MkTime :time="page.updatedAt" mode="detail"/></div>
-				</div>
-				<MkAd :prefer="['horizontal', 'horizontal-big']"/>
-				<MkContainer :max-height="300" :foldable="true" class="other">
-					<template #icon><i class="ti ti-clock"></i></template>
-					<template #header>{{ i18n.ts.recentPosts }}</template>
-					<MkPagination v-slot="{items}" :pagination="otherPostsPagination" :class="$style.relatedPagesRoot" class="_gaps">
-						<MkPagePreview v-for="page in items" :key="page.id" :page="page" :class="$style.relatedPagesItem"/>
-					</MkPagination>
-				</MkContainer>
-			</div>
-			<MkError v-else-if="error" @retry="fetchPage()"/>
-			<MkLoading v-else/>
-		</Transition>
-	</MkSpacer>
-</MkStickyContainer>
+				<MkError v-else-if="error" @retry="fetchPage()" />
+				<MkLoading v-else />
+			</Transition>
+		</MkSpacer>
+	</MkStickyContainer>
 </template>
 
 <script lang="ts" setup>
-import { computed, watch } from 'vue';
-import XPage from '@/components/page/page.vue';
-import MkButton from '@/components/MkButton.vue';
-import * as os from '@/os.js';
-import { url } from '@/config.js';
-import MkMediaImage from '@/components/MkMediaImage.vue';
-import MkFollowButton from '@/components/MkFollowButton.vue';
-import MkContainer from '@/components/MkContainer.vue';
-import MkPagination from '@/components/MkPagination.vue';
-import MkPagePreview from '@/components/MkPagePreview.vue';
-import { i18n } from '@/i18n.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
-import { pageViewInterruptors, defaultStore } from '@/store.js';
-import { deepClone } from '@/scripts/clone.js';
-import { $i } from '@/account.js';
+import { computed, watch } from "vue";
+import XPage from "@/components/page/page.vue";
+import MkButton from "@/components/mk_components/MkButton.vue";
+import * as os from "@/os.js";
+import { url } from "@/config.js";
+import MkMediaImage from "@/components/mk_components/MkMediaImage.vue";
+import MkFollowButton from "@/components/mk_components/MkFollowButton.vue";
+import MkContainer from "@/components/mk_components/MkContainer.vue";
+import MkPagination from "@/components/mk_components/MkPagination.vue";
+import MkPagePreview from "@/components/mk_components/MkPagePreview.vue";
+import { i18n } from "@/i18n.js";
+import { definePageMetadata } from "@/scripts/page-metadata.js";
+import { pageViewInterruptors, defaultStore } from "@/store.js";
+import { deepClone } from "@/scripts/clone.js";
+import { $i } from "@/account.js";
 
 const props = defineProps<{
 	pageName: string;
@@ -99,33 +177,35 @@ const props = defineProps<{
 let page = $ref(null);
 let error = $ref(null);
 const otherPostsPagination = {
-	endpoint: 'users/pages' as const,
+	endpoint: "users/pages" as const,
 	limit: 6,
 	params: computed(() => ({
 		userId: page.user.id,
 	})),
 };
-const path = $computed(() => props.username + '/' + props.pageName);
+const path = $computed(() => props.username + "/" + props.pageName);
 
 function fetchPage() {
 	page = null;
-	os.api('pages/show', {
+	os.api("pages/show", {
 		name: props.pageName,
 		username: props.username,
-	}).then(async _page => {
-		page = _page;
+	})
+		.then(async (_page) => {
+			page = _page;
 
-		// plugin
-		if (pageViewInterruptors.length > 0) {
-			let result = deepClone(_page);
-			for (const interruptor of pageViewInterruptors) {
-				result = await interruptor.handler(result);
+			// plugin
+			if (pageViewInterruptors.length > 0) {
+				let result = deepClone(_page);
+				for (const interruptor of pageViewInterruptors) {
+					result = await interruptor.handler(result);
+				}
+				page = result;
 			}
-			page = result;
-		}
-	}).catch(err => {
-		error = err;
-	});
+		})
+		.catch((err) => {
+			error = err;
+		});
 }
 
 function share() {
@@ -138,12 +218,14 @@ function share() {
 
 function shareWithNote() {
 	os.post({
-		initialText: `${page.title || page.name} ${url}/@${page.user.username}/pages/${page.name}`,
+		initialText: `${page.title || page.name} ${url}/@${
+			page.user.username
+		}/pages/${page.name}`,
 	});
 }
 
 function like() {
-	os.apiWithDialog('pages/like', {
+	os.apiWithDialog("pages/like", {
 		pageId: page.id,
 	}).then(() => {
 		page.isLiked = true;
@@ -153,11 +235,11 @@ function like() {
 
 async function unlike() {
 	const confirm = await os.confirm({
-		type: 'warning',
+		type: "warning",
 		text: i18n.ts.unlikeConfirm,
 	});
 	if (confirm.canceled) return;
-	os.apiWithDialog('pages/unlike', {
+	os.apiWithDialog("pages/unlike", {
 		pageId: page.id,
 	}).then(() => {
 		page.isLiked = false;
@@ -166,7 +248,7 @@ async function unlike() {
 }
 
 function pin(pin) {
-	os.apiWithDialog('i/update', {
+	os.apiWithDialog("i/update", {
 		pinnedPageId: pin ? page.id : null,
 	});
 }
@@ -177,15 +259,21 @@ const headerActions = $computed(() => []);
 
 const headerTabs = $computed(() => []);
 
-definePageMetadata(computed(() => page ? {
-	title: page.title || page.name,
-	avatar: page.user,
-	path: `/@${page.user.username}/pages/${page.name}`,
-	share: {
-		title: page.title || page.name,
-		text: page.summary,
-	},
-} : null));
+definePageMetadata(
+	computed(() =>
+		page
+			? {
+					title: page.title || page.name,
+					avatar: page.user,
+					path: `/@${page.user.username}/pages/${page.name}`,
+					share: {
+						title: page.title || page.name,
+						text: page.summary,
+					},
+			  }
+			: null,
+	),
+);
 </script>
 
 <style lang="scss" scoped>

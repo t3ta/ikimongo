@@ -4,58 +4,72 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div>
-	<MkStickyContainer>
-		<template #header><XHeader :tabs="headerTabs"/></template>
-		<MkSpacer :contentMax="700" :marginMin="16" :marginMax="32">
-			<div class="_gaps_m">
-				<div>{{ i18n.ts._serverRules.description }}</div>
-				<Sortable
-					v-model="serverRules"
-					class="_gaps_m"
-					:itemKey="(_, i) => i"
-					:animation="150"
-					:handle="'.' + $style.itemHandle"
-					@start="e => e.item.classList.add('active')"
-					@end="e => e.item.classList.remove('active')"
-				>
-					<template #item="{element,index}">
-						<div :class="$style.item">
-							<div :class="$style.itemHeader">
-								<div :class="$style.itemNumber" v-text="String(index + 1)"/>
-								<span :class="$style.itemHandle"><i class="ti ti-menu"/></span>
-								<button class="_button" :class="$style.itemRemove" @click="remove(index)"><i class="ti ti-x"></i></button>
+	<div>
+		<MkStickyContainer>
+			<template #header><XHeader :tabs="headerTabs" /></template>
+			<MkSpacer :contentMax="700" :marginMin="16" :marginMax="32">
+				<div class="_gaps_m">
+					<div>{{ i18n.ts._serverRules.description }}</div>
+					<Sortable
+						v-model="serverRules"
+						class="_gaps_m"
+						:itemKey="(_, i) => i"
+						:animation="150"
+						:handle="'.' + $style.itemHandle"
+						@start="(e) => e.item.classList.add('active')"
+						@end="(e) => e.item.classList.remove('active')"
+					>
+						<template #item="{ element, index }">
+							<div :class="$style.item">
+								<div :class="$style.itemHeader">
+									<div :class="$style.itemNumber" v-text="String(index + 1)" />
+									<span :class="$style.itemHandle"
+										><i class="ti ti-menu"
+									/></span>
+									<button
+										class="_button"
+										:class="$style.itemRemove"
+										@click="remove(index)"
+									>
+										<i class="ti ti-x"></i>
+									</button>
+								</div>
+								<MkInput v-model="serverRules[index]" />
 							</div>
-							<MkInput v-model="serverRules[index]"/>
-						</div>
-					</template>
-				</Sortable>
-				<div :class="$style.commands">
-					<MkButton rounded @click="serverRules.push('')"><i class="ti ti-plus"></i> {{ i18n.ts.add }}</MkButton>
-					<MkButton primary rounded @click="save"><i class="ti ti-check"></i> {{ i18n.ts.save }}</MkButton>
+						</template>
+					</Sortable>
+					<div :class="$style.commands">
+						<MkButton rounded @click="serverRules.push('')"
+							><i class="ti ti-plus"></i> {{ i18n.ts.add }}</MkButton
+						>
+						<MkButton primary rounded @click="save"
+							><i class="ti ti-check"></i> {{ i18n.ts.save }}</MkButton
+						>
+					</div>
 				</div>
-			</div>
-		</MkSpacer>
-	</MkStickyContainer>
-</div>
+			</MkSpacer>
+		</MkStickyContainer>
+	</div>
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent } from 'vue';
-import XHeader from './_header_.vue';
-import * as os from '@/os.js';
-import { fetchInstance, instance } from '@/instance.js';
-import { i18n } from '@/i18n.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
-import MkButton from '@/components/MkButton.vue';
-import MkInput from '@/components/MkInput.vue';
+import { defineAsyncComponent } from "vue";
+import XHeader from "./_header_.vue";
+import * as os from "@/os.js";
+import { fetchInstance, instance } from "@/instance.js";
+import { i18n } from "@/i18n.js";
+import { definePageMetadata } from "@/scripts/page-metadata.js";
+import MkButton from "@/components/mk_components/MkButton.vue";
+import MkInput from "@/components/mk_components/MkInput.vue";
 
-const Sortable = defineAsyncComponent(() => import('vuedraggable').then(x => x.default));
+const Sortable = defineAsyncComponent(() =>
+	import("vuedraggable").then((x) => x.default),
+);
 
 let serverRules: string[] = $ref(instance.serverRules);
 
 const save = async () => {
-	await os.apiWithDialog('admin/update-meta', {
+	await os.apiWithDialog("admin/update-meta", {
 		serverRules,
 	});
 	fetchInstance();
@@ -69,7 +83,7 @@ const headerTabs = $computed(() => []);
 
 definePageMetadata({
 	title: i18n.ts.serverRules,
-	icon: 'ti ti-checkbox',
+	icon: "ti ti-checkbox",
 });
 </script>
 

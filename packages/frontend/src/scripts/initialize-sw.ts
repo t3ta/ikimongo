@@ -3,15 +3,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { lang } from '@/config.js';
+import { lang } from "@/config.js";
 
 export async function initializeSw() {
-	if (!('serviceWorker' in navigator)) return;
+	if (!("serviceWorker" in navigator)) return;
 
-	navigator.serviceWorker.register('/sw.js', { scope: '/', type: 'classic' });
-	navigator.serviceWorker.ready.then(registration => {
+	navigator.serviceWorker.register("/sw.js", { scope: "/", type: "classic" });
+	navigator.serviceWorker.ready.then((registration) => {
 		registration.active?.postMessage({
-			msg: 'initialize',
+			msg: "initialize",
 			lang,
 		});
 	});

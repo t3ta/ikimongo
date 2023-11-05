@@ -3,44 +3,51 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { PrimaryColumn, Entity, Index, JoinColumn, Column, ManyToOne } from 'typeorm';
-import { id } from './util/id.js';
-import { MiUser } from './user/User.js';
+import {
+	PrimaryColumn,
+	Entity,
+	Index,
+	JoinColumn,
+	Column,
+	ManyToOne,
+} from "typeorm";
+import { id } from "./util/id.js";
+import { MiUser } from "./user/User.js";
 
-@Entity('sw_subscription')
+@Entity("sw_subscription")
 export class MiSwSubscription {
 	@PrimaryColumn(id())
 	public id: string;
 
-	@Column('timestamp with time zone')
+	@Column("timestamp with time zone")
 	public createdAt: Date;
 
 	@Index()
 	@Column(id())
-	public userId: MiUser['id'];
+	public userId: MiUser["id"];
 
-	@ManyToOne(type => MiUser, {
-		onDelete: 'CASCADE',
+	@ManyToOne((type) => MiUser, {
+		onDelete: "CASCADE",
 	})
 	@JoinColumn()
 	public user: MiUser | null;
 
-	@Column('varchar', {
+	@Column("varchar", {
 		length: 512,
 	})
 	public endpoint: string;
 
-	@Column('varchar', {
+	@Column("varchar", {
 		length: 256,
 	})
 	public auth: string;
 
-	@Column('varchar', {
+	@Column("varchar", {
 		length: 128,
 	})
 	public publickey: string;
 
-	@Column('boolean', {
+	@Column("boolean", {
 		default: false,
 	})
 	public sendReadMessage: boolean;

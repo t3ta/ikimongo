@@ -3,14 +3,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import * as Redis from 'ioredis';
-import type { WebhooksRepository } from '@/models/_.js';
-import type { MiWebhook } from '@/models/Webhook.js';
-import { DI } from '@/di-symbols.js';
-import { bindThis } from '@/decorators.js';
-import type { GlobalEvents } from '@/core/GlobalEventService.js';
-import type { OnApplicationShutdown } from '@nestjs/common';
+import { Inject, Injectable } from "@nestjs/common";
+import * as Redis from "ioredis";
+import type { WebhooksRepository } from "@/models/_.js";
+import type { MiWebhook } from "@/models/Webhook.js";
+import { DI } from "@/di-symbols.js";
+import { bindThis } from "@/decorators.js";
+import type { GlobalEvents } from "@/core/GlobalEventService.js";
+import type { OnApplicationShutdown } from "@nestjs/common";
 
 @Injectable()
 export class WebhookService implements OnApplicationShutdown {
@@ -25,7 +25,7 @@ export class WebhookService implements OnApplicationShutdown {
 		private webhooksRepository: WebhooksRepository,
 	) {
 		//this.onMessage = this.onMessage.bind(this);
-		this.redisForSub.on('message', this.onMessage);
+		this.redisForSub.on("message", this.onMessage);
 	}
 
 	@bindThis
@@ -44,40 +44,46 @@ export class WebhookService implements OnApplicationShutdown {
 	private async onMessage(_: string, data: string): Promise<void> {
 		const obj = JSON.parse(data);
 
-		if (obj.channel === 'internal') {
-			const { type, body } = obj.message as GlobalEvents['internal']['payload'];
+		if (obj.channel === "internal") {
+			const { type, body } = obj.message as GlobalEvents["internal"]["payload"];
 			switch (type) {
-				case 'webhookCreated':
+				case "webhookCreated":
 					if (body.active) {
 						this.webhooks.push({
 							...body,
 							createdAt: new Date(body.createdAt),
-							latestSentAt: body.latestSentAt ? new Date(body.latestSentAt) : null,
+							latestSentAt: body.latestSentAt
+								? new Date(body.latestSentAt)
+								: null,
 						});
 					}
 					break;
-				case 'webhookUpdated':
+				case "webhookUpdated":
 					if (body.active) {
-						const i = this.webhooks.findIndex(a => a.id === body.id);
+						const i = this.webhooks.findIndex((a) => a.id === body.id);
 						if (i > -1) {
 							this.webhooks[i] = {
 								...body,
 								createdAt: new Date(body.createdAt),
-								latestSentAt: body.latestSentAt ? new Date(body.latestSentAt) : null,
+								latestSentAt: body.latestSentAt
+									? new Date(body.latestSentAt)
+									: null,
 							};
 						} else {
 							this.webhooks.push({
 								...body,
 								createdAt: new Date(body.createdAt),
-								latestSentAt: body.latestSentAt ? new Date(body.latestSentAt) : null,
+								latestSentAt: body.latestSentAt
+									? new Date(body.latestSentAt)
+									: null,
 							});
 						}
 					} else {
-						this.webhooks = this.webhooks.filter(a => a.id !== body.id);
+						this.webhooks = this.webhooks.filter((a) => a.id !== body.id);
 					}
 					break;
-				case 'webhookDeleted':
-					this.webhooks = this.webhooks.filter(a => a.id !== body.id);
+				case "webhookDeleted":
+					this.webhooks = this.webhooks.filter((a) => a.id !== body.id);
 					break;
 				default:
 					break;
@@ -87,7 +93,7 @@ export class WebhookService implements OnApplicationShutdown {
 
 	@bindThis
 	public dispose(): void {
-		this.redisForSub.off('message', this.onMessage);
+		this.redisForSub.off("message", this.onMessage);
 	}
 
 	@bindThis

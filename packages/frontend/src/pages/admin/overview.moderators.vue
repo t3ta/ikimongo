@@ -4,30 +4,38 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div>
-	<Transition :name="defaultStore.state.animation ? '_transition_zoom' : ''" mode="out-in">
-		<MkLoading v-if="fetching"/>
-		<div v-else :class="$style.root" class="_panel">
-			<MkA v-for="user in moderators" :key="user.id" class="user" :to="`/admin/user/${user.id}`">
-				<MkAvatar :user="user" class="avatar" indicator/>
-			</MkA>
-		</div>
-	</Transition>
-</div>
+	<div>
+		<Transition
+			:name="defaultStore.state.animation ? '_transition_zoom' : ''"
+			mode="out-in"
+		>
+			<MkLoading v-if="fetching" />
+			<div v-else :class="$style.root" class="_panel">
+				<MkA
+					v-for="user in moderators"
+					:key="user.id"
+					class="user"
+					:to="`/admin/user/${user.id}`"
+				>
+					<MkAvatar :user="user" class="avatar" indicator />
+				</MkA>
+			</div>
+		</Transition>
+	</div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from 'vue';
-import * as os from '@/os.js';
-import { defaultStore } from '@/store.js';
+import { onMounted } from "vue";
+import * as os from "@/os.js";
+import { defaultStore } from "@/store.js";
 
 let moderators: any = $ref(null);
 let fetching = $ref(true);
 
 onMounted(async () => {
-	moderators = await os.api('admin/show-users', {
-		sort: '+lastActiveDate',
-		state: 'adminOrModerator',
+	moderators = await os.api("admin/show-users", {
+		sort: "+lastActiveDate",
+		state: "adminOrModerator",
 		limit: 30,
 	});
 

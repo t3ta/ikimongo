@@ -3,37 +3,44 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { PrimaryColumn, Entity, Index, JoinColumn, Column, ManyToOne } from 'typeorm';
-import { id } from './util/id.js';
-import { MiUser } from './user/User.js';
+import {
+	PrimaryColumn,
+	Entity,
+	Index,
+	JoinColumn,
+	Column,
+	ManyToOne,
+} from "typeorm";
+import { id } from "./util/id.js";
+import { MiUser } from "./user/User.js";
 
-@Entity('abuse_user_report')
+@Entity("abuse_user_report")
 export class MiAbuseUserReport {
 	@PrimaryColumn(id())
 	public id: string;
 
 	@Index()
-	@Column('timestamp with time zone', {
-		comment: 'The created date of the AbuseUserReport.',
+	@Column("timestamp with time zone", {
+		comment: "The created date of the AbuseUserReport.",
 	})
 	public createdAt: Date;
 
 	@Index()
 	@Column(id())
-	public targetUserId: MiUser['id'];
+	public targetUserId: MiUser["id"];
 
-	@ManyToOne(type => MiUser, {
-		onDelete: 'CASCADE',
+	@ManyToOne((type) => MiUser, {
+		onDelete: "CASCADE",
 	})
 	@JoinColumn()
 	public targetUser: MiUser | null;
 
 	@Index()
 	@Column(id())
-	public reporterId: MiUser['id'];
+	public reporterId: MiUser["id"];
 
-	@ManyToOne(type => MiUser, {
-		onDelete: 'CASCADE',
+	@ManyToOne((type) => MiUser, {
+		onDelete: "CASCADE",
 	})
 	@JoinColumn()
 	public reporter: MiUser | null;
@@ -42,42 +49,44 @@ export class MiAbuseUserReport {
 		...id(),
 		nullable: true,
 	})
-	public assigneeId: MiUser['id'] | null;
+	public assigneeId: MiUser["id"] | null;
 
-	@ManyToOne(type => MiUser, {
-		onDelete: 'SET NULL',
+	@ManyToOne((type) => MiUser, {
+		onDelete: "SET NULL",
 	})
 	@JoinColumn()
 	public assignee: MiUser | null;
 
 	@Index()
-	@Column('boolean', {
+	@Column("boolean", {
 		default: false,
 	})
 	public resolved: boolean;
 
-	@Column('boolean', {
+	@Column("boolean", {
 		default: false,
 	})
 	public forwarded: boolean;
 
-	@Column('varchar', {
+	@Column("varchar", {
 		length: 2048,
 	})
 	public comment: string;
 
 	//#region Denormalized fields
 	@Index()
-	@Column('varchar', {
-		length: 128, nullable: true,
-		comment: '[Denormalized]',
+	@Column("varchar", {
+		length: 128,
+		nullable: true,
+		comment: "[Denormalized]",
 	})
 	public targetUserHost: string | null;
 
 	@Index()
-	@Column('varchar', {
-		length: 128, nullable: true,
-		comment: '[Denormalized]',
+	@Column("varchar", {
+		length: 128,
+		nullable: true,
+		comment: "[Denormalized]",
 	})
 	public reporterHost: string | null;
 	//#endregion

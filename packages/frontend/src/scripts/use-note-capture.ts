@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { onUnmounted, Ref } from 'vue';
-import * as Misskey from 'misskey-js';
-import { useStream } from '@/stream.js';
-import { $i } from '@/account.js';
+import { onUnmounted, Ref } from "vue";
+import * as Misskey from "misskey-js";
+import { useStream } from "@/stream.js";
+import { $i } from "@/account.js";
 
 export function useNoteCapture(props: {
 	rootEl: Ref<HTMLElement>;
@@ -22,7 +22,7 @@ export function useNoteCapture(props: {
 		if (id !== note.value.id) return;
 
 		switch (type) {
-			case 'reacted': {
+			case "reacted": {
 				const reaction = body.reaction;
 
 				if (body.emoji && !(body.emoji.name in note.value.reactionEmojis)) {
@@ -34,51 +34,54 @@ export function useNoteCapture(props: {
 
 				note.value.reactions[reaction] = currentCount + 1;
 
-				if ($i && (body.userId === $i.id)) {
+				if ($i && body.userId === $i.id) {
 					note.value.myReaction = reaction;
 				}
 				break;
 			}
 
-			case 'unreacted': {
+			case "unreacted": {
 				const reaction = body.reaction;
 
 				// TODO: reactionsプロパティがない場合ってあったっけ？ なければ || {} は消せる
 				const currentCount = (note.value.reactions || {})[reaction] || 0;
 
 				note.value.reactions[reaction] = Math.max(0, currentCount - 1);
-				if (note.value.reactions[reaction] === 0) delete note.value.reactions[reaction];
+				if (note.value.reactions[reaction] === 0)
+					delete note.value.reactions[reaction];
 
-				if ($i && (body.userId === $i.id)) {
+				if ($i && body.userId === $i.id) {
 					note.value.myReaction = null;
 				}
 				break;
 			}
 
-			case 'pollVoted': {
+			case "pollVoted": {
 				const choice = body.choice;
 
 				const choices = [...note.value.poll.choices];
 				choices[choice] = {
 					...choices[choice],
 					votes: choices[choice].votes + 1,
-					...($i && (body.userId === $i.id) ? {
-						isVoted: true,
-					} : {}),
+					...($i && body.userId === $i.id
+						? {
+								isVoted: true,
+						  }
+						: {}),
 				};
 
 				note.value.poll.choices = choices;
 				break;
 			}
 
-			case 'updated': {
+			case "updated": {
 				note.value.updatedAt = new Date().toISOString();
 				note.value.cw = body.cw;
 				note.value.text = body.text;
 				break;
 			}
 
-			case 'deleted': {
+			case "deleted": {
 				props.isDeletedRef.value = true;
 				break;
 			}
@@ -88,17 +91,19 @@ export function useNoteCapture(props: {
 	function capture(withHandler = false): void {
 		if (connection) {
 			// TODO: このノートがストリーミング経由で流れてきた場合のみ sr する
-			connection.send(document.body.contains(props.rootEl.value) ? 'sr' : 's', { id: note.value.id });
-			if (withHandler) connection.on('noteUpdated', onStreamNoteUpdated);
+			connection.send(document.body.contains(props.rootEl.value) ? "sr" : "s", {
+				id: note.value.id,
+			});
+			if (withHandler) connection.on("noteUpdated", onStreamNoteUpdated);
 		}
 	}
 
 	function decapture(withHandler = false): void {
 		if (connection) {
-			connection.send('un', {
+			connection.send("un", {
 				id: note.value.id,
 			});
-			if (withHandler) connection.off('noteUpdated', onStreamNoteUpdated);
+			if (withHandler) connection.off("noteUpdated", onStreamNoteUpdated);
 		}
 	}
 
@@ -108,13 +113,13 @@ export function useNoteCapture(props: {
 
 	capture(true);
 	if (connection) {
-		connection.on('_connected_', onStreamConnected);
+		connection.on("_connected_", onStreamConnected);
 	}
 
 	onUnmounted(() => {
 		decapture(true);
 		if (connection) {
-			connection.off('_connected_', onStreamConnected);
+			connection.off("_connected_", onStreamConnected);
 		}
 	});
 }

@@ -3,44 +3,45 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import type { PagesRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
-import { DI } from '@/di-symbols.js';
-import { ApiError } from '../../error.js';
+import { Inject, Injectable } from "@nestjs/common";
+import type { PagesRepository } from "@/models/_.js";
+import { Endpoint } from "@/server/api/endpoint-base.js";
+import { DI } from "@/di-symbols.js";
+import { ApiError } from "../../error.js";
 
 export const meta = {
-	tags: ['pages'],
+	tags: ["pages"],
 
 	requireCredential: true,
 
-	kind: 'write:pages',
+	kind: "write:pages",
 
 	errors: {
 		noSuchPage: {
-			message: 'No such page.',
-			code: 'NO_SUCH_PAGE',
-			id: 'eb0c6e1d-d519-4764-9486-52a7e1c6392a',
+			message: "No such page.",
+			code: "NO_SUCH_PAGE",
+			id: "eb0c6e1d-d519-4764-9486-52a7e1c6392a",
 		},
 
 		accessDenied: {
-			message: 'Access denied.',
-			code: 'ACCESS_DENIED',
-			id: '8b741b3e-2c22-44b3-a15f-29949aa1601e',
+			message: "Access denied.",
+			code: "ACCESS_DENIED",
+			id: "8b741b3e-2c22-44b3-a15f-29949aa1601e",
 		},
 	},
 } as const;
 
 export const paramDef = {
-	type: 'object',
+	type: "object",
 	properties: {
-		pageId: { type: 'string', format: 'misskey:id' },
+		pageId: { type: "string", format: "misskey:id" },
 	},
-	required: ['pageId'],
+	required: ["pageId"],
 } as const;
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-disable-line import/no-default-export
+export default class extends Endpoint<typeof meta, typeof paramDef> {
+	// eslint-disable-line import/no-default-export
 	constructor(
 		@Inject(DI.pagesRepository)
 		private pagesRepository: PagesRepository,

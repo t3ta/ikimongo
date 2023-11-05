@@ -4,17 +4,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<canvas ref="chartEl"></canvas>
+	<canvas ref="chartEl"></canvas>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, shallowRef } from 'vue';
-import { Chart } from 'chart.js';
-import { defaultStore } from '@/store.js';
-import { useChartTooltip } from '@/scripts/use-chart-tooltip.js';
-import { chartVLine } from '@/scripts/chart-vline.js';
-import { alpha } from '@/scripts/color.js';
-import { initChart } from '@/scripts/init-chart.js';
+import { onMounted, shallowRef } from "vue";
+import { Chart } from "chart.js";
+import { defaultStore } from "@/store.js";
+import { useChartTooltip } from "@/scripts/use-chart-tooltip.js";
+import { chartVLine } from "@/scripts/chart-vline.js";
+import { alpha } from "@/scripts/color.js";
+import { initChart } from "@/scripts/init-chart.js";
 
 initChart();
 
@@ -31,7 +31,7 @@ let chartInstance: Chart;
 function setData(values) {
 	if (chartInstance == null) return;
 	for (const value of values) {
-		chartInstance.data.labels.push('');
+		chartInstance.data.labels.push("");
 		chartInstance.data.datasets[0].data.push(value);
 		if (chartInstance.data.datasets[0].data.length > 100) {
 			chartInstance.data.labels.shift();
@@ -43,7 +43,7 @@ function setData(values) {
 
 function pushData(value) {
 	if (chartInstance == null) return;
-	chartInstance.data.labels.push('');
+	chartInstance.data.labels.push("");
 	chartInstance.data.datasets[0].data.push(value);
 	if (chartInstance.data.datasets[0].data.length > 100) {
 		chartInstance.data.labels.shift();
@@ -53,37 +53,49 @@ function pushData(value) {
 }
 
 const label =
-	props.type === 'process' ? 'Process' :
-	props.type === 'active' ? 'Active' :
-	props.type === 'delayed' ? 'Delayed' :
-	props.type === 'waiting' ? 'Waiting' :
-	'?' as never;
+	props.type === "process"
+		? "Process"
+		: props.type === "active"
+		? "Active"
+		: props.type === "delayed"
+		? "Delayed"
+		: props.type === "waiting"
+		? "Waiting"
+		: ("?" as never);
 
 const color =
-	props.type === 'process' ? '#00E396' :
-	props.type === 'active' ? '#00BCD4' :
-	props.type === 'delayed' ? '#E53935' :
-	props.type === 'waiting' ? '#FFB300' :
-	'?' as never;
+	props.type === "process"
+		? "#00E396"
+		: props.type === "active"
+		? "#00BCD4"
+		: props.type === "delayed"
+		? "#E53935"
+		: props.type === "waiting"
+		? "#FFB300"
+		: ("?" as never);
 
 onMounted(() => {
-	const vLineColor = defaultStore.state.darkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)';
+	const vLineColor = defaultStore.state.darkMode
+		? "rgba(255, 255, 255, 0.2)"
+		: "rgba(0, 0, 0, 0.2)";
 
 	chartInstance = new Chart(chartEl.value, {
-		type: 'line',
+		type: "line",
 		data: {
 			labels: [],
-			datasets: [{
-				label: label,
-				pointRadius: 0,
-				tension: 0.3,
-				borderWidth: 2,
-				borderJoinStyle: 'round',
-				borderColor: color,
-				backgroundColor: alpha(color, 0.2),
-				fill: true,
-				data: [],
-			}],
+			datasets: [
+				{
+					label: label,
+					pointRadius: 0,
+					tension: 0.3,
+					borderWidth: 2,
+					borderJoinStyle: "round",
+					borderColor: color,
+					backgroundColor: alpha(color, 0.2),
+					fill: true,
+					data: [],
+				},
+			],
 		},
 		options: {
 			aspectRatio: 2.5,
@@ -107,8 +119,7 @@ onMounted(() => {
 				},
 				y: {
 					min: 0,
-					grid: {
-					},
+					grid: {},
 				},
 			},
 			interaction: {
@@ -120,7 +131,7 @@ onMounted(() => {
 				},
 				tooltip: {
 					enabled: false,
-					mode: 'index',
+					mode: "index",
 					animation: {
 						duration: 0,
 					},

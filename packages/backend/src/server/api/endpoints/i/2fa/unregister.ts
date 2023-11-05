@@ -3,15 +3,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import bcrypt from 'bcryptjs';
-import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import type { UserProfilesRepository } from '@/models/_.js';
-import { GlobalEventService } from '@/core/GlobalEventService.js';
-import { DI } from '@/di-symbols.js';
-import { ApiError } from '@/server/api/error.js';
-import { UserAuthService } from '@/core/UserAuthService.js';
+import bcrypt from "bcryptjs";
+import { Inject, Injectable } from "@nestjs/common";
+import { Endpoint } from "@/server/api/endpoint-base.js";
+import { UserEntityService } from "@/core/entities/UserEntityService.js";
+import type { UserProfilesRepository } from "@/models/_.js";
+import { GlobalEventService } from "@/core/GlobalEventService.js";
+import { DI } from "@/di-symbols.js";
+import { ApiError } from "@/server/api/error.js";
+import { UserAuthService } from "@/core/UserAuthService.js";
 
 export const meta = {
 	requireCredential: true,
@@ -20,24 +20,25 @@ export const meta = {
 
 	errors: {
 		incorrectPassword: {
-			message: 'Incorrect password.',
-			code: 'INCORRECT_PASSWORD',
-			id: '7add0395-9901-4098-82f9-4f67af65f775',
+			message: "Incorrect password.",
+			code: "INCORRECT_PASSWORD",
+			id: "7add0395-9901-4098-82f9-4f67af65f775",
 		},
 	},
 } as const;
 
 export const paramDef = {
-	type: 'object',
+	type: "object",
 	properties: {
-		password: { type: 'string' },
-		token: { type: 'string', nullable: true },
+		password: { type: "string" },
+		token: { type: "string", nullable: true },
 	},
-	required: ['password'],
+	required: ["password"],
 } as const;
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-disable-line import/no-default-export
+export default class extends Endpoint<typeof meta, typeof paramDef> {
+	// eslint-disable-line import/no-default-export
 	constructor(
 		@Inject(DI.userProfilesRepository)
 		private userProfilesRepository: UserProfilesRepository,
@@ -48,21 +49,26 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const token = ps.token;
-			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: me.id });
+			const profile = await this.userProfilesRepository.findOneByOrFail({
+				userId: me.id,
+			});
 
 			if (profile.twoFactorEnabled) {
 				if (token == null) {
-					throw new Error('authentication failed');
+					throw new Error("authentication failed");
 				}
 
 				try {
 					await this.userAuthService.twoFactorAuthenticate(profile, token);
 				} catch (e) {
-					throw new Error('authentication failed');
+					throw new Error("authentication failed");
 				}
 			}
 
-			const passwordMatched = await bcrypt.compare(ps.password, profile.password ?? '');
+			const passwordMatched = await bcrypt.compare(
+				ps.password,
+				profile.password ?? "",
+			);
 			if (!passwordMatched) {
 				throw new ApiError(meta.errors.incorrectPassword);
 			}
@@ -75,10 +81,14 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			});
 
 			// Publish meUpdated event
-			this.globalEventService.publishMainStream(me.id, 'meUpdated', await this.userEntityService.pack(me.id, me, {
-				detail: true,
-				includeSecrets: true,
-			}));
+			this.globalEventService.publishMainStream(
+				me.id,
+				"meUpdated",
+				await this.userEntityService.pack(me.id, me, {
+					detail: true,
+					includeSecrets: true,
+				}),
+			);
 		});
 	}
 }

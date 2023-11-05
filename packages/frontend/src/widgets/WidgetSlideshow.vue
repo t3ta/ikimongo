@@ -4,35 +4,49 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div data-cy-mkw-slideshow class="kvausudm _panel mkw-slideshow" :style="{ height: widgetProps.height + 'px' }">
-	<div @click="choose">
-		<p v-if="widgetProps.folderId == null">
-			{{ i18n.ts.folder }}
-		</p>
-		<p v-if="widgetProps.folderId != null && images.length === 0 && !fetching">{{ i18n.t('no-image') }}</p>
-		<div ref="slideA" class="slide a"></div>
-		<div ref="slideB" class="slide b"></div>
+	<div
+		data-cy-mkw-slideshow
+		class="kvausudm _panel mkw-slideshow"
+		:style="{ height: widgetProps.height + 'px' }"
+	>
+		<div @click="choose">
+			<p v-if="widgetProps.folderId == null">
+				{{ i18n.ts.folder }}
+			</p>
+			<p
+				v-if="widgetProps.folderId != null && images.length === 0 && !fetching"
+			>
+				{{ i18n.t("no-image") }}
+			</p>
+			<div ref="slideA" class="slide a"></div>
+			<div ref="slideB" class="slide b"></div>
+		</div>
 	</div>
-</div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, shallowRef } from 'vue';
-import { useWidgetPropsManager, Widget, WidgetComponentEmits, WidgetComponentExpose, WidgetComponentProps } from './widget.js';
-import { GetFormResultType } from '@/scripts/form.js';
-import * as os from '@/os.js';
-import { useInterval } from '@/scripts/use-interval.js';
-import { i18n } from '@/i18n.js';
+import { onMounted, ref, shallowRef } from "vue";
+import {
+	useWidgetPropsManager,
+	Widget,
+	WidgetComponentEmits,
+	WidgetComponentExpose,
+	WidgetComponentProps,
+} from "./widget.js";
+import { GetFormResultType } from "@/scripts/form.js";
+import * as os from "@/os.js";
+import { useInterval } from "@/scripts/use-interval.js";
+import { i18n } from "@/i18n.js";
 
-const name = 'slideshow';
+const name = "slideshow";
 
 const widgetPropsDef = {
 	height: {
-		type: 'number' as const,
+		type: "number" as const,
 		default: 300,
 	},
 	folderId: {
-		type: 'string' as const,
+		type: "string" as const,
 		default: null,
 		hidden: true,
 	},
@@ -43,7 +57,8 @@ type WidgetProps = GetFormResultType<typeof widgetPropsDef>;
 const props = defineProps<WidgetComponentProps<WidgetProps>>();
 const emit = defineEmits<WidgetComponentEmits<WidgetProps>>();
 
-const { widgetProps, configure, save } = useWidgetPropsManager(name,
+const { widgetProps, configure, save } = useWidgetPropsManager(
+	name,
 	widgetPropsDef,
 	props,
 	emit,
@@ -58,39 +73,39 @@ const change = () => {
 	if (images.value.length === 0) return;
 
 	const index = Math.floor(Math.random() * images.value.length);
-	const img = `url(${ images.value[index].url })`;
+	const img = `url(${images.value[index].url})`;
 
 	slideB.value.style.backgroundImage = img;
 
-	slideB.value.classList.add('anime');
+	slideB.value.classList.add("anime");
 	window.setTimeout(() => {
 		// 既にこのウィジェットがunmountされていたら要素がない
 		if (slideA.value == null) return;
 
 		slideA.value.style.backgroundImage = img;
 
-		slideB.value.classList.remove('anime');
+		slideB.value.classList.remove("anime");
 	}, 1000);
 };
 
 const fetch = () => {
 	fetching.value = true;
 
-	os.api('drive/files', {
+	os.api("drive/files", {
 		folderId: widgetProps.folderId,
-		type: 'image/*',
+		type: "image/*",
 		limit: 100,
-	}).then(res => {
+	}).then((res) => {
 		images.value = res;
 		fetching.value = false;
-		slideA.value.style.backgroundImage = '';
-		slideB.value.style.backgroundImage = '';
+		slideA.value.style.backgroundImage = "";
+		slideB.value.style.backgroundImage = "";
 		change();
 	});
 };
 
 const choose = () => {
-	os.selectDriveFolder(false).then(folder => {
+	os.selectDriveFolder(false).then((folder) => {
 		if (folder == null) {
 			return;
 		}

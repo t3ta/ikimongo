@@ -3,16 +3,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import { DI } from '@/di-symbols.js';
-import type { FlashsRepository, FlashLikesRepository } from '@/models/_.js';
-import { awaitAll } from '@/misc/prelude/await-all.js';
-import type { Packed } from '@/misc/json-schema.js';
-import type { } from '@/models/mute-block/Blocking.js';
-import type { MiUser } from '@/models/user/User.js';
-import type { MiFlash } from '@/models/flash/Flash.js';
-import { bindThis } from '@/decorators.js';
-import { UserEntityService } from './UserEntityService.js';
+import { Inject, Injectable } from "@nestjs/common";
+import { DI } from "@/di-symbols.js";
+import type { FlashsRepository, FlashLikesRepository } from "@/models/_.js";
+import { awaitAll } from "@/misc/prelude/await-all.js";
+import type { Packed } from "@/misc/json-schema.js";
+import type {} from "@/models/mute-block/Blocking.js";
+import type { MiUser } from "@/models/user/User.js";
+import type { MiFlash } from "@/models/flash/Flash.js";
+import { bindThis } from "@/decorators.js";
+import { UserEntityService } from "./UserEntityService.js";
 
 @Injectable()
 export class FlashEntityService {
@@ -24,16 +24,18 @@ export class FlashEntityService {
 		private flashLikesRepository: FlashLikesRepository,
 
 		private userEntityService: UserEntityService,
-	) {
-	}
+	) {}
 
 	@bindThis
 	public async pack(
-		src: MiFlash['id'] | MiFlash,
-		me?: { id: MiUser['id'] } | null | undefined,
-	): Promise<Packed<'Flash'>> {
+		src: MiFlash["id"] | MiFlash,
+		me?: { id: MiUser["id"] } | null | undefined,
+	): Promise<Packed<"Flash">> {
 		const meId = me ? me.id : null;
-		const flash = typeof src === 'object' ? src : await this.flashsRepository.findOneByOrFail({ id: src });
+		const flash =
+			typeof src === "object"
+				? src
+				: await this.flashsRepository.findOneByOrFail({ id: src });
 
 		return await awaitAll({
 			id: flash.id,
@@ -45,16 +47,19 @@ export class FlashEntityService {
 			summary: flash.summary,
 			script: flash.script,
 			likedCount: flash.likedCount,
-			isLiked: meId ? await this.flashLikesRepository.exist({ where: { flashId: flash.id, userId: meId } }) : undefined,
+			isLiked: meId
+				? await this.flashLikesRepository.exist({
+						where: { flashId: flash.id, userId: meId },
+				  })
+				: undefined,
 		});
 	}
 
 	@bindThis
 	public packMany(
 		flashs: MiFlash[],
-		me?: { id: MiUser['id'] } | null | undefined,
+		me?: { id: MiUser["id"] } | null | undefined,
 	) {
-		return Promise.all(flashs.map(x => this.pack(x, me)));
+		return Promise.all(flashs.map((x) => this.pack(x, me)));
 	}
 }
-

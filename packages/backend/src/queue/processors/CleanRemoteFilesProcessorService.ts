@@ -3,15 +3,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import { IsNull, MoreThan, Not } from 'typeorm';
-import { DI } from '@/di-symbols.js';
-import type { MiDriveFile, DriveFilesRepository } from '@/models/_.js';
-import type Logger from '@/logger.js';
-import { DriveService } from '@/core/DriveService.js';
-import { bindThis } from '@/decorators.js';
-import { QueueLoggerService } from '../QueueLoggerService.js';
-import type * as Bull from 'bullmq';
+import { Inject, Injectable } from "@nestjs/common";
+import { IsNull, MoreThan, Not } from "typeorm";
+import { DI } from "@/di-symbols.js";
+import type { MiDriveFile, DriveFilesRepository } from "@/models/_.js";
+import type Logger from "@/logger.js";
+import { DriveService } from "@/core/DriveService.js";
+import { bindThis } from "@/decorators.js";
+import { QueueLoggerService } from "../QueueLoggerService.js";
+import type * as Bull from "bullmq";
 
 @Injectable()
 export class CleanRemoteFilesProcessorService {
@@ -24,15 +24,16 @@ export class CleanRemoteFilesProcessorService {
 		private driveService: DriveService,
 		private queueLoggerService: QueueLoggerService,
 	) {
-		this.logger = this.queueLoggerService.logger.createSubLogger('clean-remote-files');
+		this.logger =
+			this.queueLoggerService.logger.createSubLogger("clean-remote-files");
 	}
 
 	@bindThis
 	public async process(job: Bull.Job<Record<string, unknown>>): Promise<void> {
-		this.logger.info('Deleting cached remote files...');
+		this.logger.info("Deleting cached remote files...");
 
 		let deletedCount = 0;
-		let cursor: MiDriveFile['id'] | null = null;
+		let cursor: MiDriveFile["id"] | null = null;
 
 		while (true) {
 			const files = await this.driveFilesRepository.find({
@@ -54,7 +55,9 @@ export class CleanRemoteFilesProcessorService {
 
 			cursor = files.at(-1)?.id ?? null;
 
-			await Promise.all(files.map(file => this.driveService.deleteFileSync(file, true)));
+			await Promise.all(
+				files.map((file) => this.driveService.deleteFileSync(file, true)),
+			);
 
 			deletedCount += 8;
 
@@ -66,6 +69,6 @@ export class CleanRemoteFilesProcessorService {
 			job.updateProgress(deletedCount / total);
 		}
 
-		this.logger.succ('All cached remote files has been deleted.');
+		this.logger.succ("All cached remote files has been deleted.");
 	}
 }

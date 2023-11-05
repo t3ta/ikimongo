@@ -3,32 +3,39 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { PrimaryColumn, Entity, Index, JoinColumn, Column, ManyToOne } from 'typeorm';
-import { id } from '../util/id.js';
-import { MiUser } from '../user/User.js';
-import { MiChannel } from './Channel.js';
+import {
+	PrimaryColumn,
+	Entity,
+	Index,
+	JoinColumn,
+	Column,
+	ManyToOne,
+} from "typeorm";
+import { id } from "../util/id.js";
+import { MiUser } from "../user/User.js";
+import { MiChannel } from "./Channel.js";
 
-@Entity('channel_following')
-@Index(['followerId', 'followeeId'], { unique: true })
+@Entity("channel_following")
+@Index(["followerId", "followeeId"], { unique: true })
 export class MiChannelFollowing {
 	@PrimaryColumn(id())
 	public id: string;
 
 	@Index()
-	@Column('timestamp with time zone', {
-		comment: 'The created date of the ChannelFollowing.',
+	@Column("timestamp with time zone", {
+		comment: "The created date of the ChannelFollowing.",
 	})
 	public createdAt: Date;
 
 	@Index()
 	@Column({
 		...id(),
-		comment: 'The followee channel ID.',
+		comment: "The followee channel ID.",
 	})
-	public followeeId: MiChannel['id'];
+	public followeeId: MiChannel["id"];
 
-	@ManyToOne(type => MiChannel, {
-		onDelete: 'CASCADE',
+	@ManyToOne((type) => MiChannel, {
+		onDelete: "CASCADE",
 	})
 	@JoinColumn()
 	public followee: MiChannel | null;
@@ -36,12 +43,12 @@ export class MiChannelFollowing {
 	@Index()
 	@Column({
 		...id(),
-		comment: 'The follower user ID.',
+		comment: "The follower user ID.",
 	})
-	public followerId: MiUser['id'];
+	public followerId: MiUser["id"];
 
-	@ManyToOne(type => MiUser, {
-		onDelete: 'CASCADE',
+	@ManyToOne((type) => MiUser, {
+		onDelete: "CASCADE",
 	})
 	@JoinColumn()
 	public follower: MiUser | null;

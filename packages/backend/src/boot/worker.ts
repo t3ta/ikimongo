@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import cluster from 'node:cluster';
-import { envOption } from '@/env.js';
-import { jobQueue, server } from './common.js';
+import cluster from "node:cluster";
+import { envOption } from "@/env.js";
+import { jobQueue, server } from "./common.js";
 
 /**
  * Init worker process
@@ -21,6 +21,6 @@ export async function workerMain() {
 
 	if (cluster.isWorker) {
 		// Send a 'ready' message to parent process
-		process.send!('ready');
+		process.send!("ready");
 	}
 }

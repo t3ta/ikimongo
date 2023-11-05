@@ -4,34 +4,37 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<!-- eslint-disable vue/no-mutating-props -->
-<XContainer :draggable="true" @remove="() => $emit('remove')">
-	<template #header><i class="ti ti-align-left"></i> {{ i18n.ts._pages.blocks.text }}</template>
+	<!-- eslint-disable vue/no-mutating-props -->
+	<XContainer :draggable="true" @remove="() => $emit('remove')">
+		<template #header
+			><i class="ti ti-align-left"></i>
+			{{ i18n.ts._pages.blocks.text }}</template
+		>
 
-	<section>
-		<textarea v-model="text" :class="$style.textarea"></textarea>
-	</section>
-</XContainer>
+		<section>
+			<textarea v-model="text" :class="$style.textarea"></textarea>
+		</section>
+	</XContainer>
 </template>
 
 <script lang="ts" setup>
 /* eslint-disable vue/no-mutating-props */
-import { watch } from 'vue';
-import XContainer from '../page-editor.container.vue';
-import { i18n } from '@/i18n.js';
+import { watch } from "vue";
+import XContainer from "../page-editor.container.vue";
+import { i18n } from "@/i18n.js";
 
 const props = defineProps<{
-	modelValue: any
+	modelValue: any;
 }>();
 
 const emit = defineEmits<{
-	(ev: 'update:modelValue', value: any): void;
+	(ev: "update:modelValue", value: any): void;
 }>();
 
-const text = $ref(props.modelValue.text ?? '');
+const text = $ref(props.modelValue.text ?? "");
 
 watch($$(text), () => {
-	emit('update:modelValue', {
+	emit("update:modelValue", {
 		...props.modelValue,
 		text,
 	});

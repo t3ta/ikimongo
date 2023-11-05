@@ -3,20 +3,20 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import * as fs from 'node:fs';
-import { Inject, Injectable } from '@nestjs/common';
-import { ZipReader } from 'slacc';
-import { DI } from '@/di-symbols.js';
-import type { EmojisRepository, DriveFilesRepository } from '@/models/_.js';
-import type Logger from '@/logger.js';
-import { CustomEmojiService } from '@/core/CustomEmojiService.js';
-import { createTempDir } from '@/misc/create-temp.js';
-import { DriveService } from '@/core/DriveService.js';
-import { DownloadService } from '@/core/DownloadService.js';
-import { bindThis } from '@/decorators.js';
-import { QueueLoggerService } from '../QueueLoggerService.js';
-import type * as Bull from 'bullmq';
-import type { DbUserImportJobData } from '../types.js';
+import * as fs from "node:fs";
+import { Inject, Injectable } from "@nestjs/common";
+import { ZipReader } from "slacc";
+import { DI } from "@/di-symbols.js";
+import type { EmojisRepository, DriveFilesRepository } from "@/models/_.js";
+import type Logger from "@/logger.js";
+import { CustomEmojiService } from "@/core/CustomEmojiService.js";
+import { createTempDir } from "@/misc/create-temp.js";
+import { DriveService } from "@/core/DriveService.js";
+import { DownloadService } from "@/core/DownloadService.js";
+import { bindThis } from "@/decorators.js";
+import { QueueLoggerService } from "../QueueLoggerService.js";
+import type * as Bull from "bullmq";
+import type { DbUserImportJobData } from "../types.js";
 
 // TODO: 名前衝突時の動作を選べるようにする
 @Injectable()
@@ -35,12 +35,14 @@ export class ImportCustomEmojisProcessorService {
 		private downloadService: DownloadService,
 		private queueLoggerService: QueueLoggerService,
 	) {
-		this.logger = this.queueLoggerService.logger.createSubLogger('import-custom-emojis');
+		this.logger = this.queueLoggerService.logger.createSubLogger(
+			"import-custom-emojis",
+		);
 	}
 
 	@bindThis
 	public async process(job: Bull.Job<DbUserImportJobData>): Promise<void> {
-		this.logger.info('Importing custom emojis ...');
+		this.logger.info("Importing custom emojis ...");
 
 		const file = await this.driveFilesRepository.findOneBy({
 			id: job.data.fileId,
@@ -53,23 +55,26 @@ export class ImportCustomEmojisProcessorService {
 
 		this.logger.info(`Temp dir is ${path}`);
 
-		const destPath = path + '/emojis.zip';
+		const destPath = path + "/emojis.zip";
 
 		try {
-			fs.writeFileSync(destPath, '', 'binary');
+			fs.writeFileSync(destPath, "", "binary");
 			await this.downloadService.downloadUrl(file.url, destPath);
-		} catch (e) { // TODO: 何度か再試行
-			if (e instanceof Error || typeof e === 'string') {
+		} catch (e) {
+			// TODO: 何度か再試行
+			if (e instanceof Error || typeof e === "string") {
 				this.logger.error(e);
 			}
 			throw e;
 		}
 
-		const outputPath = path + '/emojis';
+		const outputPath = path + "/emojis";
 		try {
 			this.logger.succ(`Unzipping to ${outputPath}`);
-			ZipReader.withDestinationPath(outputPath).viaBuffer(await fs.promises.readFile(destPath));
-			const metaRaw = fs.readFileSync(outputPath + '/meta.json', 'utf-8');
+			ZipReader.withDestinationPath(outputPath).viaBuffer(
+				await fs.promises.readFile(destPath),
+			);
+			const metaRaw = fs.readFileSync(outputPath + "/meta.json", "utf-8");
 			const meta = JSON.parse(metaRaw);
 
 			for (const record of meta.emojis) {
@@ -83,7 +88,7 @@ export class ImportCustomEmojisProcessorService {
 					this.logger.error(`invalid emojiname: ${emojiInfo.name}`);
 					continue;
 				}
-				const emojiPath = outputPath + '/' + record.fileName;
+				const emojiPath = outputPath + "/" + record.fileName;
 				await this.emojisRepository.delete({
 					name: emojiInfo.name,
 				});
@@ -108,9 +113,9 @@ export class ImportCustomEmojisProcessorService {
 
 			cleanup();
 
-			this.logger.succ('Imported');
+			this.logger.succ("Imported");
 		} catch (e) {
-			if (e instanceof Error || typeof e === 'string') {
+			if (e instanceof Error || typeof e === "string") {
 				this.logger.error(e);
 			}
 			cleanup();

@@ -4,20 +4,20 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<button class="_button" :class="$style.root" @click="menu">
-	<img :src="emoji.url" :class="$style.img" loading="lazy"/>
-	<div :class="$style.body">
-		<div :class="$style.name" class="_monospace">{{ emoji.name }}</div>
-		<div :class="$style.info">{{ emoji.aliases.join(' ') }}</div>
-	</div>
-</button>
+	<button class="_button" :class="$style.root" @click="menu">
+		<img :src="emoji.url" :class="$style.img" loading="lazy" />
+		<div :class="$style.body">
+			<div :class="$style.name" class="_monospace">{{ emoji.name }}</div>
+			<div :class="$style.info">{{ emoji.aliases.join(" ") }}</div>
+		</div>
+	</button>
 </template>
 
 <script lang="ts" setup>
-import { } from 'vue';
-import * as os from '@/os.js';
-import copyToClipboard from '@/scripts/copy-to-clipboard.js';
-import { i18n } from '@/i18n.js';
+import {} from "vue";
+import * as os from "@/os.js";
+import copyToClipboard from "@/scripts/copy-to-clipboard.js";
+import { i18n } from "@/i18n.js";
 
 const props = defineProps<{
 	emoji: {
@@ -29,28 +29,35 @@ const props = defineProps<{
 }>();
 
 function menu(ev) {
-	os.popupMenu([{
-		type: 'label',
-		text: ':' + props.emoji.name + ':',
-	}, {
-		text: i18n.ts.copy,
-		icon: 'ti ti-copy',
-		action: () => {
-			copyToClipboard(`:${props.emoji.name}:`);
-			os.success();
-		},
-	}, {
-		text: i18n.ts.info,
-		icon: 'ti ti-info-circle',
-		action: () => {
-			os.apiGet('emoji', { name: props.emoji.name }).then(res => {
-				os.alert({
-					type: 'info',
-					text: `License: ${res.license}`,
-				});
-			});
-		},
-	}], ev.currentTarget ?? ev.target);
+	os.popupMenu(
+		[
+			{
+				type: "label",
+				text: ":" + props.emoji.name + ":",
+			},
+			{
+				text: i18n.ts.copy,
+				icon: "ti ti-copy",
+				action: () => {
+					copyToClipboard(`:${props.emoji.name}:`);
+					os.success();
+				},
+			},
+			{
+				text: i18n.ts.info,
+				icon: "ti ti-info-circle",
+				action: () => {
+					os.apiGet("emoji", { name: props.emoji.name }).then((res) => {
+						os.alert({
+							type: "info",
+							text: `License: ${res.license}`,
+						});
+					});
+				},
+			},
+		],
+		ev.currentTarget ?? ev.target,
+	);
 }
 </script>
 

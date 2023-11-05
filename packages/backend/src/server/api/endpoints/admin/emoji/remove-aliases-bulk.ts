@@ -3,35 +3,41 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
-import { CustomEmojiService } from '@/core/CustomEmojiService.js';
+import { Injectable } from "@nestjs/common";
+import { Endpoint } from "@/server/api/endpoint-base.js";
+import { CustomEmojiService } from "@/core/CustomEmojiService.js";
 
 export const meta = {
-	tags: ['admin'],
+	tags: ["admin"],
 
 	requireCredential: true,
-	requireRolePolicy: 'canManageCustomEmojis',
+	requireRolePolicy: "canManageCustomEmojis",
 } as const;
 
 export const paramDef = {
-	type: 'object',
+	type: "object",
 	properties: {
-		ids: { type: 'array', items: {
-			type: 'string', format: 'misskey:id',
-		} },
-		aliases: { type: 'array', items: {
-			type: 'string',
-		} },
+		ids: {
+			type: "array",
+			items: {
+				type: "string",
+				format: "misskey:id",
+			},
+		},
+		aliases: {
+			type: "array",
+			items: {
+				type: "string",
+			},
+		},
 	},
-	required: ['ids', 'aliases'],
+	required: ["ids", "aliases"],
 } as const;
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-disable-line import/no-default-export
-	constructor(
-		private customEmojiService: CustomEmojiService,
-	) {
+export default class extends Endpoint<typeof meta, typeof paramDef> {
+	// eslint-disable-line import/no-default-export
+	constructor(private customEmojiService: CustomEmojiService) {
 		super(meta, paramDef, async (ps, me) => {
 			await this.customEmojiService.removeAliasesBulk(ps.ids, ps.aliases);
 		});

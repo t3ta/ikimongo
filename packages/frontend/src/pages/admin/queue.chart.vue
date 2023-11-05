@@ -4,59 +4,77 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div class="_gaps">
-	<div :class="$style.status">
-		<div :class="$style.statusItem" class="_panel"><div :class="$style.statusLabel">Process</div>{{ number(activeSincePrevTick) }}</div>
-		<div :class="$style.statusItem" class="_panel"><div :class="$style.statusLabel">Active</div>{{ number(active) }}</div>
-		<div :class="$style.statusItem" class="_panel"><div :class="$style.statusLabel">Waiting</div>{{ number(waiting) }}</div>
-		<div :class="$style.statusItem" class="_panel"><div :class="$style.statusLabel">Delayed</div>{{ number(delayed) }}</div>
-	</div>
-	<div :class="$style.charts">
-		<div :class="$style.chart">
-			<div :class="$style.chartTitle">Process</div>
-			<XChart ref="chartProcess" type="process"/>
-		</div>
-		<div :class="$style.chart">
-			<div :class="$style.chartTitle">Active</div>
-			<XChart ref="chartActive" type="active"/>
-		</div>
-		<div :class="$style.chart">
-			<div :class="$style.chartTitle">Delayed</div>
-			<XChart ref="chartDelayed" type="delayed"/>
-		</div>
-		<div :class="$style.chart">
-			<div :class="$style.chartTitle">Waiting</div>
-			<XChart ref="chartWaiting" type="waiting"/>
-		</div>
-	</div>
-	<MkFolder :defaultOpen="true" :max-height="250">
-		<template #icon><i class="ti ti-alert-triangle"></i></template>
-		<template #label>Errored instances</template>
-		<template #suffix>({{ number(jobs.reduce((a, b) => a + b[1], 0)) }} jobs)</template>
-
-		<div>
-			<div v-if="jobs.length > 0">
-				<div v-for="job in jobs" :key="job[0]">
-					<MkA :to="`/instance-info/${job[0]}`" behavior="window">{{ job[0] }}</MkA>
-					<span style="margin-left: 8px; opacity: 0.7;">({{ number(job[1]) }} jobs)</span>
-				</div>
+	<div class="_gaps">
+		<div :class="$style.status">
+			<div :class="$style.statusItem" class="_panel">
+				<div :class="$style.statusLabel">Process</div>
+				{{ number(activeSincePrevTick) }}
 			</div>
-			<span v-else style="opacity: 0.5;">{{ i18n.ts.noJobs }}</span>
+			<div :class="$style.statusItem" class="_panel">
+				<div :class="$style.statusLabel">Active</div>
+				{{ number(active) }}
+			</div>
+			<div :class="$style.statusItem" class="_panel">
+				<div :class="$style.statusLabel">Waiting</div>
+				{{ number(waiting) }}
+			</div>
+			<div :class="$style.statusItem" class="_panel">
+				<div :class="$style.statusLabel">Delayed</div>
+				{{ number(delayed) }}
+			</div>
 		</div>
-	</MkFolder>
-</div>
+		<div :class="$style.charts">
+			<div :class="$style.chart">
+				<div :class="$style.chartTitle">Process</div>
+				<XChart ref="chartProcess" type="process" />
+			</div>
+			<div :class="$style.chart">
+				<div :class="$style.chartTitle">Active</div>
+				<XChart ref="chartActive" type="active" />
+			</div>
+			<div :class="$style.chart">
+				<div :class="$style.chartTitle">Delayed</div>
+				<XChart ref="chartDelayed" type="delayed" />
+			</div>
+			<div :class="$style.chart">
+				<div :class="$style.chartTitle">Waiting</div>
+				<XChart ref="chartWaiting" type="waiting" />
+			</div>
+		</div>
+		<MkFolder :defaultOpen="true" :max-height="250">
+			<template #icon><i class="ti ti-alert-triangle"></i></template>
+			<template #label>Errored instances</template>
+			<template #suffix
+				>({{ number(jobs.reduce((a, b) => a + b[1], 0)) }} jobs)</template
+			>
+
+			<div>
+				<div v-if="jobs.length > 0">
+					<div v-for="job in jobs" :key="job[0]">
+						<MkA :to="`/instance-info/${job[0]}`" behavior="window">{{
+							job[0]
+						}}</MkA>
+						<span style="margin-left: 8px; opacity: 0.7"
+							>({{ number(job[1]) }} jobs)</span
+						>
+					</div>
+				</div>
+				<span v-else style="opacity: 0.5">{{ i18n.ts.noJobs }}</span>
+			</div>
+		</MkFolder>
+	</div>
 </template>
 
 <script lang="ts" setup>
-import { markRaw, onMounted, onUnmounted, ref } from 'vue';
-import XChart from './queue.chart.chart.vue';
-import number from '@/filters/number.js';
-import * as os from '@/os.js';
-import { useStream } from '@/stream.js';
-import { i18n } from '@/i18n.js';
-import MkFolder from '@/components/MkFolder.vue';
+import { markRaw, onMounted, onUnmounted, ref } from "vue";
+import XChart from "./queue.chart.chart.vue";
+import number from "@/filters/number.js";
+import * as os from "@/os.js";
+import { useStream } from "@/stream.js";
+import { i18n } from "@/i18n.js";
+import MkFolder from "@/components/mk_components/MkFolder.vue";
 
-const connection = markRaw(useStream().useChannel('queueStats'));
+const connection = markRaw(useStream().useChannel("queueStats"));
 
 const activeSincePrevTick = ref(0);
 const active = ref(0);
@@ -104,21 +122,28 @@ const onStatsLog = (statsLog) => {
 };
 
 onMounted(() => {
-	os.api(props.domain === 'inbox' ? 'admin/queue/inbox-delayed' : props.domain === 'deliver' ? 'admin/queue/deliver-delayed' : null, {}).then(result => {
+	os.api(
+		props.domain === "inbox"
+			? "admin/queue/inbox-delayed"
+			: props.domain === "deliver"
+			? "admin/queue/deliver-delayed"
+			: null,
+		{},
+	).then((result) => {
 		jobs.value = result;
 	});
 
-	connection.on('stats', onStats);
-	connection.on('statsLog', onStatsLog);
-	connection.send('requestLog', {
+	connection.on("stats", onStats);
+	connection.on("statsLog", onStatsLog);
+	connection.send("requestLog", {
 		id: Math.random().toString().substring(2, 10),
 		length: 200,
 	});
 });
 
 onUnmounted(() => {
-	connection.off('stats', onStats);
-	connection.off('statsLog', onStatsLog);
+	connection.off("stats", onStats);
+	connection.off("statsLog", onStatsLog);
 	connection.dispose();
 });
 </script>

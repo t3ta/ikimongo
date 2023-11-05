@@ -4,31 +4,31 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div>
-	<MkLoading v-if="fetching"/>
-	<div v-show="!fetching" :class="$style.root">
-		<div class="charts _panel">
-			<div class="chart">
-				<canvas ref="chartEl2"></canvas>
-			</div>
-			<div class="chart">
-				<canvas ref="chartEl"></canvas>
+	<div>
+		<MkLoading v-if="fetching" />
+		<div v-show="!fetching" :class="$style.root">
+			<div class="charts _panel">
+				<div class="chart">
+					<canvas ref="chartEl2"></canvas>
+				</div>
+				<div class="chart">
+					<canvas ref="chartEl"></canvas>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from 'vue';
-import { Chart } from 'chart.js';
-import gradient from 'chartjs-plugin-gradient';
-import * as os from '@/os.js';
-import { useChartTooltip } from '@/scripts/use-chart-tooltip.js';
-import { chartVLine } from '@/scripts/chart-vline.js';
-import { defaultStore } from '@/store.js';
-import { alpha } from '@/scripts/color.js';
-import { initChart } from '@/scripts/init-chart.js';
+import { onMounted } from "vue";
+import { Chart } from "chart.js";
+import gradient from "chartjs-plugin-gradient";
+import * as os from "@/os.js";
+import { useChartTooltip } from "@/scripts/use-chart-tooltip.js";
+import { chartVLine } from "@/scripts/chart-vline.js";
+import { defaultStore } from "@/store.js";
+import { alpha } from "@/scripts/color.js";
+import { initChart } from "@/scripts/init-chart.js";
 
 initChart();
 
@@ -65,47 +65,55 @@ onMounted(async () => {
 		}));
 	};
 
-	const raw = await os.api('charts/ap-request', { limit: chartLimit, span: 'day' });
+	const raw = await os.api("charts/ap-request", {
+		limit: chartLimit,
+		span: "day",
+	});
 
-	const vLineColor = defaultStore.state.darkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)';
-	const succColor = '#87e000';
-	const failColor = '#ff4400';
+	const vLineColor = defaultStore.state.darkMode
+		? "rgba(255, 255, 255, 0.2)"
+		: "rgba(0, 0, 0, 0.2)";
+	const succColor = "#87e000";
+	const failColor = "#ff4400";
 
 	const succMax = Math.max(...raw.deliverSucceeded);
 	const failMax = Math.max(...raw.deliverFailed);
 
 	new Chart(chartEl, {
-		type: 'line',
+		type: "line",
 		data: {
-			datasets: [{
-				stack: 'a',
-				parsing: false,
-				label: 'Out: Succ',
-				data: format(raw.deliverSucceeded).slice().reverse(),
-				tension: 0.3,
-				pointRadius: 0,
-				borderWidth: 2,
-				borderColor: succColor,
-				borderJoinStyle: 'round',
-				borderRadius: 4,
-				backgroundColor: alpha(succColor, 0.35),
-				fill: true,
-				clip: 8,
-			}, {
-				stack: 'a',
-				parsing: false,
-				label: 'Out: Fail',
-				data: formatMinus(raw.deliverFailed).slice().reverse(),
-				tension: 0.3,
-				pointRadius: 0,
-				borderWidth: 2,
-				borderColor: failColor,
-				borderJoinStyle: 'round',
-				borderRadius: 4,
-				backgroundColor: alpha(failColor, 0.35),
-				fill: true,
-				clip: 8,
-			}],
+			datasets: [
+				{
+					stack: "a",
+					parsing: false,
+					label: "Out: Succ",
+					data: format(raw.deliverSucceeded).slice().reverse(),
+					tension: 0.3,
+					pointRadius: 0,
+					borderWidth: 2,
+					borderColor: succColor,
+					borderJoinStyle: "round",
+					borderRadius: 4,
+					backgroundColor: alpha(succColor, 0.35),
+					fill: true,
+					clip: 8,
+				},
+				{
+					stack: "a",
+					parsing: false,
+					label: "Out: Fail",
+					data: formatMinus(raw.deliverFailed).slice().reverse(),
+					tension: 0.3,
+					pointRadius: 0,
+					borderWidth: 2,
+					borderColor: failColor,
+					borderJoinStyle: "round",
+					borderRadius: 4,
+					backgroundColor: alpha(failColor, 0.35),
+					fill: true,
+					clip: 8,
+				},
+			],
 		},
 		options: {
 			aspectRatio: 2.5,
@@ -119,12 +127,12 @@ onMounted(async () => {
 			},
 			scales: {
 				x: {
-					type: 'time',
+					type: "time",
 					stacked: true,
 					offset: false,
 					time: {
 						stepSize: 1,
-						unit: 'day',
+						unit: "day",
 					},
 					grid: {
 						display: true,
@@ -138,7 +146,7 @@ onMounted(async () => {
 				},
 				y: {
 					stacked: true,
-					position: 'left',
+					position: "left",
 					suggestedMax: 10,
 					grid: {
 						display: true,
@@ -146,13 +154,13 @@ onMounted(async () => {
 					ticks: {
 						display: true,
 						//mirror: true,
-						callback: (value, index, values) => value < 0 ? -value : value,
+						callback: (value, index, values) => (value < 0 ? -value : value),
 					},
 				},
 			},
 			interaction: {
 				intersect: false,
-				mode: 'index',
+				mode: "index",
 			},
 			elements: {
 				point: {
@@ -166,7 +174,7 @@ onMounted(async () => {
 				},
 				tooltip: {
 					enabled: false,
-					mode: 'index',
+					mode: "index",
 					animation: {
 						duration: 0,
 					},
@@ -179,23 +187,25 @@ onMounted(async () => {
 	});
 
 	new Chart(chartEl2, {
-		type: 'bar',
+		type: "bar",
 		data: {
-			datasets: [{
-				parsing: false,
-				label: 'In',
-				data: format(raw.inboxReceived).slice().reverse(),
-				tension: 0.3,
-				pointRadius: 0,
-				borderWidth: 0,
-				borderJoinStyle: 'round',
-				borderRadius: 4,
-				backgroundColor: '#0cc2d6',
-				barPercentage: 0.8,
-				categoryPercentage: 0.9,
-				fill: true,
-				clip: 8,
-			}],
+			datasets: [
+				{
+					parsing: false,
+					label: "In",
+					data: format(raw.inboxReceived).slice().reverse(),
+					tension: 0.3,
+					pointRadius: 0,
+					borderWidth: 0,
+					borderJoinStyle: "round",
+					borderRadius: 4,
+					backgroundColor: "#0cc2d6",
+					barPercentage: 0.8,
+					categoryPercentage: 0.9,
+					fill: true,
+					clip: 8,
+				},
+			],
 		},
 		options: {
 			aspectRatio: 5,
@@ -209,14 +219,14 @@ onMounted(async () => {
 			},
 			scales: {
 				x: {
-					type: 'time',
+					type: "time",
 					offset: false,
 					time: {
 						stepSize: 1,
-						unit: 'day',
+						unit: "day",
 						displayFormats: {
-							day: 'M/d',
-							month: 'Y/M',
+							day: "M/d",
+							month: "Y/M",
 						},
 					},
 					grid: {
@@ -230,7 +240,7 @@ onMounted(async () => {
 					min: getDate(chartLimit).getTime(),
 				},
 				y: {
-					position: 'left',
+					position: "left",
 					suggestedMax: 10,
 					grid: {
 						display: true,
@@ -239,7 +249,7 @@ onMounted(async () => {
 			},
 			interaction: {
 				intersect: false,
-				mode: 'index',
+				mode: "index",
 			},
 			elements: {
 				point: {
@@ -253,7 +263,7 @@ onMounted(async () => {
 				},
 				tooltip: {
 					enabled: false,
-					mode: 'index',
+					mode: "index",
 					animation: {
 						duration: 0,
 					},
@@ -284,4 +294,3 @@ onMounted(async () => {
 	}
 }
 </style>
-

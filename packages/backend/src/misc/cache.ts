@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import * as Redis from 'ioredis';
-import { bindThis } from '@/decorators.js';
+import * as Redis from "ioredis";
+import { bindThis } from "@/decorators.js";
 
 export class RedisKVCache<T> {
 	private redisClient: Redis.Redis;
@@ -15,13 +15,17 @@ export class RedisKVCache<T> {
 	private toRedisConverter: (value: T) => string;
 	private fromRedisConverter: (value: string) => T | undefined;
 
-	constructor(redisClient: RedisKVCache<T>['redisClient'], name: RedisKVCache<T>['name'], opts: {
-		lifetime: RedisKVCache<T>['lifetime'];
-		memoryCacheLifetime: number;
-		fetcher: RedisKVCache<T>['fetcher'];
-		toRedisConverter: RedisKVCache<T>['toRedisConverter'];
-		fromRedisConverter: RedisKVCache<T>['fromRedisConverter'];
-	}) {
+	constructor(
+		redisClient: RedisKVCache<T>["redisClient"],
+		name: RedisKVCache<T>["name"],
+		opts: {
+			lifetime: RedisKVCache<T>["lifetime"];
+			memoryCacheLifetime: number;
+			fetcher: RedisKVCache<T>["fetcher"];
+			toRedisConverter: RedisKVCache<T>["toRedisConverter"];
+			fromRedisConverter: RedisKVCache<T>["fromRedisConverter"];
+		},
+	) {
 		this.redisClient = redisClient;
 		this.name = name;
 		this.lifetime = opts.lifetime;
@@ -43,7 +47,8 @@ export class RedisKVCache<T> {
 			await this.redisClient.set(
 				`kvcache:${this.name}:${key}`,
 				this.toRedisConverter(value),
-				'EX', Math.round(this.lifetime / 1000),
+				"EX",
+				Math.round(this.lifetime / 1000),
 			);
 		}
 	}
@@ -109,13 +114,17 @@ export class RedisSingleCache<T> {
 	private toRedisConverter: (value: T) => string;
 	private fromRedisConverter: (value: string) => T | undefined;
 
-	constructor(redisClient: RedisSingleCache<T>['redisClient'], name: RedisSingleCache<T>['name'], opts: {
-		lifetime: RedisSingleCache<T>['lifetime'];
-		memoryCacheLifetime: number;
-		fetcher: RedisSingleCache<T>['fetcher'];
-		toRedisConverter: RedisSingleCache<T>['toRedisConverter'];
-		fromRedisConverter: RedisSingleCache<T>['fromRedisConverter'];
-	}) {
+	constructor(
+		redisClient: RedisSingleCache<T>["redisClient"],
+		name: RedisSingleCache<T>["name"],
+		opts: {
+			lifetime: RedisSingleCache<T>["lifetime"];
+			memoryCacheLifetime: number;
+			fetcher: RedisSingleCache<T>["fetcher"];
+			toRedisConverter: RedisSingleCache<T>["toRedisConverter"];
+			fromRedisConverter: RedisSingleCache<T>["fromRedisConverter"];
+		},
+	) {
 		this.redisClient = redisClient;
 		this.name = name;
 		this.lifetime = opts.lifetime;
@@ -137,7 +146,8 @@ export class RedisSingleCache<T> {
 			await this.redisClient.set(
 				`singlecache:${this.name}`,
 				this.toRedisConverter(value),
-				'EX', Math.round(this.lifetime / 1000),
+				"EX",
+				Math.round(this.lifetime / 1000),
 			);
 		}
 	}
@@ -191,27 +201,33 @@ function nothingToDo<T, V = T>(value: T): V {
 }
 
 export class MemoryKVCache<T, V = T> {
-	public cache: Map<string, { date: number; value: V; }>;
+	public cache: Map<string, { date: number; value: V }>;
 	private lifetime: number;
 	private gcIntervalHandle: NodeJS.Timeout;
 	private toMapConverter: (value: T) => V;
 	private fromMapConverter: (cached: V) => T | undefined;
 
-	constructor(lifetime: MemoryKVCache<never>['lifetime'], options: {
-		toMapConverter: (value: T) => V;
-		fromMapConverter: (cached: V) => T | undefined;
-	} = {
-		toMapConverter: nothingToDo,
-		fromMapConverter: nothingToDo,
-	}) {
+	constructor(
+		lifetime: MemoryKVCache<never>["lifetime"],
+		options: {
+			toMapConverter: (value: T) => V;
+			fromMapConverter: (cached: V) => T | undefined;
+		} = {
+			toMapConverter: nothingToDo,
+			fromMapConverter: nothingToDo,
+		},
+	) {
 		this.cache = new Map();
 		this.lifetime = lifetime;
 		this.toMapConverter = options.toMapConverter;
 		this.fromMapConverter = options.fromMapConverter;
 
-		this.gcIntervalHandle = setInterval(() => {
-			this.gc();
-		}, 1000 * 60 * 3);
+		this.gcIntervalHandle = setInterval(
+			() => {
+				this.gc();
+			},
+			1000 * 60 * 3,
+		);
 	}
 
 	@bindThis
@@ -226,7 +242,7 @@ export class MemoryKVCache<T, V = T> {
 	public get(key: string): T | undefined {
 		const cached = this.cache.get(key);
 		if (cached == null) return undefined;
-		if ((Date.now() - cached.date) > this.lifetime) {
+		if (Date.now() - cached.date > this.lifetime) {
 			this.cache.delete(key);
 			return undefined;
 		}
@@ -244,7 +260,11 @@ export class MemoryKVCache<T, V = T> {
 	 * fetcherの引数はcacheに保存されている値があれば渡されます
 	 */
 	@bindThis
-	public async fetch(key: string, fetcher: (value: V | undefined) => Promise<T>, validator?: (cachedValue: T) => boolean): Promise<T> {
+	public async fetch(
+		key: string,
+		fetcher: (value: V | undefined) => Promise<T>,
+		validator?: (cachedValue: T) => boolean,
+	): Promise<T> {
 		const cachedValue = this.get(key);
 		if (cachedValue !== undefined) {
 			if (validator) {
@@ -270,7 +290,11 @@ export class MemoryKVCache<T, V = T> {
 	 * fetcherの引数はcacheに保存されている値があれば渡されます
 	 */
 	@bindThis
-	public async fetchMaybe(key: string, fetcher: (value: V | undefined) => Promise<T | undefined>, validator?: (cachedValue: T) => boolean): Promise<T | undefined> {
+	public async fetchMaybe(
+		key: string,
+		fetcher: (value: V | undefined) => Promise<T | undefined>,
+		validator?: (cachedValue: T) => boolean,
+	): Promise<T | undefined> {
 		const cachedValue = this.get(key);
 		if (cachedValue !== undefined) {
 			if (validator) {
@@ -296,7 +320,7 @@ export class MemoryKVCache<T, V = T> {
 	public gc(): void {
 		const now = Date.now();
 		for (const [key, { date }] of this.cache.entries()) {
-			if ((now - date) > this.lifetime) {
+			if (now - date > this.lifetime) {
 				this.cache.delete(key);
 			}
 		}
@@ -313,7 +337,7 @@ export class MemorySingleCache<T> {
 	private value: T | undefined;
 	private lifetime: number;
 
-	constructor(lifetime: MemorySingleCache<never>['lifetime']) {
+	constructor(lifetime: MemorySingleCache<never>["lifetime"]) {
 		this.lifetime = lifetime;
 	}
 
@@ -326,7 +350,7 @@ export class MemorySingleCache<T> {
 	@bindThis
 	public get(): T | undefined {
 		if (this.cachedAt == null) return undefined;
-		if ((Date.now() - this.cachedAt) > this.lifetime) {
+		if (Date.now() - this.cachedAt > this.lifetime) {
 			this.value = undefined;
 			this.cachedAt = null;
 			return undefined;
@@ -345,7 +369,10 @@ export class MemorySingleCache<T> {
 	 * optional: キャッシュが存在してもvalidatorでfalseを返すとキャッシュ無効扱いにします
 	 */
 	@bindThis
-	public async fetch(fetcher: () => Promise<T>, validator?: (cachedValue: T) => boolean): Promise<T> {
+	public async fetch(
+		fetcher: () => Promise<T>,
+		validator?: (cachedValue: T) => boolean,
+	): Promise<T> {
 		const cachedValue = this.get();
 		if (cachedValue !== undefined) {
 			if (validator) {
@@ -370,7 +397,10 @@ export class MemorySingleCache<T> {
 	 * optional: キャッシュが存在してもvalidatorでfalseを返すとキャッシュ無効扱いにします
 	 */
 	@bindThis
-	public async fetchMaybe(fetcher: () => Promise<T | undefined>, validator?: (cachedValue: T) => boolean): Promise<T | undefined> {
+	public async fetchMaybe(
+		fetcher: () => Promise<T | undefined>,
+		validator?: (cachedValue: T) => boolean,
+	): Promise<T | undefined> {
 		const cachedValue = this.get();
 		if (cachedValue !== undefined) {
 			if (validator) {

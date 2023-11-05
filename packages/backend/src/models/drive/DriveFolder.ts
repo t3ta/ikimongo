@@ -3,24 +3,31 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { JoinColumn, ManyToOne, Entity, PrimaryColumn, Index, Column } from 'typeorm';
-import { id } from '../util/id.js';
-import { MiUser } from '../user/User.js';
+import {
+	JoinColumn,
+	ManyToOne,
+	Entity,
+	PrimaryColumn,
+	Index,
+	Column,
+} from "typeorm";
+import { id } from "../util/id.js";
+import { MiUser } from "../user/User.js";
 
-@Entity('drive_folder')
+@Entity("drive_folder")
 export class MiDriveFolder {
 	@PrimaryColumn(id())
 	public id: string;
 
 	@Index()
-	@Column('timestamp with time zone', {
-		comment: 'The created date of the DriveFolder.',
+	@Column("timestamp with time zone", {
+		comment: "The created date of the DriveFolder.",
 	})
 	public createdAt: Date;
 
-	@Column('varchar', {
+	@Column("varchar", {
 		length: 128,
-		comment: 'The name of the DriveFolder.',
+		comment: "The name of the DriveFolder.",
 	})
 	public name: string;
 
@@ -28,12 +35,12 @@ export class MiDriveFolder {
 	@Column({
 		...id(),
 		nullable: true,
-		comment: 'The owner ID.',
+		comment: "The owner ID.",
 	})
-	public userId: MiUser['id'] | null;
+	public userId: MiUser["id"] | null;
 
-	@ManyToOne(type => MiUser, {
-		onDelete: 'CASCADE',
+	@ManyToOne((type) => MiUser, {
+		onDelete: "CASCADE",
 	})
 	@JoinColumn()
 	public user: MiUser | null;
@@ -42,12 +49,13 @@ export class MiDriveFolder {
 	@Column({
 		...id(),
 		nullable: true,
-		comment: 'The parent folder ID. If null, it means the DriveFolder is located in root.',
+		comment:
+			"The parent folder ID. If null, it means the DriveFolder is located in root.",
 	})
-	public parentId: MiDriveFolder['id'] | null;
+	public parentId: MiDriveFolder["id"] | null;
 
-	@ManyToOne(type => MiDriveFolder, {
-		onDelete: 'SET NULL',
+	@ManyToOne((type) => MiDriveFolder, {
+		onDelete: "SET NULL",
 	})
 	@JoinColumn()
 	public parent: MiDriveFolder | null;

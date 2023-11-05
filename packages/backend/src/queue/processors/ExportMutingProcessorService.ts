@@ -3,20 +3,24 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import * as fs from 'node:fs';
-import { Inject, Injectable } from '@nestjs/common';
-import { IsNull, MoreThan } from 'typeorm';
-import { format as dateFormat } from 'date-fns';
-import { DI } from '@/di-symbols.js';
-import type { MutingsRepository, UsersRepository, MiMuting } from '@/models/_.js';
-import type Logger from '@/logger.js';
-import { DriveService } from '@/core/DriveService.js';
-import { createTemp } from '@/misc/create-temp.js';
-import { UtilityService } from '@/core/UtilityService.js';
-import { bindThis } from '@/decorators.js';
-import { QueueLoggerService } from '../QueueLoggerService.js';
-import type * as Bull from 'bullmq';
-import type { DbJobDataWithUser } from '../types.js';
+import * as fs from "node:fs";
+import { Inject, Injectable } from "@nestjs/common";
+import { IsNull, MoreThan } from "typeorm";
+import { format as dateFormat } from "date-fns";
+import { DI } from "@/di-symbols.js";
+import type {
+	MutingsRepository,
+	UsersRepository,
+	MiMuting,
+} from "@/models/_.js";
+import type Logger from "@/logger.js";
+import { DriveService } from "@/core/DriveService.js";
+import { createTemp } from "@/misc/create-temp.js";
+import { UtilityService } from "@/core/UtilityService.js";
+import { bindThis } from "@/decorators.js";
+import { QueueLoggerService } from "../QueueLoggerService.js";
+import type * as Bull from "bullmq";
+import type { DbJobDataWithUser } from "../types.js";
 
 @Injectable()
 export class ExportMutingProcessorService {
@@ -33,7 +37,8 @@ export class ExportMutingProcessorService {
 		private driveService: DriveService,
 		private queueLoggerService: QueueLoggerService,
 	) {
-		this.logger = this.queueLoggerService.logger.createSubLogger('export-muting');
+		this.logger =
+			this.queueLoggerService.logger.createSubLogger("export-muting");
 	}
 
 	@bindThis
@@ -51,10 +56,10 @@ export class ExportMutingProcessorService {
 		this.logger.info(`Temp file is ${path}`);
 
 		try {
-			const stream = fs.createWriteStream(path, { flags: 'a' });
+			const stream = fs.createWriteStream(path, { flags: "a" });
 
 			let exportedCount = 0;
-			let cursor: MiMuting['id'] | null = null;
+			let cursor: MiMuting["id"] | null = null;
 
 			while (true) {
 				const mutes = await this.mutingsRepository.find({
@@ -79,12 +84,16 @@ export class ExportMutingProcessorService {
 				for (const mute of mutes) {
 					const u = await this.usersRepository.findOneBy({ id: mute.muteeId });
 					if (u == null) {
-						exportedCount++; continue;
+						exportedCount++;
+						continue;
 					}
 
-					const content = this.utilityService.getFullApAccount(u.username, u.host);
+					const content = this.utilityService.getFullApAccount(
+						u.username,
+						u.host,
+					);
 					await new Promise<void>((res, rej) => {
-						stream.write(content + '\n', err => {
+						stream.write(content + "\n", (err) => {
 							if (err) {
 								this.logger.error(err);
 								rej(err);
@@ -106,8 +115,15 @@ export class ExportMutingProcessorService {
 			stream.end();
 			this.logger.succ(`Exported to: ${path}`);
 
-			const fileName = 'mute-' + dateFormat(new Date(), 'yyyy-MM-dd-HH-mm-ss') + '.csv';
-			const driveFile = await this.driveService.addFile({ user, path, name: fileName, force: true, ext: 'csv' });
+			const fileName =
+				"mute-" + dateFormat(new Date(), "yyyy-MM-dd-HH-mm-ss") + ".csv";
+			const driveFile = await this.driveService.addFile({
+				user,
+				path,
+				name: fileName,
+				force: true,
+				ext: "csv",
+			});
 
 			this.logger.succ(`Exported to: ${driveFile.id}`);
 		} finally {

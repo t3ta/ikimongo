@@ -4,33 +4,44 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkStickyContainer>
-	<template #header><MkPageHeader :actions="headerActions" :tabs="headerTabs"/></template>
-	<MkSpacer :contentMax="800">
-		<div ref="rootEl" v-hotkey.global="keymap">
-			<div v-if="queue > 0" :class="$style.new"><button class="_buttonPrimary" :class="$style.newButton" @click="top()">{{ i18n.ts.newNoteRecived }}</button></div>
-			<div :class="$style.tl">
-				<MkTimeline
-					ref="tlEl" :key="antennaId"
-					src="antenna"
-					:antenna="antennaId"
-					:sound="true"
-					@queue="queueUpdated"
-				/>
+	<MkStickyContainer>
+		<template #header
+			><MkPageHeader :actions="headerActions" :tabs="headerTabs"
+		/></template>
+		<MkSpacer :contentMax="800">
+			<div ref="rootEl" v-hotkey.global="keymap">
+				<div v-if="queue > 0" :class="$style.new">
+					<button
+						class="_buttonPrimary"
+						:class="$style.newButton"
+						@click="top()"
+					>
+						{{ i18n.ts.newNoteRecived }}
+					</button>
+				</div>
+				<div :class="$style.tl">
+					<MkTimeline
+						ref="tlEl"
+						:key="antennaId"
+						src="antenna"
+						:antenna="antennaId"
+						:sound="true"
+						@queue="queueUpdated"
+					/>
+				</div>
 			</div>
-		</div>
-	</MkSpacer>
-</MkStickyContainer>
+		</MkSpacer>
+	</MkStickyContainer>
 </template>
 
 <script lang="ts" setup>
-import { computed, watch } from 'vue';
-import MkTimeline from '@/components/MkTimeline.vue';
-import { scroll } from '@/scripts/scroll.js';
-import * as os from '@/os.js';
-import { useRouter } from '@/router.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
-import { i18n } from '@/i18n.js';
+import { computed, watch } from "vue";
+import MkTimeline from "@/components/mk_components/MkTimeline.vue";
+import { scroll } from "@/scripts/scroll.js";
+import * as os from "@/os.js";
+import { useRouter } from "@/router.js";
+import { definePageMetadata } from "@/scripts/page-metadata.js";
+import { i18n } from "@/i18n.js";
 
 const router = useRouter();
 
@@ -43,7 +54,7 @@ let queue = $ref(0);
 let rootEl = $shallowRef<HTMLElement>();
 let tlEl = $shallowRef<InstanceType<typeof MkTimeline>>();
 const keymap = $computed(() => ({
-	't': focus,
+	t: focus,
 }));
 
 function queueUpdated(q) {
@@ -71,28 +82,45 @@ function focus() {
 	tlEl.focus();
 }
 
-watch(() => props.antennaId, async () => {
-	antenna = await os.api('antennas/show', {
-		antennaId: props.antennaId,
-	});
-}, { immediate: true });
+watch(
+	() => props.antennaId,
+	async () => {
+		antenna = await os.api("antennas/show", {
+			antennaId: props.antennaId,
+		});
+	},
+	{ immediate: true },
+);
 
-const headerActions = $computed(() => antenna ? [{
-	icon: 'ti ti-calendar-time',
-	text: i18n.ts.jumpToSpecifiedDate,
-	handler: timetravel,
-}, {
-	icon: 'ti ti-settings',
-	text: i18n.ts.settings,
-	handler: settings,
-}] : []);
+const headerActions = $computed(() =>
+	antenna
+		? [
+				{
+					icon: "ti ti-calendar-time",
+					text: i18n.ts.jumpToSpecifiedDate,
+					handler: timetravel,
+				},
+				{
+					icon: "ti ti-settings",
+					text: i18n.ts.settings,
+					handler: settings,
+				},
+		  ]
+		: [],
+);
 
 const headerTabs = $computed(() => []);
 
-definePageMetadata(computed(() => antenna ? {
-	title: antenna.name,
-	icon: 'ti ti-antenna',
-} : null));
+definePageMetadata(
+	computed(() =>
+		antenna
+			? {
+					title: antenna.name,
+					icon: "ti ti-antenna",
+			  }
+			: null,
+	),
+);
 </script>
 
 <style lang="scss" module>

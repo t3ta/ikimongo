@@ -3,23 +3,27 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import * as fs from 'node:fs';
-import { Inject, Injectable } from '@nestjs/common';
-import { MoreThan } from 'typeorm';
-import { format as dateFormat } from 'date-fns';
-import { DI } from '@/di-symbols.js';
-import type { NotesRepository, PollsRepository, UsersRepository } from '@/models/_.js';
-import type Logger from '@/logger.js';
-import { DriveService } from '@/core/DriveService.js';
-import { createTemp } from '@/misc/create-temp.js';
-import type { MiPoll } from '@/models/poll/Poll.js';
-import type { MiNote } from '@/models/note/Note.js';
-import { bindThis } from '@/decorators.js';
-import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
-import { Packed } from '@/misc/json-schema.js';
-import { QueueLoggerService } from '../QueueLoggerService.js';
-import type * as Bull from 'bullmq';
-import type { DbJobDataWithUser } from '../types.js';
+import * as fs from "node:fs";
+import { Inject, Injectable } from "@nestjs/common";
+import { MoreThan } from "typeorm";
+import { format as dateFormat } from "date-fns";
+import { DI } from "@/di-symbols.js";
+import type {
+	NotesRepository,
+	PollsRepository,
+	UsersRepository,
+} from "@/models/_.js";
+import type Logger from "@/logger.js";
+import { DriveService } from "@/core/DriveService.js";
+import { createTemp } from "@/misc/create-temp.js";
+import type { MiPoll } from "@/models/poll/Poll.js";
+import type { MiNote } from "@/models/note/Note.js";
+import { bindThis } from "@/decorators.js";
+import { DriveFileEntityService } from "@/core/entities/DriveFileEntityService.js";
+import { Packed } from "@/misc/json-schema.js";
+import { QueueLoggerService } from "../QueueLoggerService.js";
+import type * as Bull from "bullmq";
+import type { DbJobDataWithUser } from "../types.js";
 
 @Injectable()
 export class ExportNotesProcessorService {
@@ -40,7 +44,8 @@ export class ExportNotesProcessorService {
 
 		private driveFileEntityService: DriveFileEntityService,
 	) {
-		this.logger = this.queueLoggerService.logger.createSubLogger('export-notes');
+		this.logger =
+			this.queueLoggerService.logger.createSubLogger("export-notes");
 	}
 
 	@bindThis
@@ -58,11 +63,11 @@ export class ExportNotesProcessorService {
 		this.logger.info(`Temp file is ${path}`);
 
 		try {
-			const stream = fs.createWriteStream(path, { flags: 'a' });
+			const stream = fs.createWriteStream(path, { flags: "a" });
 
 			const write = (text: string): Promise<void> => {
 				return new Promise<void>((res, rej) => {
-					stream.write(text, err => {
+					stream.write(text, (err) => {
 						if (err) {
 							this.logger.error(err);
 							rej(err);
@@ -73,13 +78,13 @@ export class ExportNotesProcessorService {
 				});
 			};
 
-			await write('[');
+			await write("[");
 
 			let exportedNotesCount = 0;
-			let cursor: MiNote['id'] | null = null;
+			let cursor: MiNote["id"] | null = null;
 
 			while (true) {
-				const notes = await this.notesRepository.find({
+				const notes = (await this.notesRepository.find({
 					where: {
 						userId: user.id,
 						...(cursor ? { id: MoreThan(cursor) } : {}),
@@ -88,7 +93,7 @@ export class ExportNotesProcessorService {
 					order: {
 						id: 1,
 					},
-				}) as MiNote[];
+				})) as MiNote[];
 
 				if (notes.length === 0) {
 					job.updateProgress(100);
@@ -100,12 +105,16 @@ export class ExportNotesProcessorService {
 				for (const note of notes) {
 					let poll: MiPoll | undefined;
 					if (note.hasPoll) {
-						poll = await this.pollsRepository.findOneByOrFail({ noteId: note.id });
+						poll = await this.pollsRepository.findOneByOrFail({
+							noteId: note.id,
+						});
 					}
-					const files = await this.driveFileEntityService.packManyByIds(note.fileIds);
+					const files = await this.driveFileEntityService.packManyByIds(
+						note.fileIds,
+					);
 					const content = JSON.stringify(serialize(note, poll, files));
 					const isFirst = exportedNotesCount === 0;
-					await write(isFirst ? content : ',\n' + content);
+					await write(isFirst ? content : ",\n" + content);
 					exportedNotesCount++;
 				}
 
@@ -116,13 +125,20 @@ export class ExportNotesProcessorService {
 				job.updateProgress(exportedNotesCount / total);
 			}
 
-			await write(']');
+			await write("]");
 
 			stream.end();
 			this.logger.succ(`Exported to: ${path}`);
 
-			const fileName = 'notes-' + dateFormat(new Date(), 'yyyy-MM-dd-HH-mm-ss') + '.json';
-			const driveFile = await this.driveService.addFile({ user, path, name: fileName, force: true, ext: 'json' });
+			const fileName =
+				"notes-" + dateFormat(new Date(), "yyyy-MM-dd-HH-mm-ss") + ".json";
+			const driveFile = await this.driveService.addFile({
+				user,
+				path,
+				name: fileName,
+				force: true,
+				ext: "json",
+			});
 
 			this.logger.succ(`Exported to: ${driveFile.id}`);
 		} finally {
@@ -131,7 +147,11 @@ export class ExportNotesProcessorService {
 	}
 }
 
-function serialize(note: MiNote, poll: MiPoll | null = null, files: Packed<'DriveFile'>[]): Record<string, unknown> {
+function serialize(
+	note: MiNote,
+	poll: MiPoll | null = null,
+	files: Packed<"DriveFile">[],
+): Record<string, unknown> {
 	return {
 		id: note.id,
 		text: note.text,

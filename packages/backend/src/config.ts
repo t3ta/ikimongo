@@ -3,11 +3,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import * as fs from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, resolve } from 'node:path';
-import * as yaml from 'js-yaml';
-import type { RedisOptions } from 'ioredis';
+import * as fs from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
+import * as yaml from "js-yaml";
+import type { RedisOptions } from "ioredis";
 
 type RedisOptionsSource = Partial<RedisOptions> & {
 	host: string;
@@ -53,7 +53,7 @@ type Source = {
 		apiKey: string;
 		ssl?: boolean;
 		index: string;
-		scope?: 'local' | 'global' | string[];
+		scope?: "local" | "global" | string[];
 	};
 
 	proxy?: string;
@@ -69,7 +69,7 @@ type Source = {
 	id: string;
 
 	outgoingAddress?: string;
-	outgoingAddressFamily?: 'ipv4' | 'ipv6' | 'dual';
+	outgoingAddressFamily?: "ipv4" | "ipv6" | "dual";
 
 	deliverJobConcurrency?: number;
 	inboxJobConcurrency?: number;
@@ -108,21 +108,25 @@ export type Config = {
 		extra?: { [x: string]: string };
 	};
 	dbReplications: boolean | undefined;
-	dbSlaves: {
-		host: string;
-		port: number;
-		db: string;
-		user: string;
-		pass: string;
-	}[] | undefined;
-	meilisearch: {
-		host: string;
-		port: string;
-		apiKey: string;
-		ssl?: boolean;
-		index: string;
-		scope?: 'local' | 'global' | string[];
-	} | undefined;
+	dbSlaves:
+		| {
+				host: string;
+				port: number;
+				db: string;
+				user: string;
+				pass: string;
+		  }[]
+		| undefined;
+	meilisearch:
+		| {
+				host: string;
+				port: string;
+				apiKey: string;
+				ssl?: boolean;
+				index: string;
+				scope?: "local" | "global" | string[];
+		  }
+		| undefined;
 	proxy: string | undefined;
 	proxySmtp: string | undefined;
 	proxyBypassHosts: string[] | undefined;
@@ -131,7 +135,7 @@ export type Config = {
 	clusterLimit: number | undefined;
 	id: string;
 	outgoingAddress: string | undefined;
-	outgoingAddressFamily: 'ipv4' | 'ipv6' | 'dual' | undefined;
+	outgoingAddressFamily: "ipv4" | "ipv6" | "dual" | undefined;
 	deliverJobConcurrency: number | undefined;
 	inboxJobConcurrency: number | undefined;
 	relashionshipJobConcurrency: number | undefined;
@@ -180,27 +184,38 @@ const dir = `${_dirname}/../../../.config`;
  */
 const path = process.env.MISSKEY_CONFIG_YML
 	? resolve(dir, process.env.MISSKEY_CONFIG_YML)
-	: process.env.NODE_ENV === 'test'
-		? resolve(dir, 'test.yml')
-		: resolve(dir, 'default.yml');
+	: process.env.NODE_ENV === "test"
+	? resolve(dir, "test.yml")
+	: resolve(dir, "default.yml");
 
 export function loadConfig(): Config {
-	const meta = JSON.parse(fs.readFileSync(`${_dirname}/../../../built/meta.json`, 'utf-8'));
-	const clientManifestExists = fs.existsSync(_dirname + '/../../../built/_vite_/manifest.json');
-	const clientManifest = clientManifestExists ?
-		JSON.parse(fs.readFileSync(`${_dirname}/../../../built/_vite_/manifest.json`, 'utf-8'))
-		: { 'src/_boot_.ts': { file: 'src/_boot_.ts' } };
-	const config = yaml.load(fs.readFileSync(path, 'utf-8')) as Source;
+	const meta = JSON.parse(
+		fs.readFileSync(`${_dirname}/../../../built/meta.json`, "utf-8"),
+	);
+	const clientManifestExists = fs.existsSync(
+		_dirname + "/../../../built/_vite_/manifest.json",
+	);
+	const clientManifest = clientManifestExists
+		? JSON.parse(
+				fs.readFileSync(
+					`${_dirname}/../../../built/_vite_/manifest.json`,
+					"utf-8",
+				),
+		  )
+		: { "src/_boot_.ts": { file: "src/_boot_.ts" } };
+	const config = yaml.load(fs.readFileSync(path, "utf-8")) as Source;
 
 	const url = tryCreateUrl(config.url);
 	const version = meta.version;
 	const host = url.host;
 	const hostname = url.hostname;
-	const scheme = url.protocol.replace(/:$/, '');
-	const wsScheme = scheme.replace('http', 'ws');
+	const scheme = url.protocol.replace(/:$/, "");
+	const wsScheme = scheme.replace("http", "ws");
 
-	const externalMediaProxy = config.mediaProxy ?
-		config.mediaProxy.endsWith('/') ? config.mediaProxy.substring(0, config.mediaProxy.length - 1) : config.mediaProxy
+	const externalMediaProxy = config.mediaProxy
+		? config.mediaProxy.endsWith("/")
+			? config.mediaProxy.substring(0, config.mediaProxy.length - 1)
+			: config.mediaProxy
 		: null;
 	const internalMediaProxy = `${scheme}://${host}/proxy`;
 	const redis = convertRedisOptions(config.redis, host);
@@ -208,7 +223,7 @@ export function loadConfig(): Config {
 	return {
 		version,
 		url: url.origin,
-		port: config.port ?? parseInt(process.env.PORT ?? '', 10),
+		port: config.port ?? parseInt(process.env.PORT ?? "", 10),
 		socket: config.socket,
 		chmodSocket: config.chmodSocket,
 		disableHsts: config.disableHsts,
@@ -225,8 +240,12 @@ export function loadConfig(): Config {
 		dbSlaves: config.dbSlaves,
 		meilisearch: config.meilisearch,
 		redis,
-		redisForPubsub: config.redisForPubsub ? convertRedisOptions(config.redisForPubsub, host) : redis,
-		redisForJobQueue: config.redisForJobQueue ? convertRedisOptions(config.redisForJobQueue, host) : redis,
+		redisForPubsub: config.redisForPubsub
+			? convertRedisOptions(config.redisForPubsub, host)
+			: redis,
+		redisForJobQueue: config.redisForJobQueue
+			? convertRedisOptions(config.redisForJobQueue, host)
+			: redis,
 		id: config.id,
 		proxy: config.proxy,
 		proxySmtp: config.proxySmtp,
@@ -247,16 +266,23 @@ export function loadConfig(): Config {
 		proxyRemoteFiles: config.proxyRemoteFiles,
 		signToActivityPubGet: config.signToActivityPubGet,
 		mediaProxy: externalMediaProxy ?? internalMediaProxy,
-		externalMediaProxyEnabled: externalMediaProxy !== null && externalMediaProxy !== internalMediaProxy,
-		videoThumbnailGenerator: config.videoThumbnailGenerator ?
-			config.videoThumbnailGenerator.endsWith('/') ? config.videoThumbnailGenerator.substring(0, config.videoThumbnailGenerator.length - 1) : config.videoThumbnailGenerator
+		externalMediaProxyEnabled:
+			externalMediaProxy !== null && externalMediaProxy !== internalMediaProxy,
+		videoThumbnailGenerator: config.videoThumbnailGenerator
+			? config.videoThumbnailGenerator.endsWith("/")
+				? config.videoThumbnailGenerator.substring(
+						0,
+						config.videoThumbnailGenerator.length - 1,
+				  )
+				: config.videoThumbnailGenerator
 			: null,
 		userAgent: `Misskey/${version} (${config.url})`,
-		clientEntry: clientManifest['src/_boot_.ts'],
+		clientEntry: clientManifest["src/_boot_.ts"],
 		clientManifestExists: clientManifestExists,
 		perChannelMaxNoteCacheCount: config.perChannelMaxNoteCacheCount ?? 1000,
 		perUserNotificationsMaxCount: config.perUserNotificationsMaxCount ?? 300,
-		deactivateAntennaThreshold: config.deactivateAntennaThreshold ?? (1000 * 60 * 60 * 24 * 7),
+		deactivateAntennaThreshold:
+			config.deactivateAntennaThreshold ?? 1000 * 60 * 60 * 24 * 7,
 		pidFile: config.pidFile,
 	};
 }
@@ -269,7 +295,10 @@ function tryCreateUrl(url: string) {
 	}
 }
 
-function convertRedisOptions(options: RedisOptionsSource, host: string): RedisOptions & RedisOptionsSource {
+function convertRedisOptions(
+	options: RedisOptionsSource,
+	host: string,
+): RedisOptions & RedisOptionsSource {
 	return {
 		...options,
 		password: options.pass,

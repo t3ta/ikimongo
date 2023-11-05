@@ -3,27 +3,29 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import bcrypt from 'bcryptjs';
-import { Endpoint } from '@/server/api/endpoint-base.js';
-import type { UsersRepository, UserProfilesRepository } from '@/models/_.js';
-import { DI } from '@/di-symbols.js';
-import { secureRndstr } from '@/misc/secure-rndstr.js';
-import { ModerationLogService } from '@/core/ModerationLogService.js';
+import { Inject, Injectable } from "@nestjs/common";
+import bcrypt from "bcryptjs";
+import { Endpoint } from "@/server/api/endpoint-base.js";
+import type { UsersRepository, UserProfilesRepository } from "@/models/_.js";
+import { DI } from "@/di-symbols.js";
+import { secureRndstr } from "@/misc/secure-rndstr.js";
+import { ModerationLogService } from "@/core/ModerationLogService.js";
 
 export const meta = {
-	tags: ['admin'],
+	tags: ["admin"],
 
 	requireCredential: true,
 	requireModerator: true,
 
 	res: {
-		type: 'object',
-		optional: false, nullable: false,
+		type: "object",
+		optional: false,
+		nullable: false,
 		properties: {
 			password: {
-				type: 'string',
-				optional: false, nullable: false,
+				type: "string",
+				optional: false,
+				nullable: false,
 				minLength: 8,
 				maxLength: 8,
 			},
@@ -32,15 +34,16 @@ export const meta = {
 } as const;
 
 export const paramDef = {
-	type: 'object',
+	type: "object",
 	properties: {
-		userId: { type: 'string', format: 'misskey:id' },
+		userId: { type: "string", format: "misskey:id" },
 	},
-	required: ['userId'],
+	required: ["userId"],
 } as const;
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-disable-line import/no-default-export
+export default class extends Endpoint<typeof meta, typeof paramDef> {
+	// eslint-disable-line import/no-default-export
 	constructor(
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
@@ -54,11 +57,11 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			const user = await this.usersRepository.findOneBy({ id: ps.userId });
 
 			if (user == null) {
-				throw new Error('user not found');
+				throw new Error("user not found");
 			}
 
 			if (user.isRoot) {
-				throw new Error('cannot reset password of root');
+				throw new Error("cannot reset password of root");
 			}
 
 			const passwd = secureRndstr(8);
@@ -66,13 +69,16 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			// Generate hash of password
 			const hash = bcrypt.hashSync(passwd);
 
-			await this.userProfilesRepository.update({
-				userId: user.id,
-			}, {
-				password: hash,
-			});
+			await this.userProfilesRepository.update(
+				{
+					userId: user.id,
+				},
+				{
+					password: hash,
+				},
+			);
 
-			this.moderationLogService.log(me, 'resetPassword', {
+			this.moderationLogService.log(me, "resetPassword", {
 				userId: user.id,
 				userUsername: user.username,
 				userHost: user.host,

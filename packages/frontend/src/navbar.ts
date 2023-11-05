@@ -3,155 +3,162 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { computed, reactive } from 'vue';
-import { $i } from '@/account.js';
-import { miLocalStorage } from '@/local-storage.js';
-import { openInstanceMenu } from '@/ui/_common_/common.js';
-import { lookup } from '@/scripts/lookup.js';
-import * as os from '@/os.js';
-import { i18n } from '@/i18n.js';
-import { ui } from '@/config.js';
-import { unisonReload } from '@/scripts/unison-reload.js';
+import { computed, reactive } from "vue";
+import { $i } from "@/account.js";
+import { miLocalStorage } from "@/local-storage.js";
+import { openInstanceMenu } from "@/ui/_common_/common.js";
+import { lookup } from "@/scripts/lookup.js";
+import * as os from "@/os.js";
+import { i18n } from "@/i18n.js";
+import { ui } from "@/config.js";
+import { unisonReload } from "@/scripts/unison-reload.js";
 
 export const navbarItemDef = reactive({
 	notifications: {
 		title: i18n.ts.notifications,
-		icon: 'ti ti-bell',
+		icon: "ti ti-bell",
 		show: computed(() => $i != null),
 		indicated: computed(() => $i != null && $i.hasUnreadNotification),
-		to: '/my/notifications',
+		to: "/my/notifications",
 	},
 	drive: {
 		title: i18n.ts.drive,
-		icon: 'ti ti-cloud',
+		icon: "ti ti-cloud",
 		show: computed(() => $i != null),
-		to: '/my/drive',
+		to: "/my/drive",
 	},
 	followRequests: {
 		title: i18n.ts.followRequests,
-		icon: 'ti ti-user-plus',
+		icon: "ti ti-user-plus",
 		show: computed(() => $i != null && $i.isLocked),
 		indicated: computed(() => $i != null && $i.hasPendingReceivedFollowRequest),
-		to: '/my/follow-requests',
+		to: "/my/follow-requests",
 	},
 	explore: {
 		title: i18n.ts.explore,
-		icon: 'ti ti-hash',
-		to: '/explore',
+		icon: "ti ti-hash",
+		to: "/explore",
 	},
 	announcements: {
 		title: i18n.ts.announcements,
-		icon: 'ti ti-speakerphone',
+		icon: "ti ti-speakerphone",
 		indicated: computed(() => $i != null && $i.hasUnreadAnnouncement),
-		to: '/announcements',
+		to: "/announcements",
 	},
 	search: {
 		title: i18n.ts.search,
-		icon: 'ti ti-search',
-		to: '/search',
+		icon: "ti ti-search",
+		to: "/search",
 	},
 	lookup: {
 		title: i18n.ts.lookup,
-		icon: 'ti ti-world-search',
-		action: (ev) => {
+		icon: "ti ti-world-search",
+		action: () => {
 			lookup();
 		},
 	},
 	lists: {
 		title: i18n.ts.lists,
-		icon: 'ti ti-list',
+		icon: "ti ti-list",
 		show: computed(() => $i != null),
-		to: '/my/lists',
+		to: "/my/lists",
 	},
 	antennas: {
 		title: i18n.ts.antennas,
-		icon: 'ti ti-antenna',
+		icon: "ti ti-antenna",
 		show: computed(() => $i != null),
-		to: '/my/antennas',
+		to: "/my/antennas",
 	},
 	favorites: {
 		title: i18n.ts.favorites,
-		icon: 'ti ti-star',
+		icon: "ti ti-star",
 		show: computed(() => $i != null),
-		to: '/my/favorites',
+		to: "/my/favorites",
 	},
 	pages: {
 		title: i18n.ts.pages,
-		icon: 'ti ti-news',
-		to: '/pages',
+		icon: "ti ti-news",
+		to: "/pages",
 	},
 	play: {
-		title: 'Play',
-		icon: 'ti ti-player-play',
-		to: '/play',
+		title: "Play",
+		icon: "ti ti-player-play",
+		to: "/play",
 	},
 	gallery: {
 		title: i18n.ts.gallery,
-		icon: 'ti ti-icons',
-		to: '/gallery',
+		icon: "ti ti-icons",
+		to: "/gallery",
 	},
 	clips: {
 		title: i18n.ts.clip,
-		icon: 'ti ti-paperclip',
+		icon: "ti ti-paperclip",
 		show: computed(() => $i != null),
-		to: '/my/clips',
+		to: "/my/clips",
 	},
 	channels: {
 		title: i18n.ts.channel,
-		icon: 'ti ti-device-tv',
-		to: '/channels',
+		icon: "ti ti-device-tv",
+		to: "/channels",
 	},
 	achievements: {
 		title: i18n.ts.achievements,
-		icon: 'ti ti-medal',
+		icon: "ti ti-medal",
 		show: computed(() => $i != null),
-		to: '/my/achievements',
+		to: "/my/achievements",
 	},
 	ui: {
 		title: i18n.ts.switchUi,
-		icon: 'ti ti-devices',
+		icon: "ti ti-devices",
 		action: (ev) => {
-			os.popupMenu([{
-				text: i18n.ts.default,
-				active: ui === 'default' || ui === null,
-				action: () => {
-					miLocalStorage.setItem('ui', 'default');
-					unisonReload();
-				},
-			}, {
-				text: i18n.ts.deck,
-				active: ui === 'deck',
-				action: () => {
-					miLocalStorage.setItem('ui', 'deck');
-					unisonReload();
-				},
-			}, {
-				text: i18n.ts.classic,
-				active: ui === 'classic',
-				action: () => {
-					miLocalStorage.setItem('ui', 'classic');
-					unisonReload();
-				},
-			}], ev.currentTarget ?? ev.target);
+			os.popupMenu(
+				[
+					{
+						text: i18n.ts.default,
+						active: ui === "default" || ui === null,
+						action: () => {
+							miLocalStorage.setItem("ui", "default");
+							unisonReload();
+						},
+					},
+					{
+						text: i18n.ts.deck,
+						active: ui === "deck",
+						action: () => {
+							miLocalStorage.setItem("ui", "deck");
+							unisonReload();
+						},
+					},
+					{
+						text: i18n.ts.classic,
+						active: ui === "classic",
+						action: () => {
+							miLocalStorage.setItem("ui", "classic");
+							unisonReload();
+						},
+					},
+				],
+				ev.currentTarget ?? ev.target,
+			);
 		},
 	},
 	about: {
 		title: i18n.ts.about,
-		icon: 'ti ti-info-circle',
+		icon: "ti ti-info-circle",
 		action: (ev) => {
 			openInstanceMenu(ev);
 		},
 	},
 	reload: {
 		title: i18n.ts.reload,
-		icon: 'ti ti-refresh',
-		action: (ev) => {
+		icon: "ti ti-refresh",
+		action: () => {
 			location.reload();
 		},
 	},
 	profile: {
 		title: i18n.ts.profile,
-		icon: 'ti ti-user',
+		icon: "ti ti-user",
 		show: computed(() => $i != null),
 		to: `/@${$i?.username}`,
 	},

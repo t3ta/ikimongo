@@ -4,25 +4,25 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div class="zlxnikvl">
-	<XPie class="pie" :value="usage"/>
-	<div>
-		<p><i class="ti ti-section"></i>RAM</p>
-		<p>Total: {{ bytes(total, 1) }}</p>
-		<p>Used: {{ bytes(used, 1) }}</p>
-		<p>Free: {{ bytes(free, 1) }}</p>
+	<div class="zlxnikvl">
+		<XPie class="pie" :value="usage" />
+		<div>
+			<p><i class="ti ti-section"></i>RAM</p>
+			<p>Total: {{ bytes(total, 1) }}</p>
+			<p>Used: {{ bytes(used, 1) }}</p>
+			<p>Free: {{ bytes(free, 1) }}</p>
+		</div>
 	</div>
-</div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onBeforeUnmount } from 'vue';
-import XPie from './pie.vue';
-import bytes from '@/filters/bytes.js';
+import { onMounted, onBeforeUnmount } from "vue";
+import XPie from "./pie.vue";
+import bytes from "@/filters/bytes.js";
 
 const props = defineProps<{
-	connection: any,
-	meta: any
+	connection: any;
+	meta: any;
 }>();
 
 let usage: number = $ref(0);
@@ -38,11 +38,11 @@ function onStats(stats) {
 }
 
 onMounted(() => {
-	props.connection.on('stats', onStats);
+	props.connection.on("stats", onStats);
 });
 
 onBeforeUnmount(() => {
-	props.connection.off('stats', onStats);
+	props.connection.off("stats", onStats);
 });
 </script>
 

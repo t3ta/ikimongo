@@ -3,34 +3,46 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { type } from 'os';
-import { PrimaryColumn, Entity, Index, JoinColumn, Column, ManyToOne, OneToOne } from 'typeorm';
-import { id } from '@/models/util/id.js';
-import { MiUser } from '@/models/user/User.js';
-import { MiNote } from '../note/Note.js';
-import { MiDriveFile } from '../drive/DriveFile.js';
+import { type } from "os";
+import {
+	PrimaryColumn,
+	Entity,
+	Index,
+	JoinColumn,
+	Column,
+	ManyToOne,
+	OneToOne,
+} from "typeorm";
+import { id } from "@/models/util/id.js";
+import { MiUser } from "@/models/user/User.js";
+import { MiNote } from "../note/Note.js";
+import { MiDriveFile } from "../drive/DriveFile.js";
 
-@Entity('observation')
-@Index(['userId', 'id'])
+@Entity("observation")
+@Index(["userId", "noteId", "id"])
 export class IGObservation {
 	@PrimaryColumn(id())
 	public id: string;
 
-	@OneToOne(type => MiNote, {
-		onDelete: 'CASCADE',
+	@Index()
+	@Column(id())
+	public noteId: MiNote["id"];
+
+	@OneToOne((type) => MiNote, {
+		onDelete: "CASCADE",
 	})
 	@JoinColumn()
 	public note: MiNote | null;
 
 	@Index()
-	@Column('timestamp with time zone', {
-		comment: 'The created date of the Observation.',
+	@Column("timestamp with time zone", {
+		comment: "The created date of the Observation.",
 	})
 	public createdAt: Date;
 
 	@Index()
-	@Column('timestamp with time zone', {
-		comment: 'The updated date of the Observation.',
+	@Column("timestamp with time zone", {
+		comment: "The updated date of the Observation.",
 		nullable: true,
 	})
 	public updatedAt: Date | null;
@@ -38,53 +50,57 @@ export class IGObservation {
 	@Index()
 	@Column({
 		...id(),
-		comment: 'The owner Id.',
+		comment: "The owner Id.",
 	})
-	public userId: MiUser['id'];
+	public userId: MiUser["id"];
 
-	@ManyToOne(type => MiUser, {
-		onDelete: 'CASCADE',
+	@ManyToOne((type) => MiUser, {
+		onDelete: "CASCADE",
 	})
 	@JoinColumn()
 	public user: MiUser | null;
 
 	@Index()
-	@Column('varchar', {
-		length: 128, nullable: true,
-		comment: 'The host of owner. It will be null if the user in local.',
+	@Column("varchar", {
+		length: 128,
+		nullable: true,
+		comment: "The host of owner. It will be null if the user in local.",
 	})
 	public userHost: string | null;
 
 	@Index()
 	@Column({
 		...id(),
-		array: true, default: '{}',
+		array: true,
+		default: "{}",
 	})
-	public fileIds: MiDriveFile['id'][];
+	public fileIds: MiDriveFile["id"][];
 
 	@Index()
-	@Column('varchar', {
-		length: 256, array: true, default: '{}',
+	@Column("varchar", {
+		length: 256,
+		array: true,
+		default: "{}",
 	})
 	public attachedFileTypes: string[];
 
 	@Index()
-	@Column('timestamp with time zone', {
+	@Column("timestamp with time zone", {
 		nullable: true,
-		comment: 'The updated date of the Observation.',
+		comment: "The updated date of the Observation.",
 	})
 	public date: Date | null;
 
-	@Column('varchar', {
+	@Column("varchar", {
 		length: 256,
 		nullable: true,
-		comment: 'The location name of the Observation.',
+		comment: "The location name of the Observation.",
 	})
 	public locationName: string | null;
 
-	@Column('point', {
+	@Column("point", {
 		nullable: true,
-		comment: 'The location of the Observation.',
+		comment: "The location of the Observation.",
 	})
 	public location: string | null;
 
@@ -98,8 +114,9 @@ export class IGObservation {
 }
 
 export interface IIGObservation {
-	date: Date | null;
-	locationName: string | null;
-	location: string | null;
+	date: Date;
+	location: {
+		y: number;
+		x: number;
+	};
 }
-

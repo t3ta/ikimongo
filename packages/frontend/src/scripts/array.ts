@@ -18,7 +18,7 @@ export function countIf<T>(f: Predicate<T>, xs: T[]): number {
  * Count the number of elements that is equal to the element
  */
 export function count<T>(a: T, xs: T[]): number {
-	return countIf(x => x === a, xs);
+	return countIf((x) => x === a, xs);
 }
 
 /**
@@ -33,14 +33,14 @@ export function concat<T>(xss: T[][]): T[] {
  * @param sep The element to be interspersed
  */
 export function intersperse<T>(sep: T, xs: T[]): T[] {
-	return concat(xs.map(x => [sep, x])).slice(1);
+	return concat(xs.map((x) => [sep, x])).slice(1);
 }
 
 /**
  * Returns the array of elements that is not equal to the element
  */
 export function erase<T>(a: T, xs: T[]): T[] {
-	return xs.filter(x => x !== a);
+	return xs.filter((x) => x !== a);
 }
 
 /**
@@ -48,7 +48,7 @@ export function erase<T>(a: T, xs: T[]): T[] {
  * The order of result values are determined by the first array.
  */
 export function difference<T>(xs: T[], ys: T[]): T[] {
-	return xs.filter(x => !ys.includes(x));
+	return xs.filter((x) => !ys.includes(x));
 }
 
 /**
@@ -58,7 +58,10 @@ export function unique<T>(xs: T[]): T[] {
 	return [...new Set(xs)];
 }
 
-export function uniqueBy<TValue, TKey>(values: TValue[], keySelector: (value: TValue) => TKey): TValue[] {
+export function uniqueBy<TValue, TKey>(
+	values: TValue[],
+	keySelector: (value: TValue) => TKey,
+): TValue[] {
 	const map = new Map<TKey, TValue>();
 
 	for (const value of values) {
@@ -105,7 +108,7 @@ export function groupOn<T, S>(f: (x: T) => S, xs: T[]): T[][] {
 export function groupByX<T>(collections: T[], keySelector: (x: T) => string) {
 	return collections.reduce((obj: Record<string, T[]>, item: T) => {
 		const key = keySelector(item);
-		if (typeof obj[key] === 'undefined') {
+		if (typeof obj[key] === "undefined") {
 			obj[key] = [];
 		}
 
@@ -119,7 +122,7 @@ export function groupByX<T>(collections: T[], keySelector: (x: T) => string) {
  * Compare two arrays by lexicographical order
  */
 export function lessThan(xs: number[], ys: number[]): boolean {
-	for (let i = 0; i < Math.min(xs.length, ys.length); i++) {
+	for (let i = 0; i < Math.min(xs.length, ys.length); i += 1) {
 		if (xs[i] < ys[i]) return true;
 		if (xs[i] > ys[i]) return false;
 	}
@@ -143,7 +146,7 @@ export function takeWhile<T>(f: Predicate<T>, xs: T[]): T[] {
 
 export function cumulativeSum(xs: number[]): number[] {
 	const ys = Array.from(xs); // deep copy
-	for (let i = 1; i < ys.length; i++) ys[i] += ys[i - 1];
+	for (let i = 1; i < ys.length; i += 1) ys[i] += ys[i - 1];
 	return ys;
 }
 

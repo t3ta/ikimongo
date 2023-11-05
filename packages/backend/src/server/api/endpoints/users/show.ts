@@ -3,39 +3,40 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { In, IsNull } from 'typeorm';
-import { Inject, Injectable } from '@nestjs/common';
-import type { UsersRepository } from '@/models/_.js';
-import type { MiUser } from '@/models/user/User.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { RemoteUserResolveService } from '@/core/RemoteUserResolveService.js';
-import { DI } from '@/di-symbols.js';
-import PerUserPvChart from '@/core/chart/charts/per-user-pv.js';
-import { RoleService } from '@/core/RoleService.js';
-import { ApiError } from '../../error.js';
-import { ApiLoggerService } from '../../ApiLoggerService.js';
-import type { FindOptionsWhere } from 'typeorm';
+import { In, IsNull } from "typeorm";
+import { Inject, Injectable } from "@nestjs/common";
+import type { UsersRepository } from "@/models/_.js";
+import type { MiUser } from "@/models/user/User.js";
+import { Endpoint } from "@/server/api/endpoint-base.js";
+import { UserEntityService } from "@/core/entities/UserEntityService.js";
+import { RemoteUserResolveService } from "@/core/RemoteUserResolveService.js";
+import { DI } from "@/di-symbols.js";
+import PerUserPvChart from "@/core/chart/charts/per-user-pv.js";
+import { RoleService } from "@/core/RoleService.js";
+import { ApiError } from "../../error.js";
+import { ApiLoggerService } from "../../ApiLoggerService.js";
+import type { FindOptionsWhere } from "typeorm";
 
 export const meta = {
-	tags: ['users'],
+	tags: ["users"],
 
 	requireCredential: false,
 
-	description: 'Show the properties of a user.',
+	description: "Show the properties of a user.",
 
 	res: {
-		optional: false, nullable: false,
+		optional: false,
+		nullable: false,
 		oneOf: [
 			{
-				type: 'object',
-				ref: 'UserDetailed',
+				type: "object",
+				ref: "UserDetailed",
 			},
 			{
-				type: 'array',
+				type: "array",
 				items: {
-					type: 'object',
-					ref: 'UserDetailed',
+					type: "object",
+					ref: "UserDetailed",
 				},
 			},
 		],
@@ -43,46 +44,50 @@ export const meta = {
 
 	errors: {
 		failedToResolveRemoteUser: {
-			message: 'Failed to resolve remote user.',
-			code: 'FAILED_TO_RESOLVE_REMOTE_USER',
-			id: 'ef7b9be4-9cba-4e6f-ab41-90ed171c7d3c',
-			kind: 'server',
+			message: "Failed to resolve remote user.",
+			code: "FAILED_TO_RESOLVE_REMOTE_USER",
+			id: "ef7b9be4-9cba-4e6f-ab41-90ed171c7d3c",
+			kind: "server",
 		},
 
 		noSuchUser: {
-			message: 'No such user.',
-			code: 'NO_SUCH_USER',
-			id: '4362f8dc-731f-4ad8-a694-be5a88922a24',
+			message: "No such user.",
+			code: "NO_SUCH_USER",
+			id: "4362f8dc-731f-4ad8-a694-be5a88922a24",
 			httpStatusCode: 404,
 		},
 	},
 } as const;
 
 export const paramDef = {
-	type: 'object',
+	type: "object",
 	properties: {
-		userId: { type: 'string', format: 'misskey:id' },
+		userId: { type: "string", format: "misskey:id" },
 		userIds: {
-			type: 'array', uniqueItems: true, items: {
-				type: 'string', format: 'misskey:id',
-			}
+			type: "array",
+			uniqueItems: true,
+			items: {
+				type: "string",
+				format: "misskey:id",
+			},
 		},
-		username: { type: 'string' },
+		username: { type: "string" },
 		host: {
-			type: 'string',
+			type: "string",
 			nullable: true,
-			description: 'The local host is represented with `null`.',
+			description: "The local host is represented with `null`.",
 		},
 	},
 	anyOf: [
-		{ required: ['userId'] },
-		{ required: ['userIds'] },
-		{ required: ['username'] },
+		{ required: ["userId"] },
+		{ required: ["userIds"] },
+		{ required: ["username"] },
 	],
 } as const;
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-disable-line import/no-default-export
+export default class extends Endpoint<typeof meta, typeof paramDef> {
+	// eslint-disable-line import/no-default-export
 	constructor(
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
@@ -104,33 +109,46 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					return [];
 				}
 
-				const users = await this.usersRepository.findBy(isModerator ? {
-					id: In(ps.userIds),
-				} : {
-					id: In(ps.userIds),
-					isSuspended: false,
-				});
+				const users = await this.usersRepository.findBy(
+					isModerator
+						? {
+								id: In(ps.userIds),
+						  }
+						: {
+								id: In(ps.userIds),
+								isSuspended: false,
+						  },
+				);
 
 				// リクエストされた通りに並べ替え
 				const _users: MiUser[] = [];
 				for (const id of ps.userIds) {
-					_users.push(users.find(x => x.id === id)!);
+					_users.push(users.find((x) => x.id === id)!);
 				}
 
-				return await Promise.all(_users.map(u => this.userEntityService.pack(u, me, {
-					detail: true,
-				})));
+				return await Promise.all(
+					_users.map((u) =>
+						this.userEntityService.pack(u, me, {
+							detail: true,
+						}),
+					),
+				);
 			} else {
 				// Lookup user
-				if (typeof ps.host === 'string' && typeof ps.username === 'string') {
-					user = await this.remoteUserResolveService.resolveUser(ps.username, ps.host).catch(err => {
-						this.apiLoggerService.logger.warn(`failed to resolve remote user: ${err}`);
-						throw new ApiError(meta.errors.failedToResolveRemoteUser);
-					});
+				if (typeof ps.host === "string" && typeof ps.username === "string") {
+					user = await this.remoteUserResolveService
+						.resolveUser(ps.username, ps.host)
+						.catch((err) => {
+							this.apiLoggerService.logger.warn(
+								`failed to resolve remote user: ${err}`,
+							);
+							throw new ApiError(meta.errors.failedToResolveRemoteUser);
+						});
 				} else {
-					const q: FindOptionsWhere<MiUser> = ps.userId != null
-						? { id: ps.userId }
-						: { usernameLower: ps.username!.toLowerCase(), host: IsNull() };
+					const q: FindOptionsWhere<MiUser> =
+						ps.userId != null
+							? { id: ps.userId }
+							: { usernameLower: ps.username!.toLowerCase(), host: IsNull() };
 
 					user = await this.usersRepository.findOneBy(q);
 				}

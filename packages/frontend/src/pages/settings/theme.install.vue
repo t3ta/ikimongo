@@ -4,28 +4,39 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div class="_gaps_m">
-	<MkTextarea v-model="installThemeCode">
-		<template #label>{{ i18n.ts._theme.code }}</template>
-	</MkTextarea>
+	<div class="_gaps_m">
+		<MkTextarea v-model="installThemeCode">
+			<template #label>{{ i18n.ts._theme.code }}</template>
+		</MkTextarea>
 
-	<div class="_buttons">
-		<MkButton :disabled="installThemeCode == null" inline @click="() => preview(installThemeCode)"><i class="ti ti-eye"></i> {{ i18n.ts.preview }}</MkButton>
-		<MkButton :disabled="installThemeCode == null" primary inline @click="() => install(installThemeCode)"><i class="ti ti-check"></i> {{ i18n.ts.install }}</MkButton>
+		<div class="_buttons">
+			<MkButton
+				:disabled="installThemeCode == null"
+				inline
+				@click="() => preview(installThemeCode)"
+				><i class="ti ti-eye"></i> {{ i18n.ts.preview }}</MkButton
+			>
+			<MkButton
+				:disabled="installThemeCode == null"
+				primary
+				inline
+				@click="() => install(installThemeCode)"
+				><i class="ti ti-check"></i> {{ i18n.ts.install }}</MkButton
+			>
+		</div>
 	</div>
-</div>
 </template>
 
 <script lang="ts" setup>
-import { } from 'vue';
-import JSON5 from 'json5';
-import MkTextarea from '@/components/MkTextarea.vue';
-import MkButton from '@/components/MkButton.vue';
-import { applyTheme, validateTheme } from '@/scripts/theme.js';
-import * as os from '@/os.js';
-import { addTheme, getThemes } from '@/theme-store';
-import { i18n } from '@/i18n.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
+import {} from "vue";
+import JSON5 from "json5";
+import MkTextarea from "@/components/mk_components/MkTextarea.vue";
+import MkButton from "@/components/mk_components/MkButton.vue";
+import { applyTheme, validateTheme } from "@/scripts/theme.js";
+import * as os from "@/os.js";
+import { addTheme, getThemes } from "@/theme-store";
+import { i18n } from "@/i18n.js";
+import { definePageMetadata } from "@/scripts/page-metadata.js";
 
 let installThemeCode = $ref(null);
 
@@ -36,21 +47,21 @@ function parseThemeCode(code: string) {
 		theme = JSON5.parse(code);
 	} catch (err) {
 		os.alert({
-			type: 'error',
+			type: "error",
 			text: i18n.ts._theme.invalid,
 		});
 		return false;
 	}
 	if (!validateTheme(theme)) {
 		os.alert({
-			type: 'error',
+			type: "error",
 			text: i18n.ts._theme.invalid,
 		});
 		return false;
 	}
-	if (getThemes().some(t => t.id === theme.id)) {
+	if (getThemes().some((t) => t.id === theme.id)) {
 		os.alert({
-			type: 'info',
+			type: "info",
 			text: i18n.ts._theme.alreadyInstalled,
 		});
 		return false;
@@ -69,8 +80,8 @@ async function install(code: string): Promise<void> {
 	if (!theme) return;
 	await addTheme(theme);
 	os.alert({
-		type: 'success',
-		text: i18n.t('_theme.installed', { name: theme.name }),
+		type: "success",
+		text: i18n.t("_theme.installed", { name: theme.name }),
 	});
 }
 
@@ -80,6 +91,6 @@ const headerTabs = $computed(() => []);
 
 definePageMetadata({
 	title: i18n.ts._theme.install,
-	icon: 'ti ti-download',
+	icon: "ti ti-download",
 });
 </script>

@@ -3,22 +3,22 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import * as fs from 'node:fs';
-import * as stream from 'node:stream/promises';
-import { Inject, Injectable } from '@nestjs/common';
-import ipaddr from 'ipaddr.js';
-import chalk from 'chalk';
-import got, * as Got from 'got';
-import { parse } from 'content-disposition';
-import { DI } from '@/di-symbols.js';
-import type { Config } from '@/config.js';
-import { HttpRequestService } from '@/core/HttpRequestService.js';
-import { createTemp } from '@/misc/create-temp.js';
-import { StatusError } from '@/misc/status-error.js';
-import { LoggerService } from '@/core/LoggerService.js';
-import type Logger from '@/logger.js';
+import * as fs from "node:fs";
+import * as stream from "node:stream/promises";
+import { Inject, Injectable } from "@nestjs/common";
+import ipaddr from "ipaddr.js";
+import chalk from "chalk";
+import got, * as Got from "got";
+import { parse } from "content-disposition";
+import { DI } from "@/di-symbols.js";
+import type { Config } from "@/config.js";
+import { HttpRequestService } from "@/core/HttpRequestService.js";
+import { createTemp } from "@/misc/create-temp.js";
+import { StatusError } from "@/misc/status-error.js";
+import { LoggerService } from "@/core/LoggerService.js";
+import type Logger from "@/logger.js";
 
-import { bindThis } from '@/decorators.js';
+import { bindThis } from "@/decorators.js";
 
 @Injectable()
 export class DownloadService {
@@ -31,84 +31,108 @@ export class DownloadService {
 		private httpRequestService: HttpRequestService,
 		private loggerService: LoggerService,
 	) {
-		this.logger = this.loggerService.getLogger('download');
+		this.logger = this.loggerService.getLogger("download");
 	}
 
 	@bindThis
-	public async downloadUrl(url: string, path: string): Promise<{
+	public async downloadUrl(
+		url: string,
+		path: string,
+	): Promise<{
 		filename: string;
 	}> {
-		this.logger.info(`Downloading ${chalk.cyan(url)} to ${chalk.cyanBright(path)} ...`);
+		this.logger.info(
+			`Downloading ${chalk.cyan(url)} to ${chalk.cyanBright(path)} ...`,
+		);
 
 		const timeout = 30 * 1000;
 		const operationTimeout = 60 * 1000;
 		const maxSize = this.config.maxFileSize ?? 262144000;
 
 		const urlObj = new URL(url);
-		let filename = urlObj.pathname.split('/').pop() ?? 'untitled';
+		let filename = urlObj.pathname.split("/").pop() ?? "untitled";
 
-		const req = got.stream(url, {
-			headers: {
-				'User-Agent': this.config.userAgent,
-			},
-			timeout: {
-				lookup: timeout,
-				connect: timeout,
-				secureConnect: timeout,
-				socket: timeout,	// read timeout
-				response: timeout,
-				send: timeout,
-				request: operationTimeout,	// whole operation timeout
-			},
-			agent: {
-				http: this.httpRequestService.httpAgent,
-				https: this.httpRequestService.httpsAgent,
-			},
-			http2: false,	// default
-			retry: {
-				limit: 0,
-			},
-			enableUnixSockets: false,
-		}).on('response', (res: Got.Response) => {
-			if ((process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test') && !this.config.proxy && res.ip) {
-				if (this.isPrivateIp(res.ip)) {
-					this.logger.warn(`Blocked address: ${res.ip}`);
-					req.destroy();
-				}
-			}
-
-			const contentLength = res.headers['content-length'];
-			if (contentLength != null) {
-				const size = Number(contentLength);
-				if (size > maxSize) {
-					this.logger.warn(`maxSize exceeded (${size} > ${maxSize}) on response`);
-					req.destroy();
-				}
-			}
-
-			const contentDisposition = res.headers['content-disposition'];
-			if (contentDisposition != null) {
-				try {
-					const parsed = parse(contentDisposition);
-					if (parsed.parameters.filename) {
-						filename = parsed.parameters.filename;
+		const req = got
+			.stream(url, {
+				headers: {
+					"User-Agent": this.config.userAgent,
+				},
+				timeout: {
+					lookup: timeout,
+					connect: timeout,
+					secureConnect: timeout,
+					socket: timeout, // read timeout
+					response: timeout,
+					send: timeout,
+					request: operationTimeout, // whole operation timeout
+				},
+				agent: {
+					http: this.httpRequestService.httpAgent,
+					https: this.httpRequestService.httpsAgent,
+				},
+				http2: false, // default
+				retry: {
+					limit: 0,
+				},
+				enableUnixSockets: false,
+			})
+			.on("response", (res: Got.Response) => {
+				if (
+					(process.env.NODE_ENV === "production" ||
+						process.env.NODE_ENV === "test") &&
+					!this.config.proxy &&
+					res.ip
+				) {
+					if (this.isPrivateIp(res.ip)) {
+						this.logger.warn(`Blocked address: ${res.ip}`);
+						req.destroy();
 					}
-				} catch (e) {
-					this.logger.warn(`Failed to parse content-disposition: ${contentDisposition}`, { stack: e });
 				}
-			}
-		}).on('downloadProgress', (progress: Got.Progress) => {
-			if (progress.transferred > maxSize) {
-				this.logger.warn(`maxSize exceeded (${progress.transferred} > ${maxSize}) on downloadProgress`);
-				req.destroy();
-			}
-		});
+
+				const contentLength = res.headers["content-length"];
+				if (contentLength != null) {
+					const size = Number(contentLength);
+					if (size > maxSize) {
+						this.logger.warn(
+							`maxSize exceeded (${size} > ${maxSize}) on response`,
+						);
+						req.destroy();
+					}
+				}
+
+				const contentDisposition = res.headers["content-disposition"];
+				if (contentDisposition != null) {
+					try {
+						const parsed = parse(contentDisposition);
+						if (parsed.parameters.filename) {
+							filename = parsed.parameters.filename;
+						}
+					} catch (e) {
+						this.logger.warn(
+							`Failed to parse content-disposition: ${contentDisposition}`,
+							{ stack: e },
+						);
+					}
+				}
+			})
+			.on("downloadProgress", (progress: Got.Progress) => {
+				if (progress.transferred > maxSize) {
+					this.logger.warn(
+						`maxSize exceeded (${progress.transferred} > ${maxSize}) on downloadProgress`,
+					);
+					req.destroy();
+				}
+			});
 
 		try {
 			await stream.pipeline(req, fs.createWriteStream(path));
 		} catch (e) {
 			if (e instanceof Got.HTTPError) {
-				throw new StatusError(`${e.response.statusCode} ${e.response.statusMessage}`, e.response.statusCode, e.response.statusMessage);
+				throw new StatusError(
+					`${e.response.statusCode} ${e.response.statusMessage}`,
+					e.response.statusCode,
+					e.response.statusMessage,
+				);
 			} else {
 				throw e;
 			}
@@ -132,7 +156,7 @@ export class DownloadService {
 			// write content at URL to temp file
 			await this.downloadUrl(url, path);
 
-			const text = await fs.promises.readFile(path, 'utf8');
+			const text = await fs.promises.readFile(path, "utf8");
 
 			return text;
 		} finally {
@@ -150,6 +174,6 @@ export class DownloadService {
 			}
 		}
 
-		return parsedIp.range() !== 'unicast';
+		return parsedIp.range() !== "unicast";
 	}
 }

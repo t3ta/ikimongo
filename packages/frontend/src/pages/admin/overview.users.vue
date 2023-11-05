@@ -4,32 +4,40 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div :class="$style.root">
-	<Transition :name="defaultStore.state.animation ? '_transition_zoom' : ''" mode="out-in">
-		<MkLoading v-if="fetching"/>
-		<div v-else class="users">
-			<MkA v-for="(user, i) in newUsers" :key="user.id" :to="`/admin/user/${user.id}`" class="user">
-				<MkUserCardMini :user="user"/>
-			</MkA>
-		</div>
-	</Transition>
-</div>
+	<div :class="$style.root">
+		<Transition
+			:name="defaultStore.state.animation ? '_transition_zoom' : ''"
+			mode="out-in"
+		>
+			<MkLoading v-if="fetching" />
+			<div v-else class="users">
+				<MkA
+					v-for="(user, i) in newUsers"
+					:key="user.id"
+					:to="`/admin/user/${user.id}`"
+					class="user"
+				>
+					<MkUserCardMini :user="user" />
+				</MkA>
+			</div>
+		</Transition>
+	</div>
 </template>
 
 <script lang="ts" setup>
-import * as os from '@/os.js';
-import { useInterval } from '@/scripts/use-interval.js';
-import MkUserCardMini from '@/components/MkUserCardMini.vue';
-import { defaultStore } from '@/store.js';
+import * as os from "@/os.js";
+import { useInterval } from "@/scripts/use-interval.js";
+import MkUserCardMini from "@/components/mk_components/MkUserCardMini.vue";
+import { defaultStore } from "@/store.js";
 
 let newUsers = $ref(null);
 let fetching = $ref(true);
 
 const fetch = async () => {
-	const _newUsers = await os.api('admin/show-users', {
+	const _newUsers = await os.api("admin/show-users", {
 		limit: 5,
-		sort: '+createdAt',
-		origin: 'local',
+		sort: "+createdAt",
+		origin: "local",
 	});
 	newUsers = _newUsers;
 	fetching = false;

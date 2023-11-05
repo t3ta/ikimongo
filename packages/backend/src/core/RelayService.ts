@@ -3,21 +3,21 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import { IsNull } from 'typeorm';
-import type { MiLocalUser, MiUser } from '@/models/user/User.js';
-import type { RelaysRepository, UsersRepository } from '@/models/_.js';
-import { IdService } from '@/core/IdService.js';
-import { MemorySingleCache } from '@/misc/cache.js';
-import type { MiRelay } from '@/models/Relay.js';
-import { QueueService } from '@/core/QueueService.js';
-import { CreateSystemUserService } from '@/core/CreateSystemUserService.js';
-import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
-import { DI } from '@/di-symbols.js';
-import { deepClone } from '@/misc/clone.js';
-import { bindThis } from '@/decorators.js';
+import { Inject, Injectable } from "@nestjs/common";
+import { IsNull } from "typeorm";
+import type { MiLocalUser, MiUser } from "@/models/user/User.js";
+import type { RelaysRepository, UsersRepository } from "@/models/_.js";
+import { IdService } from "@/core/IdService.js";
+import { MemorySingleCache } from "@/misc/cache.js";
+import type { MiRelay } from "@/models/Relay.js";
+import { QueueService } from "@/core/QueueService.js";
+import { CreateSystemUserService } from "@/core/CreateSystemUserService.js";
+import { ApRendererService } from "@/core/activitypub/ApRendererService.js";
+import { DI } from "@/di-symbols.js";
+import { deepClone } from "@/misc/clone.js";
+import { bindThis } from "@/decorators.js";
 
-const ACTOR_USERNAME = 'relay.actor' as const;
+const ACTOR_USERNAME = "relay.actor" as const;
 
 @Injectable()
 export class RelayService {
@@ -47,20 +47,26 @@ export class RelayService {
 
 		if (user) return user as MiLocalUser;
 
-		const created = await this.createSystemUserService.createSystemUser(ACTOR_USERNAME);
+		const created =
+			await this.createSystemUserService.createSystemUser(ACTOR_USERNAME);
 		return created as MiLocalUser;
 	}
 
 	@bindThis
 	public async addRelay(inbox: string): Promise<MiRelay> {
-		const relay = await this.relaysRepository.insert({
-			id: this.idService.genId(),
-			inbox,
-			status: 'requesting',
-		}).then(x => this.relaysRepository.findOneByOrFail(x.identifiers[0]));
+		const relay = await this.relaysRepository
+			.insert({
+				id: this.idService.genId(),
+				inbox,
+				status: "requesting",
+			})
+			.then((x) => this.relaysRepository.findOneByOrFail(x.identifiers[0]));
 
 		const relayActor = await this.getRelayActor();
-		const follow = await this.apRendererService.renderFollowRelay(relay, relayActor);
+		const follow = await this.apRendererService.renderFollowRelay(
+			relay,
+			relayActor,
+		);
 		const activity = this.apRendererService.addContext(follow);
 		this.queueService.deliver(relayActor, activity, relay.inbox, false);
 
@@ -74,7 +80,7 @@ export class RelayService {
 		});
 
 		if (relay == null) {
-			throw new Error('relay not found');
+			throw new Error("relay not found");
 		}
 
 		const relayActor = await this.getRelayActor();
@@ -95,7 +101,7 @@ export class RelayService {
 	@bindThis
 	public async relayAccepted(id: string): Promise<string> {
 		const result = await this.relaysRepository.update(id, {
-			status: 'accepted',
+			status: "accepted",
 		});
 
 		return JSON.stringify(result);
@@ -104,23 +110,28 @@ export class RelayService {
 	@bindThis
 	public async relayRejected(id: string): Promise<string> {
 		const result = await this.relaysRepository.update(id, {
-			status: 'rejected',
+			status: "rejected",
 		});
 
 		return JSON.stringify(result);
 	}
 
 	@bindThis
-	public async deliverToRelays(user: { id: MiUser['id']; host: null; }, activity: any): Promise<void> {
+	public async deliverToRelays(
+		user: { id: MiUser["id"]; host: null },
+		activity: any,
+	): Promise<void> {
 		if (activity == null) return;
 
-		const relays = await this.relaysCache.fetch(() => this.relaysRepository.findBy({
-			status: 'accepted',
-		}));
+		const relays = await this.relaysCache.fetch(() =>
+			this.relaysRepository.findBy({
+				status: "accepted",
+			}),
+		);
 		if (relays.length === 0) return;
 
 		const copy = deepClone(activity);
-		if (!copy.to) copy.to = ['https://www.w3.org/ns/activitystreams#Public'];
+		if (!copy.to) copy.to = ["https://www.w3.org/ns/activitystreams#Public"];
 
 		const signed = await this.apRendererService.attachLdSignature(copy, user);
 

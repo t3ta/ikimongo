@@ -3,21 +3,27 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import * as fs from 'node:fs';
-import { Inject, Injectable } from '@nestjs/common';
-import { MoreThan } from 'typeorm';
-import { format as dateFormat } from 'date-fns';
-import { DI } from '@/di-symbols.js';
-import type { MiNoteFavorite, NoteFavoritesRepository, PollsRepository, MiUser, UsersRepository } from '@/models/_.js';
-import type Logger from '@/logger.js';
-import { DriveService } from '@/core/DriveService.js';
-import { createTemp } from '@/misc/create-temp.js';
-import type { MiPoll } from '@/models/poll/Poll.js';
-import type { MiNote } from '@/models/note/Note.js';
-import { bindThis } from '@/decorators.js';
-import { QueueLoggerService } from '../QueueLoggerService.js';
-import type * as Bull from 'bullmq';
-import type { DbJobDataWithUser } from '../types.js';
+import * as fs from "node:fs";
+import { Inject, Injectable } from "@nestjs/common";
+import { MoreThan } from "typeorm";
+import { format as dateFormat } from "date-fns";
+import { DI } from "@/di-symbols.js";
+import type {
+	MiNoteFavorite,
+	NoteFavoritesRepository,
+	PollsRepository,
+	MiUser,
+	UsersRepository,
+} from "@/models/_.js";
+import type Logger from "@/logger.js";
+import { DriveService } from "@/core/DriveService.js";
+import { createTemp } from "@/misc/create-temp.js";
+import type { MiPoll } from "@/models/poll/Poll.js";
+import type { MiNote } from "@/models/note/Note.js";
+import { bindThis } from "@/decorators.js";
+import { QueueLoggerService } from "../QueueLoggerService.js";
+import type * as Bull from "bullmq";
+import type { DbJobDataWithUser } from "../types.js";
 
 @Injectable()
 export class ExportFavoritesProcessorService {
@@ -36,7 +42,8 @@ export class ExportFavoritesProcessorService {
 		private driveService: DriveService,
 		private queueLoggerService: QueueLoggerService,
 	) {
-		this.logger = this.queueLoggerService.logger.createSubLogger('export-favorites');
+		this.logger =
+			this.queueLoggerService.logger.createSubLogger("export-favorites");
 	}
 
 	@bindThis
@@ -54,11 +61,11 @@ export class ExportFavoritesProcessorService {
 		this.logger.info(`Temp file is ${path}`);
 
 		try {
-			const stream = fs.createWriteStream(path, { flags: 'a' });
+			const stream = fs.createWriteStream(path, { flags: "a" });
 
 			const write = (text: string): Promise<void> => {
 				return new Promise<void>((res, rej) => {
-					stream.write(text, err => {
+					stream.write(text, (err) => {
 						if (err) {
 							this.logger.error(err);
 							rej(err);
@@ -69,13 +76,13 @@ export class ExportFavoritesProcessorService {
 				});
 			};
 
-			await write('[');
+			await write("[");
 
 			let exportedFavoritesCount = 0;
-			let cursor: MiNoteFavorite['id'] | null = null;
+			let cursor: MiNoteFavorite["id"] | null = null;
 
 			while (true) {
-				const favorites = await this.noteFavoritesRepository.find({
+				const favorites = (await this.noteFavoritesRepository.find({
 					where: {
 						userId: user.id,
 						...(cursor ? { id: MoreThan(cursor) } : {}),
@@ -84,8 +91,8 @@ export class ExportFavoritesProcessorService {
 					order: {
 						id: 1,
 					},
-					relations: ['note', 'note.user'],
-				}) as (MiNoteFavorite & { note: MiNote & { user: MiUser } })[];
+					relations: ["note", "note.user"],
+				})) as (MiNoteFavorite & { note: MiNote & { user: MiUser } })[];
 
 				if (favorites.length === 0) {
 					job.updateProgress(100);
@@ -97,11 +104,13 @@ export class ExportFavoritesProcessorService {
 				for (const favorite of favorites) {
 					let poll: MiPoll | undefined;
 					if (favorite.note.hasPoll) {
-						poll = await this.pollsRepository.findOneByOrFail({ noteId: favorite.note.id });
+						poll = await this.pollsRepository.findOneByOrFail({
+							noteId: favorite.note.id,
+						});
 					}
 					const content = JSON.stringify(serialize(favorite, poll));
 					const isFirst = exportedFavoritesCount === 0;
-					await write(isFirst ? content : ',\n' + content);
+					await write(isFirst ? content : ",\n" + content);
 					exportedFavoritesCount++;
 				}
 
@@ -112,13 +121,20 @@ export class ExportFavoritesProcessorService {
 				job.updateProgress(exportedFavoritesCount / total);
 			}
 
-			await write(']');
+			await write("]");
 
 			stream.end();
 			this.logger.succ(`Exported to: ${path}`);
 
-			const fileName = 'favorites-' + dateFormat(new Date(), 'yyyy-MM-dd-HH-mm-ss') + '.json';
-			const driveFile = await this.driveService.addFile({ user, path, name: fileName, force: true, ext: 'json' });
+			const fileName =
+				"favorites-" + dateFormat(new Date(), "yyyy-MM-dd-HH-mm-ss") + ".json";
+			const driveFile = await this.driveService.addFile({
+				user,
+				path,
+				name: fileName,
+				force: true,
+				ext: "json",
+			});
 
 			this.logger.succ(`Exported to: ${driveFile.id}`);
 		} finally {
@@ -127,7 +143,10 @@ export class ExportFavoritesProcessorService {
 	}
 }
 
-function serialize(favorite: MiNoteFavorite & { note: MiNote & { user: MiUser } }, poll: MiPoll | null = null): Record<string, unknown> {
+function serialize(
+	favorite: MiNoteFavorite & { note: MiNote & { user: MiUser } },
+	poll: MiPoll | null = null,
+): Record<string, unknown> {
 	return {
 		id: favorite.id,
 		createdAt: favorite.createdAt,

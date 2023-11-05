@@ -4,70 +4,90 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div>
-	<Transition :name="defaultStore.state.animation ? '_transition_zoom' : ''" mode="out-in">
-		<MkLoading v-if="fetching"/>
-		<div v-else :class="$style.root">
-			<div class="item _panel users">
-				<div class="icon"><i class="ti ti-users"></i></div>
-				<div class="body">
-					<div class="value">
-						<MkNumber :value="stats.originalUsersCount" style="margin-right: 0.5em;"/>
-						<MkNumberDiff v-tooltip="i18n.ts.dayOverDayChanges" class="diff" :value="usersComparedToThePrevDay"></MkNumberDiff>
+	<div>
+		<Transition
+			:name="defaultStore.state.animation ? '_transition_zoom' : ''"
+			mode="out-in"
+		>
+			<MkLoading v-if="fetching" />
+			<div v-else :class="$style.root">
+				<div class="item _panel users">
+					<div class="icon"><i class="ti ti-users"></i></div>
+					<div class="body">
+						<div class="value">
+							<MkNumber
+								:value="stats.originalUsersCount"
+								style="margin-right: 0.5em"
+							/>
+							<MkNumberDiff
+								v-tooltip="i18n.ts.dayOverDayChanges"
+								class="diff"
+								:value="usersComparedToThePrevDay"
+							></MkNumberDiff>
+						</div>
+						<div class="label">Users</div>
 					</div>
-					<div class="label">Users</div>
+				</div>
+				<div class="item _panel notes">
+					<div class="icon"><i class="ti ti-pencil"></i></div>
+					<div class="body">
+						<div class="value">
+							<MkNumber
+								:value="stats.originalNotesCount"
+								style="margin-right: 0.5em"
+							/>
+							<MkNumberDiff
+								v-tooltip="i18n.ts.dayOverDayChanges"
+								class="diff"
+								:value="notesComparedToThePrevDay"
+							></MkNumberDiff>
+						</div>
+						<div class="label">Notes</div>
+					</div>
+				</div>
+				<div class="item _panel instances">
+					<div class="icon"><i class="ti ti-planet"></i></div>
+					<div class="body">
+						<div class="value">
+							<MkNumber :value="stats.instances" style="margin-right: 0.5em" />
+						</div>
+						<div class="label">Instances</div>
+					</div>
+				</div>
+				<div class="item _panel emojis">
+					<div class="icon"><i class="ti ti-icons"></i></div>
+					<div class="body">
+						<div class="value">
+							<MkNumber
+								:value="customEmojis.length"
+								style="margin-right: 0.5em"
+							/>
+						</div>
+						<div class="label">Custom emojis</div>
+					</div>
+				</div>
+				<div class="item _panel online">
+					<div class="icon"><i class="ti ti-access-point"></i></div>
+					<div class="body">
+						<div class="value">
+							<MkNumber :value="onlineUsersCount" style="margin-right: 0.5em" />
+						</div>
+						<div class="label">Online</div>
+					</div>
 				</div>
 			</div>
-			<div class="item _panel notes">
-				<div class="icon"><i class="ti ti-pencil"></i></div>
-				<div class="body">
-					<div class="value">
-						<MkNumber :value="stats.originalNotesCount" style="margin-right: 0.5em;"/>
-						<MkNumberDiff v-tooltip="i18n.ts.dayOverDayChanges" class="diff" :value="notesComparedToThePrevDay"></MkNumberDiff>
-					</div>
-					<div class="label">Notes</div>
-				</div>
-			</div>
-			<div class="item _panel instances">
-				<div class="icon"><i class="ti ti-planet"></i></div>
-				<div class="body">
-					<div class="value">
-						<MkNumber :value="stats.instances" style="margin-right: 0.5em;"/>
-					</div>
-					<div class="label">Instances</div>
-				</div>
-			</div>
-			<div class="item _panel emojis">
-				<div class="icon"><i class="ti ti-icons"></i></div>
-				<div class="body">
-					<div class="value">
-						<MkNumber :value="customEmojis.length" style="margin-right: 0.5em;"/>
-					</div>
-					<div class="label">Custom emojis</div>
-				</div>
-			</div>
-			<div class="item _panel online">
-				<div class="icon"><i class="ti ti-access-point"></i></div>
-				<div class="body">
-					<div class="value">
-						<MkNumber :value="onlineUsersCount" style="margin-right: 0.5em;"/>
-					</div>
-					<div class="label">Online</div>
-				</div>
-			</div>
-		</div>
-	</Transition>
-</div>
+		</Transition>
+	</div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from 'vue';
-import * as os from '@/os.js';
-import MkNumberDiff from '@/components/MkNumberDiff.vue';
-import MkNumber from '@/components/MkNumber.vue';
-import { i18n } from '@/i18n.js';
-import { customEmojis } from '@/custom-emojis.js';
-import { defaultStore } from '@/store.js';
+import { onMounted } from "vue";
+import * as os from "@/os.js";
+import MkNumberDiff from "@/components/mk_components/MkNumberDiff.vue";
+import MkNumber from "@/components/mk_components/MkNumber.vue";
+import { i18n } from "@/i18n.js";
+import { customEmojis } from "@/custom-emojis.js";
+import { defaultStore } from "@/store.js";
 
 let stats: any = $ref(null);
 let usersComparedToThePrevDay = $ref<number>();
@@ -77,17 +97,17 @@ let fetching = $ref(true);
 
 onMounted(async () => {
 	const [_stats, _onlineUsersCount] = await Promise.all([
-		os.api('stats', {}),
-		os.apiGet('get-online-users-count').then(res => res.count),
+		os.api("stats", {}),
+		os.apiGet("get-online-users-count").then((res) => res.count),
 	]);
 	stats = _stats;
 	onlineUsersCount = _onlineUsersCount;
 
-	os.apiGet('charts/users', { limit: 2, span: 'day' }).then(chart => {
+	os.apiGet("charts/users", { limit: 2, span: "day" }).then((chart) => {
 		usersComparedToThePrevDay = stats.originalUsersCount - chart.local.total[1];
 	});
 
-	os.apiGet('charts/notes', { limit: 2, span: 'day' }).then(chart => {
+	os.apiGet("charts/notes", { limit: 2, span: "day" }).then((chart) => {
 		notesComparedToThePrevDay = stats.originalNotesCount - chart.local.total[1];
 	});
 
@@ -142,7 +162,7 @@ onMounted(async () => {
 			&.emojis {
 				> .icon {
 					background: #d5ba0026;
-						color: #dfc300;
+					color: #dfc300;
 				}
 			}
 

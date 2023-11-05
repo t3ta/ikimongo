@@ -3,19 +3,19 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import Xev from 'xev';
-import { Injectable } from '@nestjs/common';
-import { bindThis } from '@/decorators.js';
-import Channel from '../channel.js';
+import Xev from "xev";
+import { Injectable } from "@nestjs/common";
+import { bindThis } from "@/decorators.js";
+import Channel from "../channel.js";
 
 const ev = new Xev();
 
 class ServerStatsChannel extends Channel {
-	public readonly chName = 'serverStats';
+	public readonly chName = "serverStats";
 	public static shouldShare = true;
 	public static requireCredential = false;
 
-	constructor(id: string, connection: Channel['connection']) {
+	constructor(id: string, connection: Channel["connection"]) {
 		super(id, connection);
 		//this.onStats = this.onStats.bind(this);
 		//this.onMessage = this.onMessage.bind(this);
@@ -23,22 +23,22 @@ class ServerStatsChannel extends Channel {
 
 	@bindThis
 	public async init(params: any) {
-		ev.addListener('serverStats', this.onStats);
+		ev.addListener("serverStats", this.onStats);
 	}
 
 	@bindThis
 	private onStats(stats: any) {
-		this.send('stats', stats);
+		this.send("stats", stats);
 	}
 
 	@bindThis
 	public onMessage(type: string, body: any) {
 		switch (type) {
-			case 'requestLog':
-				ev.once(`serverStatsLog:${body.id}`, statsLog => {
-					this.send('statsLog', statsLog);
+			case "requestLog":
+				ev.once(`serverStatsLog:${body.id}`, (statsLog) => {
+					this.send("statsLog", statsLog);
 				});
-				ev.emit('requestServerStatsLog', {
+				ev.emit("requestServerStatsLog", {
 					id: body.id,
 					length: body.length,
 				});
@@ -48,7 +48,7 @@ class ServerStatsChannel extends Channel {
 
 	@bindThis
 	public dispose() {
-		ev.removeListener('serverStats', this.onStats);
+		ev.removeListener("serverStats", this.onStats);
 	}
 }
 
@@ -57,15 +57,13 @@ export class ServerStatsChannelService {
 	public readonly shouldShare = ServerStatsChannel.shouldShare;
 	public readonly requireCredential = ServerStatsChannel.requireCredential;
 
-	constructor(
-	) {
-	}
+	constructor() {}
 
 	@bindThis
-	public create(id: string, connection: Channel['connection']): ServerStatsChannel {
-		return new ServerStatsChannel(
-			id,
-			connection,
-		);
+	public create(
+		id: string,
+		connection: Channel["connection"],
+	): ServerStatsChannel {
+		return new ServerStatsChannel(id, connection);
 	}
 }

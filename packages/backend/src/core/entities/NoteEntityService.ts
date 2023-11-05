@@ -3,25 +3,34 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import { In } from 'typeorm';
-import * as mfm from 'mfm-js';
-import { ModuleRef } from '@nestjs/core';
-import { DI } from '@/di-symbols.js';
-import type { Packed } from '@/misc/json-schema.js';
-import { nyaize } from '@/misc/nyaize.js';
-import { awaitAll } from '@/misc/prelude/await-all.js';
-import type { MiUser } from '@/models/user/User.js';
-import type { MiNote } from '@/models/note/Note.js';
-import type { MiNoteReaction } from '@/models/note/NoteReaction.js';
-import type { UsersRepository, NotesRepository, FollowingsRepository, PollsRepository, PollVotesRepository, NoteReactionsRepository, ChannelsRepository } from '@/models/_.js';
-import { bindThis } from '@/decorators.js';
-import { isNotNull } from '@/misc/is-not-null.js';
-import type { OnModuleInit } from '@nestjs/common';
-import type { CustomEmojiService } from '../CustomEmojiService.js';
-import type { ReactionService } from '../ReactionService.js';
-import type { UserEntityService } from './UserEntityService.js';
-import type { DriveFileEntityService } from './DriveFileEntityService.js';
+import { Inject, Injectable } from "@nestjs/common";
+import { In } from "typeorm";
+import * as mfm from "mfm-js";
+import { ModuleRef } from "@nestjs/core";
+import { DI } from "@/di-symbols.js";
+import type { Packed } from "@/misc/json-schema.js";
+import { nyaize } from "@/misc/nyaize.js";
+import { awaitAll } from "@/misc/prelude/await-all.js";
+import type { MiUser } from "@/models/user/User.js";
+import type { MiNote } from "@/models/note/Note.js";
+import type { MiNoteReaction } from "@/models/note/NoteReaction.js";
+import type {
+	UsersRepository,
+	NotesRepository,
+	FollowingsRepository,
+	PollsRepository,
+	PollVotesRepository,
+	NoteReactionsRepository,
+	ChannelsRepository,
+	IGObservationsRepository,
+} from "@/models/_.js";
+import { bindThis } from "@/decorators.js";
+import { isNotNull } from "@/misc/is-not-null.js";
+import type { OnModuleInit } from "@nestjs/common";
+import type { CustomEmojiService } from "../CustomEmojiService.js";
+import type { ReactionService } from "../ReactionService.js";
+import type { UserEntityService } from "./UserEntityService.js";
+import type { DriveFileEntityService } from "./DriveFileEntityService.js";
 
 @Injectable()
 export class NoteEntityService implements OnModuleInit {
@@ -54,34 +63,39 @@ export class NoteEntityService implements OnModuleInit {
 		@Inject(DI.channelsRepository)
 		private channelsRepository: ChannelsRepository,
 
-		//private userEntityService: UserEntityService,
+		@Inject(DI.observationsRepository)
+		private observationsRepository: IGObservationsRepository, //private userEntityService: UserEntityService,
 		//private driveFileEntityService: DriveFileEntityService,
-		//private customEmojiService: CustomEmojiService,
-		//private reactionService: ReactionService,
-	) {
-	}
+	) //private customEmojiService: CustomEmojiService,
+	//private reactionService: ReactionService,
+	{}
 
 	onModuleInit() {
-		this.userEntityService = this.moduleRef.get('UserEntityService');
-		this.driveFileEntityService = this.moduleRef.get('DriveFileEntityService');
-		this.customEmojiService = this.moduleRef.get('CustomEmojiService');
-		this.reactionService = this.moduleRef.get('ReactionService');
+		this.userEntityService = this.moduleRef.get("UserEntityService");
+		this.driveFileEntityService = this.moduleRef.get("DriveFileEntityService");
+		this.customEmojiService = this.moduleRef.get("CustomEmojiService");
+		this.reactionService = this.moduleRef.get("ReactionService");
 	}
 
 	@bindThis
-	private async hideNote(packedNote: Packed<'Note'>, meId: MiUser['id'] | null) {
+	private async hideNote(
+		packedNote: Packed<"Note">,
+		meId: MiUser["id"] | null,
+	) {
 		// TODO: isVisibleForMe を使うようにしても良さそう(型違うけど)
 		let hide = false;
 
 		// visibility が specified かつ自分が指定されていなかったら非表示
-		if (packedNote.visibility === 'specified') {
+		if (packedNote.visibility === "specified") {
 			if (meId == null) {
 				hide = true;
 			} else if (meId === packedNote.userId) {
 				hide = false;
 			} else {
 				// 指定されているかどうか
-				const specified = packedNote.visibleUserIds!.some((id: any) => meId === id);
+				const specified = packedNote.visibleUserIds!.some(
+					(id: any) => meId === id,
+				);
 
 				if (specified) {
 					hide = false;
@@ -92,15 +106,18 @@ export class NoteEntityService implements OnModuleInit {
 		}
 
 		// visibility が followers かつ自分が投稿者のフォロワーでなかったら非表示
-		if (packedNote.visibility === 'followers') {
+		if (packedNote.visibility === "followers") {
 			if (meId == null) {
 				hide = true;
 			} else if (meId === packedNote.userId) {
 				hide = false;
-			} else if (packedNote.reply && (meId === packedNote.reply.userId)) {
+			} else if (packedNote.reply && meId === packedNote.reply.userId) {
 				// 自分の投稿に対するリプライ
 				hide = false;
-			} else if (packedNote.mentions && packedNote.mentions.some(id => meId === id)) {
+			} else if (
+				packedNote.mentions &&
+				packedNote.mentions.some((id) => meId === id)
+			) {
 				// 自分へのメンション
 				hide = false;
 			} else {
@@ -130,9 +147,11 @@ export class NoteEntityService implements OnModuleInit {
 	}
 
 	@bindThis
-	private async populatePoll(note: MiNote, meId: MiUser['id'] | null) {
-		const poll = await this.pollsRepository.findOneByOrFail({ noteId: note.id });
-		const choices = poll.choices.map(c => ({
+	private async populatePoll(note: MiNote, meId: MiUser["id"] | null) {
+		const poll = await this.pollsRepository.findOneByOrFail({
+			noteId: note.id,
+		});
+		const choices = poll.choices.map((c) => ({
 			text: c,
 			votes: poll.votes[poll.choices.indexOf(c)],
 			isVoted: false,
@@ -145,7 +164,7 @@ export class NoteEntityService implements OnModuleInit {
 					noteId: note.id,
 				});
 
-				const myChoices = votes.map(v => v.choice);
+				const myChoices = votes.map((v) => v.choice);
 				for (const myChoice of myChoices) {
 					choices[myChoice].isVoted = true;
 				}
@@ -169,9 +188,13 @@ export class NoteEntityService implements OnModuleInit {
 	}
 
 	@bindThis
-	private async populateMyReaction(note: MiNote, meId: MiUser['id'], _hint_?: {
-		myReactions: Map<MiNote['id'], MiNoteReaction | null>;
-	}) {
+	private async populateMyReaction(
+		note: MiNote,
+		meId: MiUser["id"],
+		_hint_?: {
+			myReactions: Map<MiNote["id"], MiNoteReaction | null>;
+		},
+	) {
 		if (_hint_?.myReactions) {
 			const reaction = _hint_.myReactions.get(note.id);
 			if (reaction) {
@@ -200,10 +223,22 @@ export class NoteEntityService implements OnModuleInit {
 	}
 
 	@bindThis
-	public async isVisibleForMe(note: MiNote, meId: MiUser['id'] | null): Promise<boolean> {
+	private async populateObservation(note: MiNote) {
+		const observation = await this.observationsRepository.findOneBy({
+			noteId: note.id,
+		});
+
+		return observation;
+	}
+
+	@bindThis
+	public async isVisibleForMe(
+		note: MiNote,
+		meId: MiUser["id"] | null,
+	): Promise<boolean> {
 		// This code must always be synchronized with the checks in generateVisibilityQuery.
 		// visibility が specified かつ自分が指定されていなかったら非表示
-		if (note.visibility === 'specified') {
+		if (note.visibility === "specified") {
 			if (meId == null) {
 				return false;
 			} else if (meId === note.userId) {
@@ -215,15 +250,15 @@ export class NoteEntityService implements OnModuleInit {
 		}
 
 		// visibility が followers かつ自分が投稿者のフォロワーでなかったら非表示
-		if (note.visibility === 'followers') {
+		if (note.visibility === "followers") {
 			if (meId == null) {
 				return false;
 			} else if (meId === note.userId) {
 				return true;
-			} else if (note.reply && (meId === note.reply.userId)) {
+			} else if (note.reply && meId === note.reply.userId) {
 				// 自分の投稿に対するリプライ
 				return true;
-			} else if (note.mentions && note.mentions.some(id => meId === id)) {
+			} else if (note.mentions && note.mentions.some((id) => meId === id)) {
 				// 自分へのメンション
 				return true;
 			} else {
@@ -254,46 +289,61 @@ export class NoteEntityService implements OnModuleInit {
 	}
 
 	@bindThis
-	public async packAttachedFiles(fileIds: MiNote['fileIds'], packedFiles: Map<MiNote['fileIds'][number], Packed<'DriveFile'> | null>): Promise<Packed<'DriveFile'>[]> {
+	public async packAttachedFiles(
+		fileIds: MiNote["fileIds"],
+		packedFiles: Map<MiNote["fileIds"][number], Packed<"DriveFile"> | null>,
+	): Promise<Packed<"DriveFile">[]> {
 		const missingIds = [];
 		for (const id of fileIds) {
 			if (!packedFiles.has(id)) missingIds.push(id);
 		}
 		if (missingIds.length) {
-			const additionalMap = await this.driveFileEntityService.packManyByIdsMap(missingIds);
+			const additionalMap =
+				await this.driveFileEntityService.packManyByIdsMap(missingIds);
 			for (const [k, v] of additionalMap) {
 				packedFiles.set(k, v);
 			}
 		}
-		return fileIds.map(id => packedFiles.get(id)).filter(isNotNull);
+		return fileIds.map((id) => packedFiles.get(id)).filter(isNotNull);
 	}
 
 	@bindThis
 	public async pack(
-		src: MiNote['id'] | MiNote,
-		me?: { id: MiUser['id'] } | null | undefined,
+		src: MiNote["id"] | MiNote,
+		me?: { id: MiUser["id"] } | null | undefined,
 		options?: {
 			detail?: boolean;
 			skipHide?: boolean;
 			_hint_?: {
-				myReactions: Map<MiNote['id'], MiNoteReaction | null>;
-				packedFiles: Map<MiNote['fileIds'][number], Packed<'DriveFile'> | null>;
+				myReactions: Map<MiNote["id"], MiNoteReaction | null>;
+				packedFiles: Map<MiNote["fileIds"][number], Packed<"DriveFile"> | null>;
 			};
 		},
-	): Promise<Packed<'Note'>> {
-		const opts = Object.assign({
-			detail: true,
-			skipHide: false,
-		}, options);
+	): Promise<Packed<"Note">> {
+		const opts = Object.assign(
+			{
+				detail: true,
+				skipHide: false,
+			},
+			options,
+		);
 
 		const meId = me ? me.id : null;
-		const note = typeof src === 'object' ? src : await this.notesRepository.findOneOrFail({ where: { id: src }, relations: ['user'] });
+		const note =
+			typeof src === "object"
+				? src
+				: await this.notesRepository.findOneOrFail({
+						where: { id: src },
+						relations: ["user"],
+				  });
 		const host = note.userHost;
 
 		let text = note.text;
 
 		if (note.name && (note.url ?? note.uri)) {
-			text = `【${note.name}】\n${(note.text ?? '').trim()}\n\n${note.url ?? note.uri}`;
+			text = `【${note.name}】\n${(note.text ?? "").trim()}\n\n${
+				note.url ?? note.uri
+			}`;
 		}
 
 		const channel = note.channelId
@@ -303,11 +353,13 @@ export class NoteEntityService implements OnModuleInit {
 			: null;
 
 		const reactionEmojiNames = Object.keys(note.reactions)
-			.filter(x => x.startsWith(':') && x.includes('@') && !x.includes('@.')) // リモートカスタム絵文字のみ
-			.map(x => this.reactionService.decodeReaction(x).reaction.replaceAll(':', ''));
+			.filter((x) => x.startsWith(":") && x.includes("@") && !x.includes("@.")) // リモートカスタム絵文字のみ
+			.map((x) =>
+				this.reactionService.decodeReaction(x).reaction.replaceAll(":", ""),
+			);
 		const packedFiles = options?._hint_?.packedFiles;
 
-		const packed: Packed<'Note'> = await awaitAll({
+		const packed: Packed<"Note"> = await awaitAll({
 			id: note.id,
 			createdAt: note.createdAt.toISOString(),
 			updatedAt: note.updatedAt ? note.updatedAt.toISOString() : undefined,
@@ -320,54 +372,82 @@ export class NoteEntityService implements OnModuleInit {
 			visibility: note.visibility,
 			localOnly: note.localOnly ?? undefined,
 			reactionAcceptance: note.reactionAcceptance,
-			visibleUserIds: note.visibility === 'specified' ? note.visibleUserIds : undefined,
+			visibleUserIds:
+				note.visibility === "specified" ? note.visibleUserIds : undefined,
 			renoteCount: note.renoteCount,
 			repliesCount: note.repliesCount,
 			reactions: this.reactionService.convertLegacyReactions(note.reactions),
-			reactionEmojis: this.customEmojiService.populateEmojis(reactionEmojiNames, host),
-			emojis: host != null ? this.customEmojiService.populateEmojis(note.emojis, host) : undefined,
+			reactionEmojis: this.customEmojiService.populateEmojis(
+				reactionEmojiNames,
+				host,
+			),
+			emojis:
+				host != null
+					? this.customEmojiService.populateEmojis(note.emojis, host)
+					: undefined,
 			tags: note.tags.length > 0 ? note.tags : undefined,
 			fileIds: note.fileIds,
-			files: packedFiles != null ? this.packAttachedFiles(note.fileIds, packedFiles) : this.driveFileEntityService.packManyByIds(note.fileIds),
+			files:
+				packedFiles != null
+					? this.packAttachedFiles(note.fileIds, packedFiles)
+					: this.driveFileEntityService.packManyByIds(note.fileIds),
 			replyId: note.replyId,
 			renoteId: note.renoteId,
 			channelId: note.channelId ?? undefined,
-			channel: channel ? {
-				id: channel.id,
-				name: channel.name,
-				color: channel.color,
-				isSensitive: channel.isSensitive,
-			} : undefined,
+			channel: channel
+				? {
+						id: channel.id,
+						name: channel.name,
+						color: channel.color,
+						isSensitive: channel.isSensitive,
+				  }
+				: undefined,
 			mentions: note.mentions.length > 0 ? note.mentions : undefined,
 			uri: note.uri ?? undefined,
 			url: note.url ?? undefined,
 
-			...(opts.detail ? {
-				clippedCount: note.clippedCount,
+			...(opts.detail
+				? {
+						clippedCount: note.clippedCount,
 
-				reply: note.replyId ? this.pack(note.reply ?? note.replyId, me, {
-					detail: false,
-					_hint_: options?._hint_,
-				}) : undefined,
+						reply: note.replyId
+							? this.pack(note.reply ?? note.replyId, me, {
+									detail: false,
+									_hint_: options?._hint_,
+							  })
+							: undefined,
 
-				renote: note.renoteId ? this.pack(note.renote ?? note.renoteId, me, {
-					detail: true,
-					_hint_: options?._hint_,
-				}) : undefined,
+						renote: note.renoteId
+							? this.pack(note.renote ?? note.renoteId, me, {
+									detail: true,
+									_hint_: options?._hint_,
+							  })
+							: undefined,
 
-				poll: note.hasPoll ? this.populatePoll(note, meId) : undefined,
+						poll: note.hasPoll ? this.populatePoll(note, meId) : undefined,
 
-				...(meId ? {
-					myReaction: this.populateMyReaction(note, meId, options?._hint_),
-				} : {}),
-			} : {}),
+						observation: note.hasObservation
+							? this.populateObservation(note)
+							: undefined,
+
+						...(meId
+							? {
+									myReaction: this.populateMyReaction(
+										note,
+										meId,
+										options?._hint_,
+									),
+							  }
+							: {}),
+				  }
+				: {}),
 		});
 
 		if (packed.user.isCat && packed.text) {
 			const tokens = packed.text ? mfm.parse(packed.text) : [];
 			function nyaizeNode(node: mfm.MfmNode) {
-				if (node.type === 'quote') return;
-				if (node.type === 'text') {
+				if (node.type === "quote") return;
+				if (node.type === "text") {
 					node.props.text = nyaize(node.props.text);
 				}
 				if (node.children) {
@@ -392,7 +472,7 @@ export class NoteEntityService implements OnModuleInit {
 	@bindThis
 	public async packMany(
 		notes: MiNote[],
-		me?: { id: MiUser['id'] } | null | undefined,
+		me?: { id: MiUser["id"] } | null | undefined,
 		options?: {
 			detail?: boolean;
 			skipHide?: boolean;
@@ -401,69 +481,113 @@ export class NoteEntityService implements OnModuleInit {
 		if (notes.length === 0) return [];
 
 		const meId = me ? me.id : null;
-		const myReactionsMap = new Map<MiNote['id'], MiNoteReaction | null>();
+		const myReactionsMap = new Map<MiNote["id"], MiNoteReaction | null>();
 		if (meId) {
-			const renoteIds = notes.filter(n => n.renoteId != null).map(n => n.renoteId!);
+			const renoteIds = notes
+				.filter((n) => n.renoteId != null)
+				.map((n) => n.renoteId!);
 			// パフォーマンスのためノートが作成されてから1秒以上経っていない場合はリアクションを取得しない
-			const targets = [...notes.filter(n => n.createdAt.getTime() + 1000 < Date.now()).map(n => n.id), ...renoteIds];
+			const targets = [
+				...notes
+					.filter((n) => n.createdAt.getTime() + 1000 < Date.now())
+					.map((n) => n.id),
+				...renoteIds,
+			];
 			const myReactions = await this.noteReactionsRepository.findBy({
 				userId: meId,
 				noteId: In(targets),
 			});
 
 			for (const target of targets) {
-				myReactionsMap.set(target, myReactions.find(reaction => reaction.noteId === target) ?? null);
+				myReactionsMap.set(
+					target,
+					myReactions.find((reaction) => reaction.noteId === target) ?? null,
+				);
 			}
 		}
 
-		await this.customEmojiService.prefetchEmojis(this.aggregateNoteEmojis(notes));
+		await this.customEmojiService.prefetchEmojis(
+			this.aggregateNoteEmojis(notes),
+		);
 		// TODO: 本当は renote とか reply がないのに renoteId とか replyId があったらここで解決しておく
-		const fileIds = notes.map(n => [n.fileIds, n.renote?.fileIds, n.reply?.fileIds]).flat(2).filter(isNotNull);
-		const packedFiles = fileIds.length > 0 ? await this.driveFileEntityService.packManyByIdsMap(fileIds) : new Map();
+		const fileIds = notes
+			.map((n) => [n.fileIds, n.renote?.fileIds, n.reply?.fileIds])
+			.flat(2)
+			.filter(isNotNull);
+		const packedFiles =
+			fileIds.length > 0
+				? await this.driveFileEntityService.packManyByIdsMap(fileIds)
+				: new Map();
 
-		return await Promise.all(notes.map(n => this.pack(n, me, {
-			...options,
-			_hint_: {
-				myReactions: myReactionsMap,
-				packedFiles,
-			},
-		})));
+		return await Promise.all(
+			notes.map((n) =>
+				this.pack(n, me, {
+					...options,
+					_hint_: {
+						myReactions: myReactionsMap,
+						packedFiles,
+					},
+				}),
+			),
+		);
 	}
 
 	@bindThis
 	public aggregateNoteEmojis(notes: MiNote[]) {
-		let emojis: { name: string | null; host: string | null; }[] = [];
+		let emojis: { name: string | null; host: string | null }[] = [];
 		for (const note of notes) {
-			emojis = emojis.concat(note.emojis
-				.map(e => this.customEmojiService.parseEmojiStr(e, note.userHost)));
+			emojis = emojis.concat(
+				note.emojis.map((e) =>
+					this.customEmojiService.parseEmojiStr(e, note.userHost),
+				),
+			);
 			if (note.renote) {
-				emojis = emojis.concat(note.renote.emojis
-					.map(e => this.customEmojiService.parseEmojiStr(e, note.renote!.userHost)));
+				emojis = emojis.concat(
+					note.renote.emojis.map((e) =>
+						this.customEmojiService.parseEmojiStr(e, note.renote!.userHost),
+					),
+				);
 				if (note.renote.user) {
-					emojis = emojis.concat(note.renote.user.emojis
-						.map(e => this.customEmojiService.parseEmojiStr(e, note.renote!.userHost)));
+					emojis = emojis.concat(
+						note.renote.user.emojis.map((e) =>
+							this.customEmojiService.parseEmojiStr(e, note.renote!.userHost),
+						),
+					);
 				}
 			}
-			const customReactions = Object.keys(note.reactions).map(x => this.reactionService.decodeReaction(x)).filter(x => x.name != null) as typeof emojis;
+			const customReactions = Object.keys(note.reactions)
+				.map((x) => this.reactionService.decodeReaction(x))
+				.filter((x) => x.name != null) as typeof emojis;
 			emojis = emojis.concat(customReactions);
 			if (note.user) {
-				emojis = emojis.concat(note.user.emojis
-					.map(e => this.customEmojiService.parseEmojiStr(e, note.userHost)));
+				emojis = emojis.concat(
+					note.user.emojis.map((e) =>
+						this.customEmojiService.parseEmojiStr(e, note.userHost),
+					),
+				);
 			}
 		}
-		return emojis.filter(x => x.name != null && x.host != null) as { name: string; host: string; }[];
+		return emojis.filter((x) => x.name != null && x.host != null) as {
+			name: string;
+			host: string;
+		}[];
 	}
 
 	@bindThis
-	public async countSameRenotes(userId: string, renoteId: string, excludeNoteId: string | undefined): Promise<number> {
+	public async countSameRenotes(
+		userId: string,
+		renoteId: string,
+		excludeNoteId: string | undefined,
+	): Promise<number> {
 		// 指定したユーザーの指定したノートのリノートがいくつあるか数える
-		const query = this.notesRepository.createQueryBuilder('note')
-			.where('note.userId = :userId', { userId })
-			.andWhere('note.renoteId = :renoteId', { renoteId });
+		const query = this.notesRepository
+			.createQueryBuilder("note")
+			.where("note.userId = :userId", { userId })
+			.andWhere("note.renoteId = :renoteId", { renoteId });
 
 		// 指定した投稿を除く
 		if (excludeNoteId) {
-			query.andWhere('note.id != :excludeNoteId', { excludeNoteId });
+			query.andWhere("note.id != :excludeNoteId", { excludeNoteId });
 		}
 
 		return await query.getCount();

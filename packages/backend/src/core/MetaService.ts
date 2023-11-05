@@ -3,15 +3,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import { DataSource } from 'typeorm';
-import * as Redis from 'ioredis';
-import { DI } from '@/di-symbols.js';
-import { MiMeta } from '@/models/Meta.js';
-import { GlobalEventService } from '@/core/GlobalEventService.js';
-import { bindThis } from '@/decorators.js';
-import type { GlobalEvents } from '@/core/GlobalEventService.js';
-import type { OnApplicationShutdown } from '@nestjs/common';
+import { Inject, Injectable } from "@nestjs/common";
+import { DataSource } from "typeorm";
+import * as Redis from "ioredis";
+import { DI } from "@/di-symbols.js";
+import { MiMeta } from "@/models/Meta.js";
+import { GlobalEventService } from "@/core/GlobalEventService.js";
+import { bindThis } from "@/decorators.js";
+import type { GlobalEvents } from "@/core/GlobalEventService.js";
+import type { OnApplicationShutdown } from "@nestjs/common";
 
 @Injectable()
 export class MetaService implements OnApplicationShutdown {
@@ -29,26 +29,29 @@ export class MetaService implements OnApplicationShutdown {
 	) {
 		//this.onMessage = this.onMessage.bind(this);
 
-		if (process.env.NODE_ENV !== 'test') {
-			this.intervalId = setInterval(() => {
-				this.fetch(true).then(meta => {
-					// fetch内でもセットしてるけど仕様変更の可能性もあるため一応
-					this.cache = meta;
-				});
-			}, 1000 * 60 * 5);
+		if (process.env.NODE_ENV !== "test") {
+			this.intervalId = setInterval(
+				() => {
+					this.fetch(true).then((meta) => {
+						// fetch内でもセットしてるけど仕様変更の可能性もあるため一応
+						this.cache = meta;
+					});
+				},
+				1000 * 60 * 5,
+			);
 		}
 
-		this.redisForSub.on('message', this.onMessage);
+		this.redisForSub.on("message", this.onMessage);
 	}
 
 	@bindThis
 	private async onMessage(_: string, data: string): Promise<void> {
 		const obj = JSON.parse(data);
 
-		if (obj.channel === 'internal') {
-			const { type, body } = obj.message as GlobalEvents['internal']['payload'];
+		if (obj.channel === "internal") {
+			const { type, body } = obj.message as GlobalEvents["internal"]["payload"];
 			switch (type) {
-				case 'metaUpdated': {
+				case "metaUpdated": {
 					this.cache = body;
 					break;
 				}
@@ -62,11 +65,11 @@ export class MetaService implements OnApplicationShutdown {
 	public async fetch(noCache = false): Promise<MiMeta> {
 		if (!noCache && this.cache) return this.cache;
 
-		return await this.db.transaction(async transactionalEntityManager => {
+		return await this.db.transaction(async (transactionalEntityManager) => {
 			// 過去のバグでレコードが複数出来てしまっている可能性があるので新しいIDを優先する
 			const metas = await transactionalEntityManager.find(MiMeta, {
 				order: {
-					id: 'DESC',
+					id: "DESC",
 				},
 			});
 
@@ -81,11 +84,16 @@ export class MetaService implements OnApplicationShutdown {
 					.upsert(
 						MiMeta,
 						{
-							id: 'x',
+							id: "x",
 						},
-						['id'],
+						["id"],
 					)
-					.then((x) => transactionalEntityManager.findOneByOrFail(MiMeta, x.identifiers[0]));
+					.then((x) =>
+						transactionalEntityManager.findOneByOrFail(
+							MiMeta,
+							x.identifiers[0],
+						),
+					);
 
 				this.cache = saved;
 				return saved;
@@ -95,31 +103,33 @@ export class MetaService implements OnApplicationShutdown {
 
 	@bindThis
 	public async update(data: Partial<MiMeta>): Promise<MiMeta> {
-		const updated = await this.db.transaction(async transactionalEntityManager => {
-			const metas = await transactionalEntityManager.find(MiMeta, {
-				order: {
-					id: 'DESC',
-				},
-			});
-
-			const meta = metas[0];
-
-			if (meta) {
-				await transactionalEntityManager.update(MiMeta, meta.id, data);
-
+		const updated = await this.db.transaction(
+			async (transactionalEntityManager) => {
 				const metas = await transactionalEntityManager.find(MiMeta, {
 					order: {
-						id: 'DESC',
+						id: "DESC",
 					},
 				});
 
-				return metas[0];
-			} else {
-				return await transactionalEntityManager.save(MiMeta, data);
-			}
-		});
+				const meta = metas[0];
 
-		this.globalEventService.publishInternalEvent('metaUpdated', updated);
+				if (meta) {
+					await transactionalEntityManager.update(MiMeta, meta.id, data);
+
+					const metas = await transactionalEntityManager.find(MiMeta, {
+						order: {
+							id: "DESC",
+						},
+					});
+
+					return metas[0];
+				} else {
+					return await transactionalEntityManager.save(MiMeta, data);
+				}
+			},
+		);
+
+		this.globalEventService.publishInternalEvent("metaUpdated", updated);
 
 		return updated;
 	}
@@ -127,7 +137,7 @@ export class MetaService implements OnApplicationShutdown {
 	@bindThis
 	public dispose(): void {
 		clearInterval(this.intervalId);
-		this.redisForSub.off('message', this.onMessage);
+		this.redisForSub.off("message", this.onMessage);
 	}
 
 	@bindThis

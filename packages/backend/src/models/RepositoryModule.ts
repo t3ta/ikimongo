@@ -3,11 +3,78 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Module } from '@nestjs/common';
-import { DI } from '@/di-symbols.js';
-import { MiAbuseUserReport, MiAccessToken, MiAd, MiAnnouncement, MiAnnouncementRead, MiAntenna, MiApp, MiAuthSession, MiBlocking, MiChannel, MiChannelFavorite, MiChannelFollowing, MiClip, MiClipFavorite, MiClipNote, MiDriveFile, MiDriveFolder, MiEmoji, MiFlash, MiFlashLike, MiFollowRequest, MiFollowing, MiGalleryLike, MiGalleryPost, MiHashtag, MiInstance, MiMeta, MiModerationLog, MiMutedNote, MiMuting, MiNote, MiNoteFavorite, MiNoteReaction, MiNoteThreadMuting, MiNoteUnread, MiPage, MiPageLike, MiPasswordResetRequest, MiPoll, MiPollVote, MiPromoNote, MiPromoRead, MiRegistrationTicket, MiRegistryItem, MiRelay, MiRenoteMuting, MiRetentionAggregation, MiRole, MiRoleAssignment, MiSignin, MiSwSubscription, MiUsedUsername, MiUser, MiUserIp, MiUserKeypair, MiUserList, MiUserListFavorite, MiUserListJoining, MiUserMemo, MiUserNotePining, MiUserPending, MiUserProfile, MiUserPublickey, MiUserSecurityKey, MiWebhook } from './_.js';
-import type { DataSource } from 'typeorm';
-import type { Provider } from '@nestjs/common';
+import { Module } from "@nestjs/common";
+import { DI } from "@/di-symbols.js";
+import {
+	IGObservation,
+	MiAbuseUserReport,
+	MiAccessToken,
+	MiAd,
+	MiAnnouncement,
+	MiAnnouncementRead,
+	MiAntenna,
+	MiApp,
+	MiAuthSession,
+	MiBlocking,
+	MiChannel,
+	MiChannelFavorite,
+	MiChannelFollowing,
+	MiClip,
+	MiClipFavorite,
+	MiClipNote,
+	MiDriveFile,
+	MiDriveFolder,
+	MiEmoji,
+	MiFlash,
+	MiFlashLike,
+	MiFollowRequest,
+	MiFollowing,
+	MiGalleryLike,
+	MiGalleryPost,
+	MiHashtag,
+	MiInstance,
+	MiMeta,
+	MiModerationLog,
+	MiMutedNote,
+	MiMuting,
+	MiNote,
+	MiNoteFavorite,
+	MiNoteReaction,
+	MiNoteThreadMuting,
+	MiNoteUnread,
+	MiPage,
+	MiPageLike,
+	MiPasswordResetRequest,
+	MiPoll,
+	MiPollVote,
+	MiPromoNote,
+	MiPromoRead,
+	MiRegistrationTicket,
+	MiRegistryItem,
+	MiRelay,
+	MiRenoteMuting,
+	MiRetentionAggregation,
+	MiRole,
+	MiRoleAssignment,
+	MiSignin,
+	MiSwSubscription,
+	MiUsedUsername,
+	MiUser,
+	MiUserIp,
+	MiUserKeypair,
+	MiUserList,
+	MiUserListFavorite,
+	MiUserListJoining,
+	MiUserMemo,
+	MiUserNotePining,
+	MiUserPending,
+	MiUserProfile,
+	MiUserPublickey,
+	MiUserSecurityKey,
+	MiWebhook,
+} from "./_.js";
+import type { DataSource } from "typeorm";
+import type { Provider } from "@nestjs/common";
 
 const $usersRepository: Provider = {
 	provide: DI.usersRepository,
@@ -399,9 +466,14 @@ const $userMemosRepository: Provider = {
 	inject: [DI.db],
 };
 
+const $observationsRepository: Provider = {
+	provide: DI.observationsRepository,
+	useFactory: (db: DataSource) => db.getRepository(IGObservation),
+	inject: [DI.db],
+};
+
 @Module({
-	imports: [
-	],
+	imports: [],
 	providers: [
 		$usersRepository,
 		$notesRepository,
@@ -468,6 +540,7 @@ const $userMemosRepository: Provider = {
 		$flashsRepository,
 		$flashLikesRepository,
 		$userMemosRepository,
+		$observationsRepository,
 	],
 	exports: [
 		$usersRepository,
@@ -535,6 +608,7 @@ const $userMemosRepository: Provider = {
 		$flashsRepository,
 		$flashLikesRepository,
 		$userMemosRepository,
+		$observationsRepository,
 	],
 })
 export class RepositoryModule {}

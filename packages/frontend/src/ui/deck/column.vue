@@ -4,87 +4,131 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div
-	:class="[$style.root, { [$style.paged]: isMainColumn, [$style.naked]: naked, [$style.active]: active, [$style.draghover]: draghover, [$style.dragging]: dragging, [$style.dropready]: dropready }]"
-	@dragover.prevent.stop="onDragover"
-	@dragleave="onDragleave"
-	@drop.prevent.stop="onDrop"
->
-	<header
-		:class="[$style.header]"
-		draggable="true"
-		@click="goTop"
-		@dragstart="onDragstart"
-		@dragend="onDragend"
-		@contextmenu.prevent.stop="onContextmenu"
-		@wheel="emit('headerWheel', $event)"
+	<div
+		:class="[
+			$style.root,
+			{
+				[$style.paged]: isMainColumn,
+				[$style.naked]: naked,
+				[$style.active]: active,
+				[$style.draghover]: draghover,
+				[$style.dragging]: dragging,
+				[$style.dropready]: dropready,
+			},
+		]"
+		@dragover.prevent.stop="onDragover"
+		@dragleave="onDragleave"
+		@drop.prevent.stop="onDrop"
 	>
-		<svg viewBox="0 0 256 128" :class="$style.tabShape">
-			<g transform="matrix(6.2431,0,0,6.2431,-677.417,-29.3839)">
-				<path d="M149.512,4.707L108.507,4.707C116.252,4.719 118.758,14.958 118.758,14.958C118.758,14.958 121.381,25.283 129.009,25.209L149.512,25.209L149.512,4.707Z" style="fill:var(--deckBg);"/>
-			</g>
-		</svg>
-		<div :class="$style.color"></div>
-		<button v-if="isStacked && !isMainColumn" :class="$style.toggleActive" class="_button" @click="toggleActive">
-			<template v-if="active"><i class="ti ti-chevron-up"></i></template>
-			<template v-else><i class="ti ti-chevron-down"></i></template>
-		</button>
-		<span :class="$style.title"><slot name="header"></slot></span>
-		<svg viewBox="0 0 16 16" version="1.1" :class="$style.grabber">
-			<path fill="currentColor" d="M10 13a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm0-4a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm-4 4a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm5-9a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM6 5a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path>
-		</svg>
-		<button v-tooltip="i18n.ts.settings" :class="$style.menu" class="_button" @click.stop="showSettingsMenu"><i class="ti ti-dots"></i></button>
-	</header>
-	<div v-if="active" ref="body" :class="$style.body">
-		<slot></slot>
+		<header
+			:class="[$style.header]"
+			draggable="true"
+			@click="goTop"
+			@dragstart="onDragstart"
+			@dragend="onDragend"
+			@contextmenu.prevent.stop="onContextmenu"
+			@wheel="emit('headerWheel', $event)"
+		>
+			<svg viewBox="0 0 256 128" :class="$style.tabShape">
+				<g transform="matrix(6.2431,0,0,6.2431,-677.417,-29.3839)">
+					<path
+						d="M149.512,4.707L108.507,4.707C116.252,4.719 118.758,14.958 118.758,14.958C118.758,14.958 121.381,25.283 129.009,25.209L149.512,25.209L149.512,4.707Z"
+						style="fill: var(--deckBg)"
+					/>
+				</g>
+			</svg>
+			<div :class="$style.color"></div>
+			<button
+				v-if="isStacked && !isMainColumn"
+				:class="$style.toggleActive"
+				class="_button"
+				@click="toggleActive"
+			>
+				<template v-if="active"><i class="ti ti-chevron-up"></i></template>
+				<template v-else><i class="ti ti-chevron-down"></i></template>
+			</button>
+			<span :class="$style.title"><slot name="header"></slot></span>
+			<svg viewBox="0 0 16 16" version="1.1" :class="$style.grabber">
+				<path
+					fill="currentColor"
+					d="M10 13a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm0-4a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm-4 4a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm5-9a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM6 5a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"
+				></path>
+			</svg>
+			<button
+				v-tooltip="i18n.ts.settings"
+				:class="$style.menu"
+				class="_button"
+				@click.stop="showSettingsMenu"
+			>
+				<i class="ti ti-dots"></i>
+			</button>
+		</header>
+		<div v-if="active" ref="body" :class="$style.body">
+			<slot></slot>
+		</div>
 	</div>
-</div>
 </template>
 
 <script lang="ts" setup>
-import { onBeforeUnmount, onMounted, provide, watch } from 'vue';
-import { updateColumn, swapLeftColumn, swapRightColumn, swapUpColumn, swapDownColumn, stackLeftColumn, popRightColumn, removeColumn, swapColumn, Column } from './deck-store';
-import * as os from '@/os.js';
-import { i18n } from '@/i18n.js';
-import { MenuItem } from '@/types/menu.js';
+import { onBeforeUnmount, onMounted, provide, watch } from "vue";
+import {
+	updateColumn,
+	swapLeftColumn,
+	swapRightColumn,
+	swapUpColumn,
+	swapDownColumn,
+	stackLeftColumn,
+	popRightColumn,
+	removeColumn,
+	swapColumn,
+	Column,
+} from "./deck-store";
+import * as os from "@/os.js";
+import { i18n } from "@/i18n.js";
+import { MenuItem } from "@/types/menu.js";
 
-provide('shouldHeaderThin', true);
-provide('shouldOmitHeaderTitle', true);
-provide('forceSpacerMin', true);
+provide("shouldHeaderThin", true);
+provide("shouldOmitHeaderTitle", true);
+provide("forceSpacerMin", true);
 
-const props = withDefaults(defineProps<{
-	column: Column;
-	isStacked?: boolean;
-	naked?: boolean;
-	menu?: MenuItem[];
-}>(), {
-	isStacked: false,
-	naked: false,
-});
+const props = withDefaults(
+	defineProps<{
+		column: Column;
+		isStacked?: boolean;
+		naked?: boolean;
+		menu?: MenuItem[];
+	}>(),
+	{
+		isStacked: false,
+		naked: false,
+	},
+);
 
 const emit = defineEmits<{
-	(ev: 'headerWheel', ctx: WheelEvent): void;
+	(ev: "headerWheel", ctx: WheelEvent): void;
 }>();
 
 let body = $shallowRef<HTMLDivElement | null>();
 
 let dragging = $ref(false);
-watch($$(dragging), v => os.deckGlobalEvents.emit(v ? 'column.dragStart' : 'column.dragEnd'));
+watch($$(dragging), (v) =>
+	os.deckGlobalEvents.emit(v ? "column.dragStart" : "column.dragEnd"),
+);
 
 let draghover = $ref(false);
 let dropready = $ref(false);
 
-const isMainColumn = $computed(() => props.column.type === 'main');
+const isMainColumn = $computed(() => props.column.type === "main");
 const active = $computed(() => props.column.active !== false);
 
 onMounted(() => {
-	os.deckGlobalEvents.on('column.dragStart', onOtherDragStart);
-	os.deckGlobalEvents.on('column.dragEnd', onOtherDragEnd);
+	os.deckGlobalEvents.on("column.dragStart", onOtherDragStart);
+	os.deckGlobalEvents.on("column.dragEnd", onOtherDragEnd);
 });
 
 onBeforeUnmount(() => {
-	os.deckGlobalEvents.off('column.dragStart', onOtherDragStart);
-	os.deckGlobalEvents.off('column.dragEnd', onOtherDragEnd);
+	os.deckGlobalEvents.off("column.dragStart", onOtherDragStart);
+	os.deckGlobalEvents.off("column.dragEnd", onOtherDragEnd);
 });
 
 function onOtherDragStart() {
@@ -103,80 +147,98 @@ function toggleActive() {
 }
 
 function getMenu() {
-	let items = [{
-		icon: 'ti ti-settings',
-		text: i18n.ts._deck.configureColumn,
-		action: async () => {
-			const { canceled, result } = await os.form(props.column.name, {
-				name: {
-					type: 'string',
-					label: i18n.ts.name,
-					default: props.column.name,
+	let items = [
+		{
+			icon: "ti ti-settings",
+			text: i18n.ts._deck.configureColumn,
+			action: async () => {
+				const { canceled, result } = await os.form(props.column.name, {
+					name: {
+						type: "string",
+						label: i18n.ts.name,
+						default: props.column.name,
+					},
+					width: {
+						type: "number",
+						label: i18n.ts.width,
+						description: i18n.ts._deck.usedAsMinWidthWhenFlexible,
+						default: props.column.width,
+					},
+					flexible: {
+						type: "boolean",
+						label: i18n.ts._deck.flexible,
+						default: props.column.flexible,
+					},
+				});
+				if (canceled) return;
+				updateColumn(props.column.id, result);
+			},
+		},
+		{
+			type: "parent",
+			text: i18n.ts.move + "...",
+			icon: "ti ti-arrows-move",
+			children: [
+				{
+					icon: "ti ti-arrow-left",
+					text: i18n.ts._deck.swapLeft,
+					action: () => {
+						swapLeftColumn(props.column.id);
+					},
 				},
-				width: {
-					type: 'number',
-					label: i18n.ts.width,
-					description: i18n.ts._deck.usedAsMinWidthWhenFlexible,
-					default: props.column.width,
+				{
+					icon: "ti ti-arrow-right",
+					text: i18n.ts._deck.swapRight,
+					action: () => {
+						swapRightColumn(props.column.id);
+					},
 				},
-				flexible: {
-					type: 'boolean',
-					label: i18n.ts._deck.flexible,
-					default: props.column.flexible,
-				},
-			});
-			if (canceled) return;
-			updateColumn(props.column.id, result);
+				props.isStacked
+					? {
+							icon: "ti ti-arrow-up",
+							text: i18n.ts._deck.swapUp,
+							action: () => {
+								swapUpColumn(props.column.id);
+							},
+					  }
+					: undefined,
+				props.isStacked
+					? {
+							icon: "ti ti-arrow-down",
+							text: i18n.ts._deck.swapDown,
+							action: () => {
+								swapDownColumn(props.column.id);
+							},
+					  }
+					: undefined,
+			],
 		},
-	}, {
-		type: 'parent',
-		text: i18n.ts.move + '...',
-		icon: 'ti ti-arrows-move',
-		children: [{
-			icon: 'ti ti-arrow-left',
-			text: i18n.ts._deck.swapLeft,
+		{
+			icon: "ti ti-stack-2",
+			text: i18n.ts._deck.stackLeft,
 			action: () => {
-				swapLeftColumn(props.column.id);
+				stackLeftColumn(props.column.id);
 			},
-		}, {
-			icon: 'ti ti-arrow-right',
-			text: i18n.ts._deck.swapRight,
-			action: () => {
-				swapRightColumn(props.column.id);
-			},
-		}, props.isStacked ? {
-			icon: 'ti ti-arrow-up',
-			text: i18n.ts._deck.swapUp,
-			action: () => {
-				swapUpColumn(props.column.id);
-			},
-		} : undefined, props.isStacked ? {
-			icon: 'ti ti-arrow-down',
-			text: i18n.ts._deck.swapDown,
-			action: () => {
-				swapDownColumn(props.column.id);
-			},
-		} : undefined],
-	}, {
-		icon: 'ti ti-stack-2',
-		text: i18n.ts._deck.stackLeft,
-		action: () => {
-			stackLeftColumn(props.column.id);
 		},
-	}, props.isStacked ? {
-		icon: 'ti ti-window-maximize',
-		text: i18n.ts._deck.popRight,
-		action: () => {
-			popRightColumn(props.column.id);
+		props.isStacked
+			? {
+					icon: "ti ti-window-maximize",
+					text: i18n.ts._deck.popRight,
+					action: () => {
+						popRightColumn(props.column.id);
+					},
+			  }
+			: undefined,
+		null,
+		{
+			icon: "ti ti-trash",
+			text: i18n.ts.remove,
+			danger: true,
+			action: () => {
+				removeColumn(props.column.id);
+			},
 		},
-	} : undefined, null, {
-		icon: 'ti ti-trash',
-		text: i18n.ts.remove,
-		danger: true,
-		action: () => {
-			removeColumn(props.column.id);
-		},
-	}];
+	];
 
 	if (props.menu) {
 		items.unshift(null);
@@ -198,13 +260,13 @@ function goTop() {
 	if (body) {
 		body.scrollTo({
 			top: 0,
-			behavior: 'smooth',
+			behavior: "smooth",
 		});
 	}
 }
 
 function onDragstart(ev) {
-	ev.dataTransfer.effectAllowed = 'move';
+	ev.dataTransfer.effectAllowed = "move";
 	ev.dataTransfer.setData(_DATA_TRANSFER_DECK_COLUMN_, props.column.id);
 
 	// Chromeのバグで、Dragstartハンドラ内ですぐにDOMを変更する(=リアクティブなプロパティを変更する)とDragが終了してしまう
@@ -222,11 +284,12 @@ function onDragover(ev) {
 	// 自分自身がドラッグされている場合
 	if (dragging) {
 		// 自分自身にはドロップさせない
-		ev.dataTransfer.dropEffect = 'none';
+		ev.dataTransfer.dropEffect = "none";
 	} else {
-		const isDeckColumn = ev.dataTransfer.types[0] === _DATA_TRANSFER_DECK_COLUMN_;
+		const isDeckColumn =
+			ev.dataTransfer.types[0] === _DATA_TRANSFER_DECK_COLUMN_;
 
-		ev.dataTransfer.dropEffect = isDeckColumn ? 'move' : 'none';
+		ev.dataTransfer.dropEffect = isDeckColumn ? "move" : "none";
 
 		if (isDeckColumn) draghover = true;
 	}
@@ -238,10 +301,10 @@ function onDragleave() {
 
 function onDrop(ev) {
 	draghover = false;
-	os.deckGlobalEvents.emit('column.dragEnd');
+	os.deckGlobalEvents.emit("column.dragEnd");
 
 	const id = ev.dataTransfer.getData(_DATA_TRANSFER_DECK_COLUMN_);
-	if (id != null && id !== '') {
+	if (id != null && id !== "") {
 		swapColumn(props.column.id, id);
 	}
 }

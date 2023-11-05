@@ -3,16 +3,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { setTimeout } from 'node:timers/promises';
-import { Global, Inject, Module } from '@nestjs/common';
-import * as Redis from 'ioredis';
-import { DataSource } from 'typeorm';
-import { MeiliSearch } from 'meilisearch';
-import { DI } from './di-symbols.js';
-import { Config, loadConfig } from './config.js';
-import { createPostgresDataSource } from './postgres.js';
-import { RepositoryModule } from './models/RepositoryModule.js';
-import type { Provider, OnApplicationShutdown } from '@nestjs/common';
+import { setTimeout } from "node:timers/promises";
+import { Global, Inject, Module } from "@nestjs/common";
+import * as Redis from "ioredis";
+import { DataSource } from "typeorm";
+import { MeiliSearch } from "meilisearch";
+import { DI } from "./di-symbols.js";
+import { Config, loadConfig } from "./config.js";
+import { createPostgresDataSource } from "./postgres.js";
+import { RepositoryModule } from "./models/RepositoryModule.js";
+import type { Provider, OnApplicationShutdown } from "@nestjs/common";
 
 const $config: Provider = {
 	provide: DI.config,
@@ -33,7 +33,9 @@ const $meilisearch: Provider = {
 	useFactory: (config: Config) => {
 		if (config.meilisearch) {
 			return new MeiliSearch({
-				host: `${config.meilisearch.ssl ? 'https' : 'http' }://${config.meilisearch.host}:${config.meilisearch.port}`,
+				host: `${config.meilisearch.ssl ? "https" : "http"}://${
+					config.meilisearch.host
+				}:${config.meilisearch.port}`,
 				apiKey: config.meilisearch.apiKey,
 			});
 		} else {
@@ -74,7 +76,15 @@ const $redisForSub: Provider = {
 @Module({
 	imports: [RepositoryModule],
 	providers: [$config, $db, $meilisearch, $redis, $redisForPub, $redisForSub],
-	exports: [$config, $db, $meilisearch, $redis, $redisForPub, $redisForSub, RepositoryModule],
+	exports: [
+		$config,
+		$db,
+		$meilisearch,
+		$redis,
+		$redisForPub,
+		$redisForSub,
+		RepositoryModule,
+	],
 })
 export class GlobalModule implements OnApplicationShutdown {
 	constructor(
@@ -85,7 +95,7 @@ export class GlobalModule implements OnApplicationShutdown {
 	) {}
 
 	public async dispose(): Promise<void> {
-		if (process.env.NODE_ENV === 'test') {
+		if (process.env.NODE_ENV === "test") {
 			// XXX:
 			// Shutting down the existing connections causes errors on Jest as
 			// Misskey has asynchronous postgres/redis connections that are not

@@ -3,14 +3,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
-import * as Redis from 'ioredis';
-import type { MiUser } from '@/models/user/User.js';
-import type { UserKeypairsRepository } from '@/models/_.js';
-import { RedisKVCache } from '@/misc/cache.js';
-import type { MiUserKeypair } from '@/models/user/UserKeypair.js';
-import { DI } from '@/di-symbols.js';
-import { bindThis } from '@/decorators.js';
+import { Inject, Injectable, OnApplicationShutdown } from "@nestjs/common";
+import * as Redis from "ioredis";
+import type { MiUser } from "@/models/user/User.js";
+import type { UserKeypairsRepository } from "@/models/_.js";
+import { RedisKVCache } from "@/misc/cache.js";
+import type { MiUserKeypair } from "@/models/user/UserKeypair.js";
+import { DI } from "@/di-symbols.js";
+import { bindThis } from "@/decorators.js";
 
 @Injectable()
 export class UserKeypairService implements OnApplicationShutdown {
@@ -23,17 +23,22 @@ export class UserKeypairService implements OnApplicationShutdown {
 		@Inject(DI.userKeypairsRepository)
 		private userKeypairsRepository: UserKeypairsRepository,
 	) {
-		this.cache = new RedisKVCache<MiUserKeypair>(this.redisClient, 'userKeypair', {
-			lifetime: 1000 * 60 * 60 * 24, // 24h
-			memoryCacheLifetime: Infinity,
-			fetcher: (key) => this.userKeypairsRepository.findOneByOrFail({ userId: key }),
-			toRedisConverter: (value) => JSON.stringify(value),
-			fromRedisConverter: (value) => JSON.parse(value),
-		});
+		this.cache = new RedisKVCache<MiUserKeypair>(
+			this.redisClient,
+			"userKeypair",
+			{
+				lifetime: 1000 * 60 * 60 * 24, // 24h
+				memoryCacheLifetime: Infinity,
+				fetcher: (key) =>
+					this.userKeypairsRepository.findOneByOrFail({ userId: key }),
+				toRedisConverter: (value) => JSON.stringify(value),
+				fromRedisConverter: (value) => JSON.parse(value),
+			},
+		);
 	}
 
 	@bindThis
-	public async getUserKeypair(userId: MiUser['id']): Promise<MiUserKeypair> {
+	public async getUserKeypair(userId: MiUser["id"]): Promise<MiUserKeypair> {
 		return await this.cache.fetch(userId);
 	}
 

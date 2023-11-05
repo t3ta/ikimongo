@@ -3,16 +3,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import { IsNull } from 'typeorm';
-import type { MiLocalUser } from '@/models/user/User.js';
-import type { UsersRepository } from '@/models/_.js';
-import { MemorySingleCache } from '@/misc/cache.js';
-import { DI } from '@/di-symbols.js';
-import { CreateSystemUserService } from '@/core/CreateSystemUserService.js';
-import { bindThis } from '@/decorators.js';
+import { Inject, Injectable } from "@nestjs/common";
+import { IsNull } from "typeorm";
+import type { MiLocalUser } from "@/models/user/User.js";
+import type { UsersRepository } from "@/models/_.js";
+import { MemorySingleCache } from "@/misc/cache.js";
+import { DI } from "@/di-symbols.js";
+import { CreateSystemUserService } from "@/core/CreateSystemUserService.js";
+import { bindThis } from "@/decorators.js";
 
-const ACTOR_USERNAME = 'instance.actor' as const;
+const ACTOR_USERNAME = "instance.actor" as const;
 
 @Injectable()
 export class InstanceActorService {
@@ -32,16 +32,18 @@ export class InstanceActorService {
 		const cached = this.cache.get();
 		if (cached) return cached;
 
-		const user = await this.usersRepository.findOneBy({
+		const user = (await this.usersRepository.findOneBy({
 			host: IsNull(),
 			username: ACTOR_USERNAME,
-		}) as MiLocalUser | undefined;
+		})) as MiLocalUser | undefined;
 
 		if (user) {
 			this.cache.set(user);
 			return user;
 		} else {
-			const created = await this.createSystemUserService.createSystemUser(ACTOR_USERNAME) as MiLocalUser;
+			const created = (await this.createSystemUserService.createSystemUser(
+				ACTOR_USERNAME,
+			)) as MiLocalUser;
 			this.cache.set(created);
 			return created;
 		}

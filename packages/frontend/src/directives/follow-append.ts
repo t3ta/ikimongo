@@ -3,25 +3,29 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Directive } from 'vue';
-import { getScrollContainer, getScrollPosition } from '@/scripts/scroll.js';
+import { Directive } from "vue";
+import { getScrollContainer, getScrollPosition } from "@/scripts/scroll.js";
 
 export default {
-	mounted(src, binding, vn) {
+	mounted(src, binding) {
 		if (binding.value === false) return;
 
 		let isBottom = true;
 
 		const container = getScrollContainer(src)!;
-		container.addEventListener('scroll', () => {
-			const pos = getScrollPosition(container);
-			const viewHeight = container.clientHeight;
-			const height = container.scrollHeight;
-			isBottom = (pos + viewHeight > height - 32);
-		}, { passive: true });
+		container.addEventListener(
+			"scroll",
+			() => {
+				const pos = getScrollPosition(container);
+				const viewHeight = container.clientHeight;
+				const height = container.scrollHeight;
+				isBottom = pos + viewHeight > height - 32;
+			},
+			{ passive: true },
+		);
 		container.scrollTop = container.scrollHeight;
 
-		const ro = new ResizeObserver((entries, observer) => {
+		const ro = new ResizeObserver(() => {
 			if (isBottom) {
 				const height = container.scrollHeight;
 				container.scrollTop = height;
@@ -34,7 +38,7 @@ export default {
 		src._ro_ = ro;
 	},
 
-	unmounted(src, binding, vn) {
+	unmounted(src) {
 		if (src._ro_) src._ro_.unobserve(src);
 	},
 } as Directive;

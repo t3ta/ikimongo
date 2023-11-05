@@ -9,26 +9,25 @@ export type BlockBase = {
 };
 
 export type TextBlock = BlockBase & {
-	type: 'text';
+	type: "text";
 	text: string;
 };
 
 export type SectionBlock = BlockBase & {
-	type: 'section';
+	type: "section";
 	title: string;
 	children: Block[];
 };
 
 export type ImageBlock = BlockBase & {
-	type: 'image';
+	type: "image";
 	fileId: string | null;
 };
 
 export type NoteBlock = BlockBase & {
-	type: 'note';
+	type: "note";
 	detailed: boolean;
 	note: string | null;
 };
 
-export type Block =
-	TextBlock | SectionBlock | ImageBlock | NoteBlock;
+export type Block = TextBlock | SectionBlock | ImageBlock | NoteBlock;

@@ -3,16 +3,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import * as nodemailer from 'nodemailer';
-import { Inject, Injectable } from '@nestjs/common';
-import { validate as validateEmail } from 'deep-email-validator';
-import { MetaService } from '@/core/MetaService.js';
-import { DI } from '@/di-symbols.js';
-import type { Config } from '@/config.js';
-import type Logger from '@/logger.js';
-import type { UserProfilesRepository } from '@/models/_.js';
-import { LoggerService } from '@/core/LoggerService.js';
-import { bindThis } from '@/decorators.js';
+import * as nodemailer from "nodemailer";
+import { Inject, Injectable } from "@nestjs/common";
+import { validate as validateEmail } from "deep-email-validator";
+import { MetaService } from "@/core/MetaService.js";
+import { DI } from "@/di-symbols.js";
+import type { Config } from "@/config.js";
+import type Logger from "@/logger.js";
+import type { UserProfilesRepository } from "@/models/_.js";
+import { LoggerService } from "@/core/LoggerService.js";
+import { bindThis } from "@/decorators.js";
 
 @Injectable()
 export class EmailService {
@@ -28,17 +28,22 @@ export class EmailService {
 		private metaService: MetaService,
 		private loggerService: LoggerService,
 	) {
-		this.logger = this.loggerService.getLogger('email');
+		this.logger = this.loggerService.getLogger("email");
 	}
 
 	@bindThis
-	public async sendEmail(to: string, subject: string, html: string, text: string) {
+	public async sendEmail(
+		to: string,
+		subject: string,
+		html: string,
+		text: string,
+	) {
 		const meta = await this.metaService.fetch(true);
 
 		const iconUrl = `${this.config.url}/static-assets/mi-white.png`;
 		const emailSettingUrl = `${this.config.url}/settings/email`;
 
-		const enableAuth = meta.smtpUser != null && meta.smtpUser !== '';
+		const enableAuth = meta.smtpUser != null && meta.smtpUser !== "";
 
 		const transporter = nodemailer.createTransport({
 			host: meta.smtpHost,
@@ -46,10 +51,12 @@ export class EmailService {
 			secure: meta.smtpSecure,
 			ignoreTLS: !enableAuth,
 			proxy: this.config.proxySmtp,
-			auth: enableAuth ? {
-				user: meta.smtpUser,
-				pass: meta.smtpPass,
-			} : undefined,
+			auth: enableAuth
+				? {
+						user: meta.smtpUser,
+						pass: meta.smtpPass,
+				  }
+				: undefined,
 		} as any);
 
 		try {
@@ -63,7 +70,7 @@ export class EmailService {
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>${ subject }</title>
+		<title>${subject}</title>
 		<style>
 			html {
 				background: #eee;
@@ -124,18 +131,18 @@ export class EmailService {
 	<body>
 		<main>
 			<header>
-				<img src="${ meta.logoImageUrl ?? meta.iconUrl ?? iconUrl }"/>
+				<img src="${meta.logoImageUrl ?? meta.iconUrl ?? iconUrl}"/>
 			</header>
 			<article>
-				<h1>${ subject }</h1>
-				<div>${ html }</div>
+				<h1>${subject}</h1>
+				<div>${html}</div>
 			</article>
 			<footer>
-				<a href="${ emailSettingUrl }">${ 'Email setting' }</a>
+				<a href="${emailSettingUrl}">${"Email setting"}</a>
 			</footer>
 		</main>
 		<nav>
-			<a href="${ this.config.url }">${ this.config.host }</a>
+			<a href="${this.config.url}">${this.config.host}</a>
 		</nav>
 	</body>
 </html>`,
@@ -151,7 +158,7 @@ export class EmailService {
 	@bindThis
 	public async validateEmailForAccount(emailAddress: string): Promise<{
 		available: boolean;
-		reason: null | 'used' | 'format' | 'disposable' | 'mx' | 'smtp';
+		reason: null | "used" | "format" | "disposable" | "mx" | "smtp";
 	}> {
 		const meta = await this.metaService.fetch();
 
@@ -160,26 +167,34 @@ export class EmailService {
 			email: emailAddress,
 		});
 
-		const validated = meta.enableActiveEmailValidation ? await validateEmail({
-			email: emailAddress,
-			validateRegex: true,
-			validateMx: true,
-			validateTypo: false, // TLDを見ているみたいだけどclubとか弾かれるので
-			validateDisposable: true, // 捨てアドかどうかチェック
-			validateSMTP: false, // 日本だと25ポートが殆どのプロバイダーで塞がれていてタイムアウトになるので
-		}) : { valid: true, reason: null };
+		const validated = meta.enableActiveEmailValidation
+			? await validateEmail({
+					email: emailAddress,
+					validateRegex: true,
+					validateMx: true,
+					validateTypo: false, // TLDを見ているみたいだけどclubとか弾かれるので
+					validateDisposable: true, // 捨てアドかどうかチェック
+					validateSMTP: false, // 日本だと25ポートが殆どのプロバイダーで塞がれていてタイムアウトになるので
+			  })
+			: { valid: true, reason: null };
 
 		const available = exist === 0 && validated.valid;
 
 		return {
 			available,
-			reason: available ? null :
-			exist !== 0 ? 'used' :
-			validated.reason === 'regex' ? 'format' :
-			validated.reason === 'disposable' ? 'disposable' :
-			validated.reason === 'mx' ? 'mx' :
-			validated.reason === 'smtp' ? 'smtp' :
-			null,
+			reason: available
+				? null
+				: exist !== 0
+				? "used"
+				: validated.reason === "regex"
+				? "format"
+				: validated.reason === "disposable"
+				? "disposable"
+				: validated.reason === "mx"
+				? "mx"
+				: validated.reason === "smtp"
+				? "smtp"
+				: null,
 		};
 	}
 }

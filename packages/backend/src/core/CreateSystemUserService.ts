@@ -3,19 +3,19 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { randomUUID } from 'node:crypto';
-import { Inject, Injectable } from '@nestjs/common';
-import bcrypt from 'bcryptjs';
-import { IsNull, DataSource } from 'typeorm';
-import { genRsaKeyPair } from '@/misc/gen-key-pair.js';
-import { MiUser } from '@/models/user/User.js';
-import { MiUserProfile } from '@/models/user/UserProfile.js';
-import { IdService } from '@/core/IdService.js';
-import { MiUserKeypair } from '@/models/user/UserKeypair.js';
-import { MiUsedUsername } from '@/models/auth/UsedUsername.js';
-import { DI } from '@/di-symbols.js';
-import generateNativeUserToken from '@/misc/generate-native-user-token.js';
-import { bindThis } from '@/decorators.js';
+import { randomUUID } from "node:crypto";
+import { Inject, Injectable } from "@nestjs/common";
+import bcrypt from "bcryptjs";
+import { IsNull, DataSource } from "typeorm";
+import { genRsaKeyPair } from "@/misc/gen-key-pair.js";
+import { MiUser } from "@/models/user/User.js";
+import { MiUserProfile } from "@/models/user/UserProfile.js";
+import { IdService } from "@/core/IdService.js";
+import { MiUserKeypair } from "@/models/user/UserKeypair.js";
+import { MiUsedUsername } from "@/models/auth/UsedUsername.js";
+import { DI } from "@/di-symbols.js";
+import generateNativeUserToken from "@/misc/generate-native-user-token.js";
+import { bindThis } from "@/decorators.js";
 
 @Injectable()
 export class CreateSystemUserService {
@@ -24,8 +24,7 @@ export class CreateSystemUserService {
 		private db: DataSource,
 
 		private idService: IdService,
-	) {
-	}
+	) {}
 
 	@bindThis
 	public async createSystemUser(username: string): Promise<MiUser> {
@@ -43,26 +42,30 @@ export class CreateSystemUserService {
 		let account!: MiUser;
 
 		// Start transaction
-		await this.db.transaction(async transactionalEntityManager => {
+		await this.db.transaction(async (transactionalEntityManager) => {
 			const exist = await transactionalEntityManager.findOneBy(MiUser, {
 				usernameLower: username.toLowerCase(),
 				host: IsNull(),
 			});
 
-			if (exist) throw new Error('the user is already exists');
+			if (exist) throw new Error("the user is already exists");
 
-			account = await transactionalEntityManager.insert(MiUser, {
-				id: this.idService.genId(),
-				createdAt: new Date(),
-				username: username,
-				usernameLower: username.toLowerCase(),
-				host: null,
-				token: secret,
-				isRoot: false,
-				isLocked: true,
-				isExplorable: false,
-				isBot: true,
-			}).then(x => transactionalEntityManager.findOneByOrFail(MiUser, x.identifiers[0]));
+			account = await transactionalEntityManager
+				.insert(MiUser, {
+					id: this.idService.genId(),
+					createdAt: new Date(),
+					username: username,
+					usernameLower: username.toLowerCase(),
+					host: null,
+					token: secret,
+					isRoot: false,
+					isLocked: true,
+					isExplorable: false,
+					isBot: true,
+				})
+				.then((x) =>
+					transactionalEntityManager.findOneByOrFail(MiUser, x.identifiers[0]),
+				);
 
 			await transactionalEntityManager.insert(MiUserKeypair, {
 				publicKey: keyPair.publicKey,

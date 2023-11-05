@@ -4,24 +4,22 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkStickyContainer>
-	<template #header><MkPageHeader/></template>
-	<MkSpacer :contentMax="800">
-		<MkClickerGame/>
-	</MkSpacer>
-</MkStickyContainer>
+	<MkStickyContainer>
+		<template #header><MkPageHeader /></template>
+		<MkSpacer :contentMax="800">
+			<MkClickerGame />
+		</MkSpacer>
+	</MkStickyContainer>
 </template>
 
 <script lang="ts" setup>
-import MkClickerGame from '@/components/MkClickerGame.vue';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
+import MkClickerGame from "@/components/mk_components/MkClickerGame.vue";
+import { definePageMetadata } from "@/scripts/page-metadata.js";
 
 definePageMetadata({
-	title: '🍪👈',
-	icon: 'ti ti-cookie',
+	title: "🍪👈",
+	icon: "ti ti-cookie",
 });
 </script>
 
-<style lang="scss" module>
-
-</style>
+<style lang="scss" module></style>

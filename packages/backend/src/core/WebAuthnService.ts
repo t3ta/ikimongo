@@ -3,21 +3,22 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import * as Redis from 'ioredis';
+import { Inject, Injectable } from "@nestjs/common";
+import * as Redis from "ioredis";
 import {
 	generateAuthenticationOptions,
-	generateRegistrationOptions, verifyAuthenticationResponse,
+	generateRegistrationOptions,
+	verifyAuthenticationResponse,
 	verifyRegistrationResponse,
-} from '@simplewebauthn/server';
-import { AttestationFormat, isoCBOR } from '@simplewebauthn/server/helpers';
-import { DI } from '@/di-symbols.js';
-import type { UserSecurityKeysRepository } from '@/models/_.js';
-import type { Config } from '@/config.js';
-import { bindThis } from '@/decorators.js';
-import { MetaService } from '@/core/MetaService.js';
-import { MiUser } from '@/models/_.js';
-import { IdentifiableError } from '@/misc/identifiable-error.js';
+} from "@simplewebauthn/server";
+import { AttestationFormat, isoCBOR } from "@simplewebauthn/server/helpers";
+import { DI } from "@/di-symbols.js";
+import type { UserSecurityKeysRepository } from "@/models/_.js";
+import type { Config } from "@/config.js";
+import { bindThis } from "@/decorators.js";
+import { MetaService } from "@/core/MetaService.js";
+import { MiUser } from "@/models/_.js";
+import { IdentifiableError } from "@/misc/identifiable-error.js";
 import type {
 	AuthenticationResponseJSON,
 	AuthenticatorTransportFuture,
@@ -26,7 +27,7 @@ import type {
 	PublicKeyCredentialDescriptorFuture,
 	PublicKeyCredentialRequestOptionsJSON,
 	RegistrationResponseJSON,
-} from '@simplewebauthn/typescript-types';
+} from "@simplewebauthn/typescript-types";
 
 @Injectable()
 export class WebAuthnService {
@@ -41,11 +42,15 @@ export class WebAuthnService {
 		private userSecurityKeysRepository: UserSecurityKeysRepository,
 
 		private metaService: MetaService,
-	) {
-	}
+	) {}
 
 	@bindThis
-	public async getRelyingParty(): Promise<{ origin: string; rpId: string; rpName: string; rpIcon?: string; }> {
+	public async getRelyingParty(): Promise<{
+		origin: string;
+		rpId: string;
+		rpName: string;
+		rpIcon?: string;
+	}> {
 		const instance = await this.metaService.fetch();
 		return {
 			origin: this.config.url,
@@ -56,7 +61,11 @@ export class WebAuthnService {
 	}
 
 	@bindThis
-	public async initiateRegistration(userId: MiUser['id'], userName: string, userDisplayName?: string): Promise<PublicKeyCredentialCreationOptionsJSON> {
+	public async initiateRegistration(
+		userId: MiUser["id"],
+		userName: string,
+		userDisplayName?: string,
+	): Promise<PublicKeyCredentialCreationOptionsJSON> {
 		const relyingParty = await this.getRelyingParty();
 		const keys = await this.userSecurityKeysRepository.findBy({
 			userId: userId,
@@ -68,25 +77,35 @@ export class WebAuthnService {
 			userID: userId,
 			userName: userName,
 			userDisplayName: userDisplayName,
-			attestationType: 'indirect',
-			excludeCredentials: keys.map(key => (<PublicKeyCredentialDescriptorFuture>{
-				id: Buffer.from(key.id, 'base64url'),
-				type: 'public-key',
-				transports: key.transports ?? undefined,
-			})),
+			attestationType: "indirect",
+			excludeCredentials: keys.map(
+				(key) =>
+					<PublicKeyCredentialDescriptorFuture>{
+						id: Buffer.from(key.id, "base64url"),
+						type: "public-key",
+						transports: key.transports ?? undefined,
+					},
+			),
 			authenticatorSelection: {
-				residentKey: 'required',
-				userVerification: 'preferred',
+				residentKey: "required",
+				userVerification: "preferred",
 			},
 		});
 
-		await this.redisClient.setex(`webauthn:challenge:${userId}`, 90, registrationOptions.challenge);
+		await this.redisClient.setex(
+			`webauthn:challenge:${userId}`,
+			90,
+			registrationOptions.challenge,
+		);
 
 		return registrationOptions;
 	}
 
 	@bindThis
-	public async verifyRegistration(userId: MiUser['id'], response: RegistrationResponseJSON): Promise<{
+	public async verifyRegistration(
+		userId: MiUser["id"],
+		response: RegistrationResponseJSON,
+	): Promise<{
 		credentialID: Uint8Array;
 		credentialPublicKey: Uint8Array;
 		attestationObject: Uint8Array;
@@ -97,10 +116,15 @@ export class WebAuthnService {
 		credentialBackedUp: boolean;
 		transports?: AuthenticatorTransportFuture[];
 	}> {
-		const challenge = await this.redisClient.get(`webauthn:challenge:${userId}`);
+		const challenge = await this.redisClient.get(
+			`webauthn:challenge:${userId}`,
+		);
 
 		if (!challenge) {
-			throw new IdentifiableError('7dbfb66c-9216-4e2b-9c27-cef2ac8efb84', 'challenge not found');
+			throw new IdentifiableError(
+				"7dbfb66c-9216-4e2b-9c27-cef2ac8efb84",
+				"challenge not found",
+			);
 		}
 
 		await this.redisClient.del(`webauthn:challenge:${userId}`);
@@ -118,13 +142,19 @@ export class WebAuthnService {
 			});
 		} catch (error) {
 			console.error(error);
-			throw new IdentifiableError('5c1446f8-8ca7-4d31-9f39-656afe9c5d87', 'verification failed');
+			throw new IdentifiableError(
+				"5c1446f8-8ca7-4d31-9f39-656afe9c5d87",
+				"verification failed",
+			);
 		}
 
 		const { verified } = verification;
 
 		if (!verified || !verification.registrationInfo) {
-			throw new IdentifiableError('bb333667-3832-4a80-8bb5-c505be7d710d', 'verification failed');
+			throw new IdentifiableError(
+				"bb333667-3832-4a80-8bb5-c505be7d710d",
+				"verification failed",
+			);
 		}
 
 		const { registrationInfo } = verification;
@@ -143,35 +173,55 @@ export class WebAuthnService {
 	}
 
 	@bindThis
-	public async initiateAuthentication(userId: MiUser['id']): Promise<PublicKeyCredentialRequestOptionsJSON> {
+	public async initiateAuthentication(
+		userId: MiUser["id"],
+	): Promise<PublicKeyCredentialRequestOptionsJSON> {
 		const keys = await this.userSecurityKeysRepository.findBy({
 			userId: userId,
 		});
 
 		if (keys.length === 0) {
-			throw new IdentifiableError('f27fd449-9af4-4841-9249-1f989b9fa4a4', 'no keys found');
+			throw new IdentifiableError(
+				"f27fd449-9af4-4841-9249-1f989b9fa4a4",
+				"no keys found",
+			);
 		}
 
 		const authenticationOptions = await generateAuthenticationOptions({
-			allowCredentials: keys.map(key => (<PublicKeyCredentialDescriptorFuture>{
-				id: Buffer.from(key.id, 'base64url'),
-				type: 'public-key',
-				transports: key.transports ?? undefined,
-			})),
-			userVerification: 'preferred',
+			allowCredentials: keys.map(
+				(key) =>
+					<PublicKeyCredentialDescriptorFuture>{
+						id: Buffer.from(key.id, "base64url"),
+						type: "public-key",
+						transports: key.transports ?? undefined,
+					},
+			),
+			userVerification: "preferred",
 		});
 
-		await this.redisClient.setex(`webauthn:challenge:${userId}`, 90, authenticationOptions.challenge);
+		await this.redisClient.setex(
+			`webauthn:challenge:${userId}`,
+			90,
+			authenticationOptions.challenge,
+		);
 
 		return authenticationOptions;
 	}
 
 	@bindThis
-	public async verifyAuthentication(userId: MiUser['id'], response: AuthenticationResponseJSON): Promise<boolean> {
-		const challenge = await this.redisClient.get(`webauthn:challenge:${userId}`);
+	public async verifyAuthentication(
+		userId: MiUser["id"],
+		response: AuthenticationResponseJSON,
+	): Promise<boolean> {
+		const challenge = await this.redisClient.get(
+			`webauthn:challenge:${userId}`,
+		);
 
 		if (!challenge) {
-			throw new IdentifiableError('2d16e51c-007b-4edd-afd2-f7dd02c947f6', 'challenge not found');
+			throw new IdentifiableError(
+				"2d16e51c-007b-4edd-afd2-f7dd02c947f6",
+				"challenge not found",
+			);
 		}
 
 		await this.redisClient.del(`webauthn:challenge:${userId}`);
@@ -182,13 +232,17 @@ export class WebAuthnService {
 		});
 
 		if (!key) {
-			throw new IdentifiableError('36b96a7d-b547-412d-aeed-2d611cdc8cdc', 'unknown key');
+			throw new IdentifiableError(
+				"36b96a7d-b547-412d-aeed-2d611cdc8cdc",
+				"unknown key",
+			);
 		}
 
 		// マイグレーション
 		if (key.counter === 0 && key.publicKey.length === 87) {
-			const cert = new Uint8Array(Buffer.from(key.publicKey, 'base64url'));
-			if (cert[0] === 0x04) { // 前の実装ではいつも 0x04 で始まっていた
+			const cert = new Uint8Array(Buffer.from(key.publicKey, "base64url"));
+			if (cert[0] === 0x04) {
+				// 前の実装ではいつも 0x04 で始まっていた
 				const halfLength = (cert.length - 1) / 2;
 
 				const cborMap = new Map<number, number | ArrayBufferLike>();
@@ -198,13 +252,18 @@ export class WebAuthnService {
 				cborMap.set(-2, cert.slice(1, halfLength + 1)); // x
 				cborMap.set(-3, cert.slice(halfLength + 1)); // y
 
-				const cborPubKey = Buffer.from(isoCBOR.encode(cborMap)).toString('base64url');
-				await this.userSecurityKeysRepository.update({
-					id: response.id,
-					userId: userId,
-				}, {
-					publicKey: cborPubKey,
-				});
+				const cborPubKey = Buffer.from(isoCBOR.encode(cborMap)).toString(
+					"base64url",
+				);
+				await this.userSecurityKeysRepository.update(
+					{
+						id: response.id,
+						userId: userId,
+					},
+					{
+						publicKey: cborPubKey,
+					},
+				);
 				key.publicKey = cborPubKey;
 			}
 		}
@@ -219,16 +278,21 @@ export class WebAuthnService {
 				expectedOrigin: relyingParty.origin,
 				expectedRPID: relyingParty.rpId,
 				authenticator: {
-					credentialID: Buffer.from(key.id, 'base64url'),
-					credentialPublicKey: Buffer.from(key.publicKey, 'base64url'),
+					credentialID: Buffer.from(key.id, "base64url"),
+					credentialPublicKey: Buffer.from(key.publicKey, "base64url"),
 					counter: key.counter,
-					transports: key.transports ? key.transports as AuthenticatorTransportFuture[] : undefined,
+					transports: key.transports
+						? (key.transports as AuthenticatorTransportFuture[])
+						: undefined,
 				},
 				requireUserVerification: true,
 			});
 		} catch (error) {
 			console.error(error);
-			throw new IdentifiableError('b18c89a7-5b5e-4cec-bb5b-0419f332d430', 'verification failed');
+			throw new IdentifiableError(
+				"b18c89a7-5b5e-4cec-bb5b-0419f332d430",
+				"verification failed",
+			);
 		}
 
 		const { verified, authenticationInfo } = verification;
@@ -237,15 +301,18 @@ export class WebAuthnService {
 			return false;
 		}
 
-		await this.userSecurityKeysRepository.update({
-			id: response.id,
-			userId: userId,
-		}, {
-			lastUsed: new Date(),
-			counter: authenticationInfo.newCounter,
-			credentialDeviceType: authenticationInfo.credentialDeviceType,
-			credentialBackedUp: authenticationInfo.credentialBackedUp,
-		});
+		await this.userSecurityKeysRepository.update(
+			{
+				id: response.id,
+				userId: userId,
+			},
+			{
+				lastUsed: new Date(),
+				counter: authenticationInfo.newCounter,
+				credentialDeviceType: authenticationInfo.credentialDeviceType,
+				credentialBackedUp: authenticationInfo.credentialBackedUp,
+			},
+		);
 
 		return verified;
 	}

@@ -18,48 +18,67 @@
  * app - アプリ通知
  * test - テスト通知（サーバー側）
  */
-export const notificationTypes = ['note', 'follow', 'mention', 'reply', 'renote', 'quote', 'reaction', 'pollEnded', 'receiveFollowRequest', 'followRequestAccepted', 'achievementEarned', 'app', 'test'] as const;
-export const obsoleteNotificationTypes = ['pollVote', 'groupInvited'] as const;
+export const notificationTypes = [
+	"note",
+	"follow",
+	"mention",
+	"reply",
+	"renote",
+	"quote",
+	"reaction",
+	"pollEnded",
+	"receiveFollowRequest",
+	"followRequestAccepted",
+	"achievementEarned",
+	"app",
+	"test",
+] as const;
+export const obsoleteNotificationTypes = ["pollVote", "groupInvited"] as const;
 
-export const noteVisibilities = ['public', 'home', 'followers', 'specified'] as const;
+export const noteVisibilities = [
+	"public",
+	"home",
+	"followers",
+	"specified",
+] as const;
 
-export const mutedNoteReasons = ['word', 'manual', 'spam', 'other'] as const;
+export const mutedNoteReasons = ["word", "manual", "spam", "other"] as const;
 
-export const ffVisibility = ['public', 'followers', 'private'] as const;
+export const ffVisibility = ["public", "followers", "private"] as const;
 
 export const moderationLogTypes = [
-	'updateServerSettings',
-	'suspend',
-	'unsuspend',
-	'updateUserNote',
-	'addCustomEmoji',
-	'updateCustomEmoji',
-	'deleteCustomEmoji',
-	'assignRole',
-	'unassignRole',
-	'createRole',
-	'updateRole',
-	'deleteRole',
-	'clearQueue',
-	'promoteQueue',
-	'deleteDriveFile',
-	'deleteNote',
-	'createGlobalAnnouncement',
-	'createUserAnnouncement',
-	'updateGlobalAnnouncement',
-	'updateUserAnnouncement',
-	'deleteGlobalAnnouncement',
-	'deleteUserAnnouncement',
-	'resetPassword',
-	'suspendRemoteInstance',
-	'unsuspendRemoteInstance',
-	'markSensitiveDriveFile',
-	'unmarkSensitiveDriveFile',
-	'resolveAbuseReport',
-	'createInvitation',
-	'createAd',
-	'updateAd',
-	'deleteAd',
+	"updateServerSettings",
+	"suspend",
+	"unsuspend",
+	"updateUserNote",
+	"addCustomEmoji",
+	"updateCustomEmoji",
+	"deleteCustomEmoji",
+	"assignRole",
+	"unassignRole",
+	"createRole",
+	"updateRole",
+	"deleteRole",
+	"clearQueue",
+	"promoteQueue",
+	"deleteDriveFile",
+	"deleteNote",
+	"createGlobalAnnouncement",
+	"createUserAnnouncement",
+	"updateGlobalAnnouncement",
+	"updateUserAnnouncement",
+	"deleteGlobalAnnouncement",
+	"deleteUserAnnouncement",
+	"resetPassword",
+	"suspendRemoteInstance",
+	"unsuspendRemoteInstance",
+	"markSensitiveDriveFile",
+	"unmarkSensitiveDriveFile",
+	"resolveAbuseReport",
+	"createInvitation",
+	"createAd",
+	"updateAd",
+	"deleteAd",
 ] as const;
 
 export type ModerationLogPayloads = {
@@ -221,12 +240,11 @@ export type ModerationLogPayloads = {
 };
 
 export type Serialized<T> = {
-	[K in keyof T]:
-		T[K] extends Date
-			? string
-			: T[K] extends (Date | null)
-				? (string | null)
-				: T[K] extends Record<string, any>
-					? Serialized<T[K]>
-					: T[K];
+	[K in keyof T]: T[K] extends Date
+		? string
+		: T[K] extends Date | null
+		? string | null
+		: T[K] extends Record<string, any>
+		? Serialized<T[K]>
+		: T[K];
 };

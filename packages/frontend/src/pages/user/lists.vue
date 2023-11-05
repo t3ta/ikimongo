@@ -4,34 +4,45 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkStickyContainer>
-	<MkSpacer :contentMax="700">
-		<div>
-			<MkPagination v-slot="{items}" ref="pagingComponent" :pagination="pagination" class="lists">
-				<MkA v-for="list in items" :key="list.id" class="_panel" :class="$style.list" :to="`/list/${ list.id }`">
-					<div>{{ list.name }}</div>
-					<MkAvatars :userIds="list.userIds"/>
-				</MkA>
-			</MkPagination>
-		</div>
-	</MkSpacer>
-</MkStickyContainer>
+	<MkStickyContainer>
+		<MkSpacer :contentMax="700">
+			<div>
+				<MkPagination
+					v-slot="{ items }"
+					ref="pagingComponent"
+					:pagination="pagination"
+					class="lists"
+				>
+					<MkA
+						v-for="list in items"
+						:key="list.id"
+						class="_panel"
+						:class="$style.list"
+						:to="`/list/${list.id}`"
+					>
+						<div>{{ list.name }}</div>
+						<MkAvatars :userIds="list.userIds" />
+					</MkA>
+				</MkPagination>
+			</div>
+		</MkSpacer>
+	</MkStickyContainer>
 </template>
 
 <script lang="ts" setup>
-import {} from 'vue';
-import * as Misskey from 'misskey-js';
-import MkPagination from '@/components/MkPagination.vue';
-import MkStickyContainer from '@/components/global/MkStickyContainer.vue';
-import MkSpacer from '@/components/global/MkSpacer.vue';
-import MkAvatars from '@/components/MkAvatars.vue';
+import {} from "vue";
+import * as Misskey from "misskey-js";
+import MkPagination from "@/components/mk_components/MkPagination.vue";
+import MkStickyContainer from "@/components/global/MkStickyContainer.vue";
+import MkSpacer from "@/components/global/MkSpacer.vue";
+import MkAvatars from "@/components/mk_components/MkAvatars.vue";
 
 const props = defineProps<{
 	user: Misskey.entities.UserDetailed;
 }>();
 
 const pagination = {
-	endpoint: 'users/lists/list' as const,
+	endpoint: "users/lists/list" as const,
 	noPaging: true,
 	limit: 10,
 	params: {

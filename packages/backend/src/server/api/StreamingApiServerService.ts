@@ -3,21 +3,24 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { EventEmitter } from 'events';
-import { Inject, Injectable } from '@nestjs/common';
-import * as Redis from 'ioredis';
-import * as WebSocket from 'ws';
-import { DI } from '@/di-symbols.js';
-import type { UsersRepository, MiAccessToken } from '@/models/_.js';
-import { NoteReadService } from '@/core/NoteReadService.js';
-import { NotificationService } from '@/core/NotificationService.js';
-import { bindThis } from '@/decorators.js';
-import { CacheService } from '@/core/CacheService.js';
-import { MiLocalUser } from '@/models/user/User.js';
-import { AuthenticateService, AuthenticationError } from './AuthenticateService.js';
-import MainStreamConnection from './stream/Connection.js';
-import { ChannelsService } from './stream/ChannelsService.js';
-import type * as http from 'node:http';
+import { EventEmitter } from "events";
+import { Inject, Injectable } from "@nestjs/common";
+import * as Redis from "ioredis";
+import * as WebSocket from "ws";
+import { DI } from "@/di-symbols.js";
+import type { UsersRepository, MiAccessToken } from "@/models/_.js";
+import { NoteReadService } from "@/core/NoteReadService.js";
+import { NotificationService } from "@/core/NotificationService.js";
+import { bindThis } from "@/decorators.js";
+import { CacheService } from "@/core/CacheService.js";
+import { MiLocalUser } from "@/models/user/User.js";
+import {
+	AuthenticateService,
+	AuthenticationError,
+} from "./AuthenticateService.js";
+import MainStreamConnection from "./stream/Connection.js";
+import { ChannelsService } from "./stream/ChannelsService.js";
+import type * as http from "node:http";
 
 @Injectable()
 export class StreamingApiServerService {
@@ -37,8 +40,7 @@ export class StreamingApiServerService {
 		private authenticateService: AuthenticateService,
 		private channelsService: ChannelsService,
 		private notificationService: NotificationService,
-	) {
-	}
+	) {}
 
 	@bindThis
 	public attach(server: http.Server): void {
@@ -46,14 +48,15 @@ export class StreamingApiServerService {
 			noServer: true,
 		});
 
-		server.on('upgrade', async (request, socket, head) => {
+		server.on("upgrade", async (request, socket, head) => {
 			if (request.url == null) {
-				socket.write('HTTP/1.1 400 Bad Request\r\n\r\n');
+				socket.write("HTTP/1.1 400 Bad Request\r\n\r\n");
 				socket.destroy();
 				return;
 			}
 
-			const q = new URL(request.url, `http://${request.headers.host}`).searchParams;
+			const q = new URL(request.url, `http://${request.headers.host}`)
+				.searchParams;
 
 			let user: MiLocalUser | null = null;
 			let app: MiAccessToken | null = null;
@@ -61,27 +64,29 @@ export class StreamingApiServerService {
 			// https://datatracker.ietf.org/doc/html/rfc6750.html#section-2.1
 			// Note that the standard WHATWG WebSocket API does not support setting any headers,
 			// but non-browser apps may still be able to set it.
-			const token = request.headers.authorization?.startsWith('Bearer ')
+			const token = request.headers.authorization?.startsWith("Bearer ")
 				? request.headers.authorization.slice(7)
-				: q.get('i');
+				: q.get("i");
 
 			try {
 				[user, app] = await this.authenticateService.authenticate(token);
 			} catch (e) {
 				if (e instanceof AuthenticationError) {
-					socket.write([
-						'HTTP/1.1 401 Unauthorized',
-						'WWW-Authenticate: Bearer realm="Misskey", error="invalid_token", error_description="Failed to authenticate"',
-					].join('\r\n') + '\r\n\r\n');
+					socket.write(
+						[
+							"HTTP/1.1 401 Unauthorized",
+							'WWW-Authenticate: Bearer realm="Misskey", error="invalid_token", error_description="Failed to authenticate"',
+						].join("\r\n") + "\r\n\r\n",
+					);
 				} else {
-					socket.write('HTTP/1.1 500 Internal Server Error\r\n\r\n');
+					socket.write("HTTP/1.1 500 Internal Server Error\r\n\r\n");
 				}
 				socket.destroy();
 				return;
 			}
 
 			if (user?.isSuspended) {
-				socket.write('HTTP/1.1 403 Forbidden\r\n\r\n');
+				socket.write("HTTP/1.1 403 Forbidden\r\n\r\n");
 				socket.destroy();
 				return;
 			}
@@ -91,67 +96,82 @@ export class StreamingApiServerService {
 				this.noteReadService,
 				this.notificationService,
 				this.cacheService,
-				user, app,
+				user,
+				app,
 			);
 
 			await stream.init();
 
 			this.#wss.handleUpgrade(request, socket, head, (ws) => {
-				this.#wss.emit('connection', ws, request, {
-					stream, user, app,
+				this.#wss.emit("connection", ws, request, {
+					stream,
+					user,
+					app,
 				});
 			});
 		});
 
 		const globalEv = new EventEmitter();
 
-		this.redisForSub.on('message', (_: string, data: string) => {
+		this.redisForSub.on("message", (_: string, data: string) => {
 			const parsed = JSON.parse(data);
-			globalEv.emit('message', parsed);
+			globalEv.emit("message", parsed);
 		});
 
-		this.#wss.on('connection', async (connection: WebSocket.WebSocket, request: http.IncomingMessage, ctx: {
-			stream: MainStreamConnection,
-			user: MiLocalUser | null;
-			app: MiAccessToken | null
-		}) => {
-			const { stream, user, app } = ctx;
+		this.#wss.on(
+			"connection",
+			async (
+				connection: WebSocket.WebSocket,
+				request: http.IncomingMessage,
+				ctx: {
+					stream: MainStreamConnection;
+					user: MiLocalUser | null;
+					app: MiAccessToken | null;
+				},
+			) => {
+				const { stream, user, app } = ctx;
 
-			const ev = new EventEmitter();
+				const ev = new EventEmitter();
 
-			function onRedisMessage(data: any): void {
-				ev.emit(data.channel, data.message);
-			}
+				function onRedisMessage(data: any): void {
+					ev.emit(data.channel, data.message);
+				}
 
-			globalEv.on('message', onRedisMessage);
+				globalEv.on("message", onRedisMessage);
 
-			await stream.listen(ev, connection);
+				await stream.listen(ev, connection);
 
-			this.#connections.set(connection, Date.now());
-
-			const userUpdateIntervalId = user ? setInterval(() => {
-				this.usersRepository.update(user.id, {
-					lastActiveDate: new Date(),
-				});
-			}, 1000 * 60 * 5) : null;
-			if (user) {
-				this.usersRepository.update(user.id, {
-					lastActiveDate: new Date(),
-				});
-			}
-
-			connection.once('close', () => {
-				ev.removeAllListeners();
-				stream.dispose();
-				globalEv.off('message', onRedisMessage);
-				this.#connections.delete(connection);
-				if (userUpdateIntervalId) clearInterval(userUpdateIntervalId);
-			});
-
-			connection.on('pong', () => {
 				this.#connections.set(connection, Date.now());
-			});
-		});
+
+				const userUpdateIntervalId = user
+					? setInterval(
+							() => {
+								this.usersRepository.update(user.id, {
+									lastActiveDate: new Date(),
+								});
+							},
+							1000 * 60 * 5,
+					  )
+					: null;
+				if (user) {
+					this.usersRepository.update(user.id, {
+						lastActiveDate: new Date(),
+					});
+				}
+
+				connection.once("close", () => {
+					ev.removeAllListeners();
+					stream.dispose();
+					globalEv.off("message", onRedisMessage);
+					this.#connections.delete(connection);
+					if (userUpdateIntervalId) clearInterval(userUpdateIntervalId);
+				});
+
+				connection.on("pong", () => {
+					this.#connections.set(connection, Date.now());
+				});
+			},
+		);
 
 		// 一定期間通信が無いコネクションは実際には切断されている可能性があるため定期的にterminateする
 		this.#cleanConnectionsIntervalId = setInterval(() => {

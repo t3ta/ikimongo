@@ -3,17 +3,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import * as Bull from 'bullmq';
-import { DI } from '@/di-symbols.js';
-import type { WebhooksRepository } from '@/models/_.js';
-import type { Config } from '@/config.js';
-import type Logger from '@/logger.js';
-import { HttpRequestService } from '@/core/HttpRequestService.js';
-import { StatusError } from '@/misc/status-error.js';
-import { bindThis } from '@/decorators.js';
-import { QueueLoggerService } from '../QueueLoggerService.js';
-import type { WebhookDeliverJobData } from '../types.js';
+import { Inject, Injectable } from "@nestjs/common";
+import * as Bull from "bullmq";
+import { DI } from "@/di-symbols.js";
+import type { WebhooksRepository } from "@/models/_.js";
+import type { Config } from "@/config.js";
+import type Logger from "@/logger.js";
+import { HttpRequestService } from "@/core/HttpRequestService.js";
+import { StatusError } from "@/misc/status-error.js";
+import { bindThis } from "@/decorators.js";
+import { QueueLoggerService } from "../QueueLoggerService.js";
+import type { WebhookDeliverJobData } from "../types.js";
 
 @Injectable()
 export class WebhookDeliverProcessorService {
@@ -29,7 +29,7 @@ export class WebhookDeliverProcessorService {
 		private httpRequestService: HttpRequestService,
 		private queueLoggerService: QueueLoggerService,
 	) {
-		this.logger = this.queueLoggerService.logger.createSubLogger('webhook');
+		this.logger = this.queueLoggerService.logger.createSubLogger("webhook");
 	}
 
 	@bindThis
@@ -38,13 +38,13 @@ export class WebhookDeliverProcessorService {
 			this.logger.debug(`delivering ${job.data.webhookId}`);
 
 			const res = await this.httpRequestService.send(job.data.to, {
-				method: 'POST',
+				method: "POST",
 				headers: {
-					'User-Agent': 'Misskey-Hooks',
-					'X-Misskey-Host': this.config.host,
-					'X-Misskey-Hook-Id': job.data.webhookId,
-					'X-Misskey-Hook-Secret': job.data.secret,
-					'Content-Type': 'application/json',
+					"User-Agent": "Misskey-Hooks",
+					"X-Misskey-Host": this.config.host,
+					"X-Misskey-Hook-Id": job.data.webhookId,
+					"X-Misskey-Hook-Secret": job.data.secret,
+					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
 					server: this.config.url,
@@ -57,22 +57,30 @@ export class WebhookDeliverProcessorService {
 				}),
 			});
 
-			this.webhooksRepository.update({ id: job.data.webhookId }, {
-				latestSentAt: new Date(),
-				latestStatus: res.status,
-			});
+			this.webhooksRepository.update(
+				{ id: job.data.webhookId },
+				{
+					latestSentAt: new Date(),
+					latestStatus: res.status,
+				},
+			);
 
-			return 'Success';
+			return "Success";
 		} catch (res) {
-			this.webhooksRepository.update({ id: job.data.webhookId }, {
-				latestSentAt: new Date(),
-				latestStatus: res instanceof StatusError ? res.statusCode : 1,
-			});
+			this.webhooksRepository.update(
+				{ id: job.data.webhookId },
+				{
+					latestSentAt: new Date(),
+					latestStatus: res instanceof StatusError ? res.statusCode : 1,
+				},
+			);
 
 			if (res instanceof StatusError) {
 				// 4xx
 				if (res.isClientError) {
-					throw new Bull.UnrecoverableError(`${res.statusCode} ${res.statusMessage}`);
+					throw new Bull.UnrecoverableError(
+						`${res.statusCode} ${res.statusMessage}`,
+					);
 				}
 
 				// 5xx etc.

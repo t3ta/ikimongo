@@ -4,11 +4,11 @@
  */
 
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { expect } from '@storybook/jest';
-import { userEvent, within } from '@storybook/testing-library';
-import { StoryObj } from '@storybook/vue3';
-import MkA from './MkA.vue';
-import { tick } from '@/scripts/test-utils.js';
+import { expect } from "@storybook/jest";
+import { userEvent, within } from "@storybook/testing-library";
+import { StoryObj } from "@storybook/vue3";
+import MkA from "./MkA.vue";
+import { tick } from "@/scripts/test-utils.js";
 export const Default = {
 	render(args) {
 		return {
@@ -32,11 +32,11 @@ export const Default = {
 	},
 	async play({ canvasElement }) {
 		const canvas = within(canvasElement);
-		const a = canvas.getByRole<HTMLAnchorElement>('link');
+		const a = canvas.getByRole<HTMLAnchorElement>("link");
 		await expect(a.href).toMatch(/^https?:\/\/.*#test$/);
-		await userEvent.pointer({ keys: '[MouseRight]', target: a });
+		await userEvent.pointer({ keys: "[MouseRight]", target: a });
 		await tick();
-		const menu = canvas.getByRole('menu');
+		const menu = canvas.getByRole("menu");
 		await expect(menu).toBeInTheDocument();
 		await userEvent.click(a);
 		a.blur();
@@ -44,9 +44,9 @@ export const Default = {
 		await expect(menu).not.toBeInTheDocument();
 	},
 	args: {
-		to: '#test',
+		to: "#test",
 	},
 	parameters: {
-		layout: 'centered',
+		layout: "centered",
 	},
 } satisfies StoryObj<typeof MkA>;

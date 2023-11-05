@@ -3,18 +3,22 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import { DI } from '@/di-symbols.js';
-import type { DriveFilesRepository, PagesRepository, PageLikesRepository } from '@/models/_.js';
-import { awaitAll } from '@/misc/prelude/await-all.js';
-import type { Packed } from '@/misc/json-schema.js';
-import type { } from '@/models/mute-block/Blocking.js';
-import type { MiUser } from '@/models/user/User.js';
-import type { MiPage } from '@/models/page/Page.js';
-import type { MiDriveFile } from '@/models/drive/DriveFile.js';
-import { bindThis } from '@/decorators.js';
-import { UserEntityService } from './UserEntityService.js';
-import { DriveFileEntityService } from './DriveFileEntityService.js';
+import { Inject, Injectable } from "@nestjs/common";
+import { DI } from "@/di-symbols.js";
+import type {
+	DriveFilesRepository,
+	PagesRepository,
+	PageLikesRepository,
+} from "@/models/_.js";
+import { awaitAll } from "@/misc/prelude/await-all.js";
+import type { Packed } from "@/misc/json-schema.js";
+import type {} from "@/models/mute-block/Blocking.js";
+import type { MiUser } from "@/models/user/User.js";
+import type { MiPage } from "@/models/page/Page.js";
+import type { MiDriveFile } from "@/models/drive/DriveFile.js";
+import { bindThis } from "@/decorators.js";
+import { UserEntityService } from "./UserEntityService.js";
+import { DriveFileEntityService } from "./DriveFileEntityService.js";
 
 @Injectable()
 export class PageEntityService {
@@ -30,25 +34,29 @@ export class PageEntityService {
 
 		private userEntityService: UserEntityService,
 		private driveFileEntityService: DriveFileEntityService,
-	) {
-	}
+	) {}
 
 	@bindThis
 	public async pack(
-		src: MiPage['id'] | MiPage,
-		me?: { id: MiUser['id'] } | null | undefined,
-	): Promise<Packed<'Page'>> {
+		src: MiPage["id"] | MiPage,
+		me?: { id: MiUser["id"] } | null | undefined,
+	): Promise<Packed<"Page">> {
 		const meId = me ? me.id : null;
-		const page = typeof src === 'object' ? src : await this.pagesRepository.findOneByOrFail({ id: src });
+		const page =
+			typeof src === "object"
+				? src
+				: await this.pagesRepository.findOneByOrFail({ id: src });
 
 		const attachedFiles: Promise<MiDriveFile | null>[] = [];
 		const collectFile = (xs: any[]) => {
 			for (const x of xs) {
-				if (x.type === 'image') {
-					attachedFiles.push(this.driveFilesRepository.findOneBy({
-						id: x.fileId,
-						userId: page.userId,
-					}));
+				if (x.type === "image") {
+					attachedFiles.push(
+						this.driveFilesRepository.findOneBy({
+							id: x.fileId,
+							userId: page.userId,
+						}),
+					);
 				}
 				if (x.children) {
 					collectFile(x.children);
@@ -61,12 +69,12 @@ export class PageEntityService {
 		let migrated = false;
 		const migrate = (xs: any[]) => {
 			for (const x of xs) {
-				if (x.type === 'input') {
-					if (x.inputType === 'text') {
-						x.type = 'textInput';
+				if (x.type === "input") {
+					if (x.inputType === "text") {
+						x.type = "textInput";
 					}
-					if (x.inputType === 'number') {
-						x.type = 'numberInput';
+					if (x.inputType === "number") {
+						x.type = "numberInput";
 						if (x.default) x.default = parseInt(x.default, 10);
 					}
 					migrated = true;
@@ -99,19 +107,28 @@ export class PageEntityService {
 			font: page.font,
 			script: page.script,
 			eyeCatchingImageId: page.eyeCatchingImageId,
-			eyeCatchingImage: page.eyeCatchingImageId ? await this.driveFileEntityService.pack(page.eyeCatchingImageId) : null,
-			attachedFiles: this.driveFileEntityService.packMany((await Promise.all(attachedFiles)).filter((x): x is MiDriveFile => x != null)),
+			eyeCatchingImage: page.eyeCatchingImageId
+				? await this.driveFileEntityService.pack(page.eyeCatchingImageId)
+				: null,
+			attachedFiles: this.driveFileEntityService.packMany(
+				(await Promise.all(attachedFiles)).filter(
+					(x): x is MiDriveFile => x != null,
+				),
+			),
 			likedCount: page.likedCount,
-			isLiked: meId ? await this.pageLikesRepository.exist({ where: { pageId: page.id, userId: meId } }) : undefined,
+			isLiked: meId
+				? await this.pageLikesRepository.exist({
+						where: { pageId: page.id, userId: meId },
+				  })
+				: undefined,
 		});
 	}
 
 	@bindThis
 	public packMany(
 		pages: MiPage[],
-		me?: { id: MiUser['id'] } | null | undefined,
+		me?: { id: MiUser["id"] } | null | undefined,
 	) {
-		return Promise.all(pages.map(x => this.pack(x, me)));
+		return Promise.all(pages.map((x) => this.pack(x, me)));
 	}
 }
-

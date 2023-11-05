@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import type { DataSource } from 'typeorm';
+import type { DataSource } from "typeorm";
 
 export async function resetDb(db: DataSource) {
 	const reset = async () => {
@@ -24,7 +24,7 @@ export async function resetDb(db: DataSource) {
 			if (i === 3) {
 				throw e;
 			} else {
-				await new Promise(resolve => setTimeout(resolve, 1000));
+				await new Promise((resolve) => setTimeout(resolve, 1000));
 				continue;
 			}
 		}

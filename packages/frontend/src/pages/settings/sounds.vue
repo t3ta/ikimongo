@@ -4,43 +4,65 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div class="_gaps_m">
-	<MkRange v-model="masterVolume" :min="0" :max="1" :step="0.05" :textConverter="(v) => `${Math.floor(v * 100)}%`">
-		<template #label>{{ i18n.ts.masterVolume }}</template>
-	</MkRange>
+	<div class="_gaps_m">
+		<MkRange
+			v-model="masterVolume"
+			:min="0"
+			:max="1"
+			:step="0.05"
+			:textConverter="(v) => `${Math.floor(v * 100)}%`"
+		>
+			<template #label>{{ i18n.ts.masterVolume }}</template>
+		</MkRange>
 
-	<FormSection>
-		<template #label>{{ i18n.ts.sounds }}</template>
-		<div class="_gaps_s">
-			<MkFolder v-for="type in soundsKeys" :key="type">
-				<template #label>{{ i18n.t('_sfx.' + type) }}</template>
-				<template #suffix>{{ sounds[type].type ?? i18n.ts.none }}</template>
+		<FormSection>
+			<template #label>{{ i18n.ts.sounds }}</template>
+			<div class="_gaps_s">
+				<MkFolder v-for="type in soundsKeys" :key="type">
+					<template #label>{{ i18n.t("_sfx." + type) }}</template>
+					<template #suffix>{{ sounds[type].type ?? i18n.ts.none }}</template>
 
-				<XSound :type="sounds[type].type" :volume="sounds[type].volume" @update="(res) => updated(type, res)"/>
-			</MkFolder>
-		</div>
-	</FormSection>
+					<XSound
+						:type="sounds[type].type"
+						:volume="sounds[type].volume"
+						@update="(res) => updated(type, res)"
+					/>
+				</MkFolder>
+			</div>
+		</FormSection>
 
-	<MkButton danger @click="reset()"><i class="ti ti-reload"></i> {{ i18n.ts.default }}</MkButton>
-</div>
+		<MkButton danger @click="reset()"
+			><i class="ti ti-reload"></i> {{ i18n.ts.default }}</MkButton
+		>
+	</div>
 </template>
 
 <script lang="ts" setup>
-import { Ref, computed, ref } from 'vue';
-import XSound from './sounds.sound.vue';
-import MkRange from '@/components/MkRange.vue';
-import MkButton from '@/components/MkButton.vue';
-import FormSection from '@/components/form/section.vue';
-import MkFolder from '@/components/MkFolder.vue';
-import { soundConfigStore } from '@/scripts/sound.js';
-import { i18n } from '@/i18n.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
+import { Ref, computed, ref } from "vue";
+import XSound from "./sounds.sound.vue";
+import MkRange from "@/components/mk_components/MkRange.vue";
+import MkButton from "@/components/mk_components/MkButton.vue";
+import FormSection from "@/components/form/section.vue";
+import MkFolder from "@/components/mk_components/MkFolder.vue";
+import { soundConfigStore } from "@/scripts/sound.js";
+import { i18n } from "@/i18n.js";
+import { definePageMetadata } from "@/scripts/page-metadata.js";
 
-const masterVolume = computed(soundConfigStore.makeGetterSetter('sound_masterVolume'));
+const masterVolume = computed(
+	soundConfigStore.makeGetterSetter("sound_masterVolume"),
+);
 
-const soundsKeys = ['note', 'noteMy', 'notification', 'chat', 'chatBg', 'antenna', 'channel'] as const;
+const soundsKeys = [
+	"note",
+	"noteMy",
+	"notification",
+	"chat",
+	"chatBg",
+	"antenna",
+	"channel",
+] as const;
 
-const sounds = ref<Record<typeof soundsKeys[number], Ref<any>>>({
+const sounds = ref<Record<(typeof soundsKeys)[number], Ref<any>>>({
 	note: soundConfigStore.reactiveState.sound_note,
 	noteMy: soundConfigStore.reactiveState.sound_noteMy,
 	notification: soundConfigStore.reactiveState.sound_notification,
@@ -61,7 +83,9 @@ async function updated(type: keyof typeof sounds.value, sound) {
 }
 
 function reset() {
-	for (const sound of Object.keys(sounds.value) as Array<keyof typeof sounds.value>) {
+	for (const sound of Object.keys(sounds.value) as Array<
+		keyof typeof sounds.value
+	>) {
 		const v = soundConfigStore.def[`sound_${sound}`].default;
 		soundConfigStore.set(`sound_${sound}`, v);
 		sounds.value[sound] = v;
@@ -74,6 +98,6 @@ const headerTabs = $computed(() => []);
 
 definePageMetadata({
 	title: i18n.ts.sounds,
-	icon: 'ti ti-music',
+	icon: "ti ti-music",
 });
 </script>

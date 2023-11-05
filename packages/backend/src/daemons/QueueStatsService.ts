@@ -3,15 +3,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import Xev from 'xev';
-import * as Bull from 'bullmq';
-import { QueueService } from '@/core/QueueService.js';
-import { bindThis } from '@/decorators.js';
-import { DI } from '@/di-symbols.js';
-import type { Config } from '@/config.js';
-import { QUEUE, baseQueueOptions } from '@/queue/const.js';
-import type { OnApplicationShutdown } from '@nestjs/common';
+import { Inject, Injectable } from "@nestjs/common";
+import Xev from "xev";
+import * as Bull from "bullmq";
+import { QueueService } from "@/core/QueueService.js";
+import { bindThis } from "@/decorators.js";
+import { DI } from "@/di-symbols.js";
+import type { Config } from "@/config.js";
+import { QUEUE, baseQueueOptions } from "@/queue/const.js";
+import type { OnApplicationShutdown } from "@nestjs/common";
 
 const ev = new Xev();
 
@@ -26,8 +26,7 @@ export class QueueStatsService implements OnApplicationShutdown {
 		private config: Config,
 
 		private queueService: QueueService,
-	) {
-	}
+	) {}
 
 	/**
 	 * Report queue stats regularly
@@ -36,26 +35,33 @@ export class QueueStatsService implements OnApplicationShutdown {
 	public start(): void {
 		const log = [] as any[];
 
-		ev.on('requestQueueStatsLog', x => {
+		ev.on("requestQueueStatsLog", (x) => {
 			ev.emit(`queueStatsLog:${x.id}`, log.slice(0, x.length ?? 50));
 		});
 
 		let activeDeliverJobs = 0;
 		let activeInboxJobs = 0;
 
-		const deliverQueueEvents = new Bull.QueueEvents(QUEUE.DELIVER, baseQueueOptions(this.config, QUEUE.DELIVER));
-		const inboxQueueEvents = new Bull.QueueEvents(QUEUE.INBOX, baseQueueOptions(this.config, QUEUE.INBOX));
+		const deliverQueueEvents = new Bull.QueueEvents(
+			QUEUE.DELIVER,
+			baseQueueOptions(this.config, QUEUE.DELIVER),
+		);
+		const inboxQueueEvents = new Bull.QueueEvents(
+			QUEUE.INBOX,
+			baseQueueOptions(this.config, QUEUE.INBOX),
+		);
 
-		deliverQueueEvents.on('active', () => {
+		deliverQueueEvents.on("active", () => {
 			activeDeliverJobs++;
 		});
 
-		inboxQueueEvents.on('active', () => {
+		inboxQueueEvents.on("active", () => {
 			activeInboxJobs++;
 		});
 
 		const tick = async () => {
-			const deliverJobCounts = await this.queueService.deliverQueue.getJobCounts();
+			const deliverJobCounts =
+				await this.queueService.deliverQueue.getJobCounts();
 			const inboxJobCounts = await this.queueService.inboxQueue.getJobCounts();
 
 			const stats = {
@@ -73,7 +79,7 @@ export class QueueStatsService implements OnApplicationShutdown {
 				},
 			};
 
-			ev.emit('queueStats', stats);
+			ev.emit("queueStats", stats);
 
 			log.unshift(stats);
 			if (log.length > 200) log.pop();

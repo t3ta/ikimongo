@@ -1,4 +1,4 @@
-import { ModerationLogPayloads, notificationTypes } from './consts.js';
+import { ModerationLogPayloads, notificationTypes } from "./consts.js";
 
 export type ID = string;
 export type DateString = string;
@@ -13,7 +13,7 @@ export type UserLite = {
 	username: string;
 	host: string | null;
 	name: string;
-	onlineStatus: 'online' | 'active' | 'offline' | 'unknown';
+	onlineStatus: "online" | "active" | "offline" | "unknown";
 	avatarUrl: string;
 	avatarBlurhash: string;
 	emojis: {
@@ -21,12 +21,12 @@ export type UserLite = {
 		url: string;
 	}[];
 	instance?: {
-		name: Instance['name'];
-		softwareName: Instance['softwareName'];
-		softwareVersion: Instance['softwareVersion'];
-		iconUrl: Instance['iconUrl'];
-		faviconUrl: Instance['faviconUrl'];
-		themeColor: Instance['themeColor'];
+		name: Instance["name"];
+		softwareName: Instance["softwareName"];
+		softwareVersion: Instance["softwareVersion"];
+		iconUrl: Instance["iconUrl"];
+		faviconUrl: Instance["faviconUrl"];
+		themeColor: Instance["themeColor"];
 	};
 };
 
@@ -38,7 +38,7 @@ export type UserDetailed = UserLite & {
 	birthday: string | null;
 	createdAt: DateString;
 	description: string | null;
-	ffVisibility: 'public' | 'followers' | 'private';
+	ffVisibility: "public" | "followers" | "private";
 	fields: { name: string; value: string }[];
 	verifiedLinks: string[];
 	followersCount: number;
@@ -72,7 +72,7 @@ export type UserDetailed = UserLite & {
 	updatedAt: DateString | null;
 	uri: string | null;
 	url: string | null;
-	notify: 'normal' | 'none';
+	notify: "normal" | "none";
 };
 
 export type UserGroup = TODO;
@@ -81,12 +81,12 @@ export type UserList = {
 	id: ID;
 	createdAt: DateString;
 	name: string;
-	userIds: User['id'][];
+	userIds: User["id"][];
 };
 
 export type MeDetailed = UserDetailed & {
-	avatarId: DriveFile['id'];
-	bannerId: DriveFile['id'];
+	avatarId: DriveFile["id"];
+	bannerId: DriveFile["id"];
 	autoAcceptFollowed: boolean;
 	alwaysMarkNsfw: boolean;
 	carefulBot: boolean;
@@ -105,26 +105,32 @@ export type MeDetailed = UserDetailed & {
 	isExplorable: boolean;
 	mutedWords: string[][];
 	notificationRecieveConfig: {
-		[notificationType in typeof notificationTypes[number]]?: {
-			type: 'all';
-		} | {
-			type: 'never';
-		} | {
-			type: 'following';
-		} | {
-			type: 'follower';
-		} | {
-			type: 'mutualFollow';
-		} | {
-			type: 'list';
-			userListId: string;
-		};
+		[notificationType in (typeof notificationTypes)[number]]?:
+			| {
+					type: "all";
+			  }
+			| {
+					type: "never";
+			  }
+			| {
+					type: "following";
+			  }
+			| {
+					type: "follower";
+			  }
+			| {
+					type: "mutualFollow";
+			  }
+			| {
+					type: "list";
+					userListId: string;
+			  };
 	};
 	noCrawle: boolean;
 	receiveAnnouncementEmail: boolean;
 	usePasswordLessLogin: boolean;
 	unreadAnnouncements: Announcement[];
-	twoFactorBackupCodesStock: 'full' | 'partial' | 'none';
+	twoFactorBackupCodesStock: "full" | "partial" | "none";
 	[other: string]: any;
 };
 
@@ -155,6 +161,7 @@ export type DriveFile = {
 	blurhash: string;
 	comment: string | null;
 	properties: Record<string, any>;
+	location: [number, number] | null;
 };
 
 export type DriveFolder = TODO;
@@ -163,11 +170,11 @@ export type GalleryPost = {
 	id: ID;
 	createdAt: DateString;
 	updatedAt: DateString;
-	userId: User['id'];
+	userId: User["id"];
 	user: User;
 	title: string;
 	description: string | null;
-	fileIds: DriveFile['id'][];
+	fileIds: DriveFile["id"][];
 	files: DriveFile[];
 	isSensitive: boolean;
 	likedCount: number;
@@ -181,15 +188,15 @@ export type Note = {
 	text: string | null;
 	cw: string | null;
 	user: User;
-	userId: User['id'];
+	userId: User["id"];
 	reply?: Note;
-	replyId: Note['id'];
+	replyId: Note["id"];
 	renote?: Note;
-	renoteId: Note['id'];
+	renoteId: Note["id"];
 	files: DriveFile[];
-	fileIds: DriveFile['id'][];
-	visibility: 'public' | 'home' | 'followers' | 'specified';
-	visibleUserIds?: User['id'][];
+	fileIds: DriveFile["id"][];
+	visibility: "public" | "home" | "followers" | "specified";
+	visibleUserIds?: User["id"][];
 	localOnly?: boolean;
 	myReaction?: string;
 	reactions: Record<string, number>;
@@ -211,8 +218,8 @@ export type Note = {
 			name: string;
 			latitude: number;
 			longitude: number;
-		}
-	},
+		};
+	};
 	identification?: {
 		scientificName?: string;
 		japaneseName?: string;
@@ -225,8 +232,8 @@ export type Note = {
 			family?: string;
 			genus?: string;
 			species?: string;
-		}
-	},
+		};
+	};
 	emojis: {
 		name: string;
 		url: string;
@@ -247,82 +254,96 @@ export type Notification = {
 	id: ID;
 	createdAt: DateString;
 	isRead: boolean;
-} & ({
-	type: 'reaction';
-	reaction: string;
-	user: User;
-	userId: User['id'];
-	note: Note;
-} | {
-	type: 'reply';
-	user: User;
-	userId: User['id'];
-	note: Note;
-} | {
-	type: 'renote';
-	user: User;
-	userId: User['id'];
-	note: Note;
-} | {
-	type: 'quote';
-	user: User;
-	userId: User['id'];
-	note: Note;
-} | {
-	type: 'mention';
-	user: User;
-	userId: User['id'];
-	note: Note;
-} | {
-	type: 'note';
-	user: User;
-	userId: User['id'];
-	note: Note;
-} | {
-	type: 'pollEnded';
-	user: User;
-	userId: User['id'];
-	note: Note;
-} | {
-	type: 'follow';
-	user: User;
-	userId: User['id'];
-} | {
-	type: 'followRequestAccepted';
-	user: User;
-	userId: User['id'];
-} | {
-	type: 'receiveFollowRequest';
-	user: User;
-	userId: User['id'];
-} | {
-	type: 'groupInvited';
-	invitation: UserGroup;
-	user: User;
-	userId: User['id'];
-} | {
-	type: 'app';
-	header?: string | null;
-	body: string;
-	icon?: string | null;
-} | {
-	type: 'test';
-});
+} & (
+	| {
+			type: "reaction";
+			reaction: string;
+			user: User;
+			userId: User["id"];
+			note: Note;
+	  }
+	| {
+			type: "reply";
+			user: User;
+			userId: User["id"];
+			note: Note;
+	  }
+	| {
+			type: "renote";
+			user: User;
+			userId: User["id"];
+			note: Note;
+	  }
+	| {
+			type: "quote";
+			user: User;
+			userId: User["id"];
+			note: Note;
+	  }
+	| {
+			type: "mention";
+			user: User;
+			userId: User["id"];
+			note: Note;
+	  }
+	| {
+			type: "note";
+			user: User;
+			userId: User["id"];
+			note: Note;
+	  }
+	| {
+			type: "pollEnded";
+			user: User;
+			userId: User["id"];
+			note: Note;
+	  }
+	| {
+			type: "follow";
+			user: User;
+			userId: User["id"];
+	  }
+	| {
+			type: "followRequestAccepted";
+			user: User;
+			userId: User["id"];
+	  }
+	| {
+			type: "receiveFollowRequest";
+			user: User;
+			userId: User["id"];
+	  }
+	| {
+			type: "groupInvited";
+			invitation: UserGroup;
+			user: User;
+			userId: User["id"];
+	  }
+	| {
+			type: "app";
+			header?: string | null;
+			body: string;
+			icon?: string | null;
+	  }
+	| {
+			type: "test";
+	  }
+);
 
 export type MessagingMessage = {
 	id: ID;
 	createdAt: DateString;
 	file: DriveFile | null;
-	fileId: DriveFile['id'] | null;
+	fileId: DriveFile["id"] | null;
 	isRead: boolean;
-	reads: User['id'][];
+	reads: User["id"][];
 	text: string | null;
 	user: User;
-	userId: User['id'];
+	userId: User["id"];
 	recipient?: User | null;
-	recipientId: User['id'] | null;
+	recipientId: User["id"] | null;
 	group?: UserGroup | null;
-	groupId: UserGroup['id'] | null;
+	groupId: UserGroup["id"] | null;
 };
 
 export type CustomEmoji = {
@@ -436,7 +457,7 @@ export type Page = {
 	id: ID;
 	createdAt: DateString;
 	updatedAt: DateString;
-	userId: User['id'];
+	userId: User["id"];
 	user: User;
 	content: Record<string, any>[];
 	variables: Record<string, any>[];
@@ -447,7 +468,7 @@ export type Page = {
 	alignCenter: boolean;
 	font: string;
 	script: string;
-	eyeCatchingImageId: DriveFile['id'] | null;
+	eyeCatchingImageId: DriveFile["id"] | null;
 	eyeCatchingImage: DriveFile | null;
 	attachedFiles: any;
 	likedCount: number;
@@ -455,10 +476,10 @@ export type Page = {
 };
 
 export type PageEvent = {
-	pageId: Page['id'];
+	pageId: Page["id"];
 	event: string;
 	var: any;
-	userId: User['id'];
+	userId: User["id"];
 	user: User;
 };
 
@@ -469,8 +490,8 @@ export type Announcement = {
 	text: string;
 	title: string;
 	imageUrl: string | null;
-	display: 'normal' | 'banner' | 'dialog';
-	icon: 'info' | 'warning' | 'error' | 'success';
+	display: "normal" | "banner" | "dialog";
+	icon: "info" | "warning" | "error" | "success";
 	needConfirmationToRead: boolean;
 	forYou: boolean;
 	isRead?: boolean;
@@ -482,7 +503,7 @@ export type Antenna = {
 	name: string;
 	keywords: string[][]; // TODO
 	excludeKeywords: string[][]; // TODO
-	src: 'home' | 'all' | 'users' | 'list' | 'group';
+	src: "home" | "all" | "users" | "list" | "group";
 	userListId: ID | null; // TODO
 	userGroupId: ID | null; // TODO
 	users: string[]; // TODO
@@ -508,7 +529,7 @@ export type Clip = TODO;
 export type NoteFavorite = {
 	id: ID;
 	createdAt: DateString;
-	noteId: Note['id'];
+	noteId: Note["id"];
 	note: Note;
 };
 
@@ -526,8 +547,8 @@ export type Channel = {
 export type Following = {
 	id: ID;
 	createdAt: DateString;
-	followerId: User['id'];
-	followeeId: User['id'];
+	followerId: User["id"];
+	followeeId: User["id"];
 };
 
 export type FollowingFolloweePopulated = Following & {
@@ -541,7 +562,7 @@ export type FollowingFollowerPopulated = Following & {
 export type Blocking = {
 	id: ID;
 	createdAt: DateString;
-	blockeeId: User['id'];
+	blockeeId: User["id"];
 	blockee: UserDetailed;
 };
 
@@ -592,117 +613,149 @@ export type Invite = {
 	usedBy: UserLite | null;
 	usedAt: DateString | null;
 	used: boolean;
-}
+};
 
 export type InviteLimit = {
 	remaining: number;
-}
+};
 
 export type UserSorting =
-	| '+follower'
-	| '-follower'
-	| '+createdAt'
-	| '-createdAt'
-	| '+updatedAt'
-	| '-updatedAt';
-export type OriginType = 'combined' | 'local' | 'remote';
+	| "+follower"
+	| "-follower"
+	| "+createdAt"
+	| "-createdAt"
+	| "+updatedAt"
+	| "-updatedAt";
+export type OriginType = "combined" | "local" | "remote";
 
 export type ModerationLog = {
 	id: ID;
 	createdAt: DateString;
-	userId: User['id'];
+	userId: User["id"];
 	user: UserDetailed | null;
-} & ({
-	type: 'updateServerSettings';
-	info: ModerationLogPayloads['updateServerSettings'];
-} | {
-	type: 'suspend';
-	info: ModerationLogPayloads['suspend'];
-} | {
-	type: 'unsuspend';
-	info: ModerationLogPayloads['unsuspend'];
-} | {
-	type: 'updateUserNote';
-	info: ModerationLogPayloads['updateUserNote'];
-} | {
-	type: 'addCustomEmoji';
-	info: ModerationLogPayloads['addCustomEmoji'];
-} | {
-	type: 'updateCustomEmoji';
-	info: ModerationLogPayloads['updateCustomEmoji'];
-} | {
-	type: 'deleteCustomEmoji';
-	info: ModerationLogPayloads['deleteCustomEmoji'];
-} | {
-	type: 'assignRole';
-	info: ModerationLogPayloads['assignRole'];
-} | {
-	type: 'unassignRole';
-	info: ModerationLogPayloads['unassignRole'];
-} | {
-	type: 'createRole';
-	info: ModerationLogPayloads['createRole'];
-} | {
-	type: 'updateRole';
-	info: ModerationLogPayloads['updateRole'];
-} | {
-	type: 'deleteRole';
-	info: ModerationLogPayloads['deleteRole'];
-} | {
-	type: 'clearQueue';
-	info: ModerationLogPayloads['clearQueue'];
-} | {
-	type: 'promoteQueue';
-	info: ModerationLogPayloads['promoteQueue'];
-} | {
-	type: 'deleteDriveFile';
-	info: ModerationLogPayloads['deleteDriveFile'];
-} | {
-	type: 'deleteNote';
-	info: ModerationLogPayloads['deleteNote'];
-} | {
-	type: 'createGlobalAnnouncement';
-	info: ModerationLogPayloads['createGlobalAnnouncement'];
-} | {
-	type: 'createUserAnnouncement';
-	info: ModerationLogPayloads['createUserAnnouncement'];
-} | {
-	type: 'updateGlobalAnnouncement';
-	info: ModerationLogPayloads['updateGlobalAnnouncement'];
-} | {
-	type: 'updateUserAnnouncement';
-	info: ModerationLogPayloads['updateUserAnnouncement'];
-} | {
-	type: 'deleteGlobalAnnouncement';
-	info: ModerationLogPayloads['deleteGlobalAnnouncement'];
-} | {
-	type: 'deleteUserAnnouncement';
-	info: ModerationLogPayloads['deleteUserAnnouncement'];
-} | {
-	type: 'resetPassword';
-	info: ModerationLogPayloads['resetPassword'];
-} | {
-	type: 'suspendRemoteInstance';
-	info: ModerationLogPayloads['suspendRemoteInstance'];
-} | {
-	type: 'unsuspendRemoteInstance';
-	info: ModerationLogPayloads['unsuspendRemoteInstance'];
-} | {
-	type: 'markSensitiveDriveFile';
-	info: ModerationLogPayloads['markSensitiveDriveFile'];
-} | {
-	type: 'unmarkSensitiveDriveFile';
-	info: ModerationLogPayloads['unmarkSensitiveDriveFile'];
-} | {
-	type: 'createInvitation';
-	info: ModerationLogPayloads['createInvitation'];
-} | {
-	type: 'createAd';
-	info: ModerationLogPayloads['createAd'];
-} | {
-	type: 'updateAd';
-	info: ModerationLogPayloads['updateAd'];
-} | {
-	type: 'deleteAd';
-	info: ModerationLogPayloads['deleteAd'];
-});
+} & (
+	| {
+			type: "updateServerSettings";
+			info: ModerationLogPayloads["updateServerSettings"];
+	  }
+	| {
+			type: "suspend";
+			info: ModerationLogPayloads["suspend"];
+	  }
+	| {
+			type: "unsuspend";
+			info: ModerationLogPayloads["unsuspend"];
+	  }
+	| {
+			type: "updateUserNote";
+			info: ModerationLogPayloads["updateUserNote"];
+	  }
+	| {
+			type: "addCustomEmoji";
+			info: ModerationLogPayloads["addCustomEmoji"];
+	  }
+	| {
+			type: "updateCustomEmoji";
+			info: ModerationLogPayloads["updateCustomEmoji"];
+	  }
+	| {
+			type: "deleteCustomEmoji";
+			info: ModerationLogPayloads["deleteCustomEmoji"];
+	  }
+	| {
+			type: "assignRole";
+			info: ModerationLogPayloads["assignRole"];
+	  }
+	| {
+			type: "unassignRole";
+			info: ModerationLogPayloads["unassignRole"];
+	  }
+	| {
+			type: "createRole";
+			info: ModerationLogPayloads["createRole"];
+	  }
+	| {
+			type: "updateRole";
+			info: ModerationLogPayloads["updateRole"];
+	  }
+	| {
+			type: "deleteRole";
+			info: ModerationLogPayloads["deleteRole"];
+	  }
+	| {
+			type: "clearQueue";
+			info: ModerationLogPayloads["clearQueue"];
+	  }
+	| {
+			type: "promoteQueue";
+			info: ModerationLogPayloads["promoteQueue"];
+	  }
+	| {
+			type: "deleteDriveFile";
+			info: ModerationLogPayloads["deleteDriveFile"];
+	  }
+	| {
+			type: "deleteNote";
+			info: ModerationLogPayloads["deleteNote"];
+	  }
+	| {
+			type: "createGlobalAnnouncement";
+			info: ModerationLogPayloads["createGlobalAnnouncement"];
+	  }
+	| {
+			type: "createUserAnnouncement";
+			info: ModerationLogPayloads["createUserAnnouncement"];
+	  }
+	| {
+			type: "updateGlobalAnnouncement";
+			info: ModerationLogPayloads["updateGlobalAnnouncement"];
+	  }
+	| {
+			type: "updateUserAnnouncement";
+			info: ModerationLogPayloads["updateUserAnnouncement"];
+	  }
+	| {
+			type: "deleteGlobalAnnouncement";
+			info: ModerationLogPayloads["deleteGlobalAnnouncement"];
+	  }
+	| {
+			type: "deleteUserAnnouncement";
+			info: ModerationLogPayloads["deleteUserAnnouncement"];
+	  }
+	| {
+			type: "resetPassword";
+			info: ModerationLogPayloads["resetPassword"];
+	  }
+	| {
+			type: "suspendRemoteInstance";
+			info: ModerationLogPayloads["suspendRemoteInstance"];
+	  }
+	| {
+			type: "unsuspendRemoteInstance";
+			info: ModerationLogPayloads["unsuspendRemoteInstance"];
+	  }
+	| {
+			type: "markSensitiveDriveFile";
+			info: ModerationLogPayloads["markSensitiveDriveFile"];
+	  }
+	| {
+			type: "unmarkSensitiveDriveFile";
+			info: ModerationLogPayloads["unmarkSensitiveDriveFile"];
+	  }
+	| {
+			type: "createInvitation";
+			info: ModerationLogPayloads["createInvitation"];
+	  }
+	| {
+			type: "createAd";
+			info: ModerationLogPayloads["createAd"];
+	  }
+	| {
+			type: "updateAd";
+			info: ModerationLogPayloads["updateAd"];
+	  }
+	| {
+			type: "deleteAd";
+			info: ModerationLogPayloads["deleteAd"];
+	  }
+);

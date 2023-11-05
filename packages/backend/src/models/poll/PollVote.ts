@@ -3,43 +3,50 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { PrimaryColumn, Entity, Index, JoinColumn, Column, ManyToOne } from 'typeorm';
-import { id } from '../util/id.js';
-import { MiUser } from '../user/User.js';
-import { MiNote } from '../note/Note.js';
+import {
+	PrimaryColumn,
+	Entity,
+	Index,
+	JoinColumn,
+	Column,
+	ManyToOne,
+} from "typeorm";
+import { id } from "../util/id.js";
+import { MiUser } from "../user/User.js";
+import { MiNote } from "../note/Note.js";
 
-@Entity('poll_vote')
-@Index(['userId', 'noteId', 'choice'], { unique: true })
+@Entity("poll_vote")
+@Index(["userId", "noteId", "choice"], { unique: true })
 export class MiPollVote {
 	@PrimaryColumn(id())
 	public id: string;
 
 	@Index()
-	@Column('timestamp with time zone', {
-		comment: 'The created date of the PollVote.',
+	@Column("timestamp with time zone", {
+		comment: "The created date of the PollVote.",
 	})
 	public createdAt: Date;
 
 	@Index()
 	@Column(id())
-	public userId: MiUser['id'];
+	public userId: MiUser["id"];
 
-	@ManyToOne(type => MiUser, {
-		onDelete: 'CASCADE',
+	@ManyToOne((type) => MiUser, {
+		onDelete: "CASCADE",
 	})
 	@JoinColumn()
 	public user: MiUser | null;
 
 	@Index()
 	@Column(id())
-	public noteId: MiNote['id'];
+	public noteId: MiNote["id"];
 
-	@ManyToOne(type => MiNote, {
-		onDelete: 'CASCADE',
+	@ManyToOne((type) => MiNote, {
+		onDelete: "CASCADE",
 	})
 	@JoinColumn()
 	public note: MiNote | null;
 
-	@Column('integer')
+	@Column("integer")
 	public choice: number;
 }

@@ -4,32 +4,38 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div class="_gaps_m">
-	<FormInfo warn>{{ i18n.ts.customCssWarn }}</FormInfo>
+	<div class="_gaps_m">
+		<FormInfo warn>{{ i18n.ts.customCssWarn }}</FormInfo>
 
-	<MkTextarea v-model="localCustomCss" manualSave tall class="_monospace" style="tab-size: 2;">
-		<template #label>CSS</template>
-	</MkTextarea>
-</div>
+		<MkTextarea
+			v-model="localCustomCss"
+			manualSave
+			tall
+			class="_monospace"
+			style="tab-size: 2"
+		>
+			<template #label>CSS</template>
+		</MkTextarea>
+	</div>
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
-import MkTextarea from '@/components/MkTextarea.vue';
-import FormInfo from '@/components/MkInfo.vue';
-import * as os from '@/os.js';
-import { unisonReload } from '@/scripts/unison-reload.js';
-import { i18n } from '@/i18n.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
-import { miLocalStorage } from '@/local-storage.js';
+import { ref, watch } from "vue";
+import MkTextarea from "@/components/mk_components/MkTextarea.vue";
+import FormInfo from "@/components/mk_components/MkInfo.vue";
+import * as os from "@/os.js";
+import { unisonReload } from "@/scripts/unison-reload.js";
+import { i18n } from "@/i18n.js";
+import { definePageMetadata } from "@/scripts/page-metadata.js";
+import { miLocalStorage } from "@/local-storage.js";
 
-const localCustomCss = ref(miLocalStorage.getItem('customCss') ?? '');
+const localCustomCss = ref(miLocalStorage.getItem("customCss") ?? "");
 
 async function apply() {
-	miLocalStorage.setItem('customCss', localCustomCss.value);
+	miLocalStorage.setItem("customCss", localCustomCss.value);
 
 	const { canceled } = await os.confirm({
-		type: 'info',
+		type: "info",
 		text: i18n.ts.reloadToApplySetting,
 	});
 	if (canceled) return;
@@ -47,6 +53,6 @@ const headerTabs = $computed(() => []);
 
 definePageMetadata({
 	title: i18n.ts.customCss,
-	icon: 'ti ti-code',
+	icon: "ti ti-code",
 });
 </script>

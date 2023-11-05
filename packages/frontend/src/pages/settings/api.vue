@@ -4,40 +4,51 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div class="_gaps_m">
-	<MkButton primary @click="generateToken">{{ i18n.ts.generateAccessToken }}</MkButton>
-	<FormLink to="/settings/apps">{{ i18n.ts.manageAccessTokens }}</FormLink>
-	<FormLink to="/api-console" :behavior="isDesktop ? 'window' : null">API console</FormLink>
-</div>
+	<div class="_gaps_m">
+		<MkButton primary @click="generateToken">{{
+			i18n.ts.generateAccessToken
+		}}</MkButton>
+		<FormLink to="/settings/apps">{{ i18n.ts.manageAccessTokens }}</FormLink>
+		<FormLink to="/api-console" :behavior="isDesktop ? 'window' : null"
+			>API console</FormLink
+		>
+	</div>
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, ref } from 'vue';
-import FormLink from '@/components/form/link.vue';
-import MkButton from '@/components/MkButton.vue';
-import * as os from '@/os.js';
-import { i18n } from '@/i18n.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
+import { defineAsyncComponent, ref } from "vue";
+import FormLink from "@/components/form/link.vue";
+import MkButton from "@/components/mk_components/MkButton.vue";
+import * as os from "@/os.js";
+import { i18n } from "@/i18n.js";
+import { definePageMetadata } from "@/scripts/page-metadata.js";
 
 const isDesktop = ref(window.innerWidth >= 1100);
 
 function generateToken() {
-	os.popup(defineAsyncComponent(() => import('@/components/MkTokenGenerateWindow.vue')), {}, {
-		done: async result => {
-			const { name, permissions } = result;
-			const { token } = await os.api('miauth/gen-token', {
-				session: null,
-				name: name,
-				permission: permissions,
-			});
+	os.popup(
+		defineAsyncComponent(
+			() => import("@/components/mk_components/MkTokenGenerateWindow.vue"),
+		),
+		{},
+		{
+			done: async (result) => {
+				const { name, permissions } = result;
+				const { token } = await os.api("miauth/gen-token", {
+					session: null,
+					name: name,
+					permission: permissions,
+				});
 
-			os.alert({
-				type: 'success',
-				title: i18n.ts.token,
-				text: token,
-			});
+				os.alert({
+					type: "success",
+					title: i18n.ts.token,
+					text: token,
+				});
+			},
 		},
-	}, 'closed');
+		"closed",
+	);
 }
 
 const headerActions = $computed(() => []);
@@ -45,7 +56,7 @@ const headerActions = $computed(() => []);
 const headerTabs = $computed(() => []);
 
 definePageMetadata({
-	title: 'API',
-	icon: 'ti ti-api',
+	title: "API",
+	icon: "ti ti-api",
 });
 </script>

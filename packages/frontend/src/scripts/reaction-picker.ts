@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { defineAsyncComponent, Ref, ref } from 'vue';
-import { popup } from '@/os.js';
+import { defineAsyncComponent, Ref, ref } from "vue";
+import { popup } from "@/os.js";
 
 class ReactionPicker {
 	private src: Ref<HTMLElement | null> = ref(null);
@@ -17,25 +17,35 @@ class ReactionPicker {
 	}
 
 	public async init() {
-		await popup(defineAsyncComponent(() => import('@/components/MkEmojiPickerDialog.vue')), {
-			src: this.src,
-			asReactionPicker: true,
-			manualShowing: this.manualShowing,
-		}, {
-			done: reaction => {
-				this.onChosen!(reaction);
+		await popup(
+			defineAsyncComponent(
+				() => import("@/components/mk_components/MkEmojiPickerDialog.vue"),
+			),
+			{
+				src: this.src,
+				asReactionPicker: true,
+				manualShowing: this.manualShowing,
 			},
-			close: () => {
-				this.manualShowing.value = false;
+			{
+				done: (reaction) => {
+					this.onChosen!(reaction);
+				},
+				close: () => {
+					this.manualShowing.value = false;
+				},
+				closed: () => {
+					this.src.value = null;
+					this.onClosed!();
+				},
 			},
-			closed: () => {
-				this.src.value = null;
-				this.onClosed!();
-			},
-		});
+		);
 	}
 
-	public show(src: HTMLElement, onChosen: ReactionPicker['onChosen'], onClosed: ReactionPicker['onClosed']) {
+	public show(
+		src: HTMLElement,
+		onChosen: ReactionPicker["onChosen"],
+		onClosed: ReactionPicker["onClosed"],
+	) {
 		this.src.value = src;
 		this.manualShowing.value = true;
 		this.onChosen = onChosen;

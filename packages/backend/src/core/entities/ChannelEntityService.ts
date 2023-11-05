@@ -3,17 +3,24 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import { DI } from '@/di-symbols.js';
-import type { ChannelFavoritesRepository, ChannelFollowingsRepository, ChannelsRepository, DriveFilesRepository, NoteUnreadsRepository, NotesRepository } from '@/models/_.js';
-import type { Packed } from '@/misc/json-schema.js';
-import type { } from '@/models/mute-block/Blocking.js';
-import type { MiUser } from '@/models/user/User.js';
-import type { MiChannel } from '@/models/channel/Channel.js';
-import { bindThis } from '@/decorators.js';
-import { DriveFileEntityService } from './DriveFileEntityService.js';
-import { NoteEntityService } from './NoteEntityService.js';
-import { In } from 'typeorm';
+import { Inject, Injectable } from "@nestjs/common";
+import { DI } from "@/di-symbols.js";
+import type {
+	ChannelFavoritesRepository,
+	ChannelFollowingsRepository,
+	ChannelsRepository,
+	DriveFilesRepository,
+	NoteUnreadsRepository,
+	NotesRepository,
+} from "@/models/_.js";
+import type { Packed } from "@/misc/json-schema.js";
+import type {} from "@/models/mute-block/Blocking.js";
+import type { MiUser } from "@/models/user/User.js";
+import type { MiChannel } from "@/models/channel/Channel.js";
+import { bindThis } from "@/decorators.js";
+import { DriveFileEntityService } from "./DriveFileEntityService.js";
+import { NoteEntityService } from "./NoteEntityService.js";
+import { In } from "typeorm";
 
 @Injectable()
 export class ChannelEntityService {
@@ -38,55 +45,72 @@ export class ChannelEntityService {
 
 		private noteEntityService: NoteEntityService,
 		private driveFileEntityService: DriveFileEntityService,
-	) {
-	}
+	) {}
 
 	@bindThis
 	public async pack(
-		src: MiChannel['id'] | MiChannel,
-		me?: { id: MiUser['id'] } | null | undefined,
+		src: MiChannel["id"] | MiChannel,
+		me?: { id: MiUser["id"] } | null | undefined,
 		detailed?: boolean,
-	): Promise<Packed<'Channel'>> {
-		const channel = typeof src === 'object' ? src : await this.channelsRepository.findOneByOrFail({ id: src });
+	): Promise<Packed<"Channel">> {
+		const channel =
+			typeof src === "object"
+				? src
+				: await this.channelsRepository.findOneByOrFail({ id: src });
 		const meId = me ? me.id : null;
 
-		const banner = channel.bannerId ? await this.driveFilesRepository.findOneBy({ id: channel.bannerId }) : null;
+		const banner = channel.bannerId
+			? await this.driveFilesRepository.findOneBy({ id: channel.bannerId })
+			: null;
 
-		const hasUnreadNote = meId ? await this.noteUnreadsRepository.exist({
-			where: {
-				noteChannelId: channel.id,
-				userId: meId,
-			},
-		}) : undefined;
+		const hasUnreadNote = meId
+			? await this.noteUnreadsRepository.exist({
+					where: {
+						noteChannelId: channel.id,
+						userId: meId,
+					},
+			  })
+			: undefined;
 
-		const isFollowing = meId ? await this.channelFollowingsRepository.exist({
-			where: {
-				followerId: meId,
-				followeeId: channel.id,
-			},
-		}) : false;
+		const isFollowing = meId
+			? await this.channelFollowingsRepository.exist({
+					where: {
+						followerId: meId,
+						followeeId: channel.id,
+					},
+			  })
+			: false;
 
-		const isFavorited = meId ? await this.channelFavoritesRepository.exist({
-			where: {
-				userId: meId,
-				channelId: channel.id,
-			},
-		}) : false;
+		const isFavorited = meId
+			? await this.channelFavoritesRepository.exist({
+					where: {
+						userId: meId,
+						channelId: channel.id,
+					},
+			  })
+			: false;
 
-		const pinnedNotes = channel.pinnedNoteIds.length > 0 ? await this.notesRepository.find({
-			where: {
-				id: In(channel.pinnedNoteIds),
-			},
-		}) : [];
+		const pinnedNotes =
+			channel.pinnedNoteIds.length > 0
+				? await this.notesRepository.find({
+						where: {
+							id: In(channel.pinnedNoteIds),
+						},
+				  })
+				: [];
 
 		return {
 			id: channel.id,
 			createdAt: channel.createdAt.toISOString(),
-			lastNotedAt: channel.lastNotedAt ? channel.lastNotedAt.toISOString() : null,
+			lastNotedAt: channel.lastNotedAt
+				? channel.lastNotedAt.toISOString()
+				: null,
 			name: channel.name,
 			description: channel.description,
 			userId: channel.userId,
-			bannerUrl: banner ? this.driveFileEntityService.getPublicUrl(banner) : null,
+			bannerUrl: banner
+				? this.driveFileEntityService.getPublicUrl(banner)
+				: null,
 			pinnedNoteIds: channel.pinnedNoteIds,
 			color: channel.color,
 			isArchived: channel.isArchived,
@@ -94,16 +118,25 @@ export class ChannelEntityService {
 			notesCount: channel.notesCount,
 			isSensitive: channel.isSensitive,
 
-			...(me ? {
-				isFollowing,
-				isFavorited,
-				hasUnreadNote,
-			} : {}),
+			...(me
+				? {
+						isFollowing,
+						isFavorited,
+						hasUnreadNote,
+				  }
+				: {}),
 
-			...(detailed ? {
-				pinnedNotes: (await this.noteEntityService.packMany(pinnedNotes, me)).sort((a, b) => channel.pinnedNoteIds.indexOf(a.id) - channel.pinnedNoteIds.indexOf(b.id)),
-			} : {}),
+			...(detailed
+				? {
+						pinnedNotes: (
+							await this.noteEntityService.packMany(pinnedNotes, me)
+						).sort(
+							(a, b) =>
+								channel.pinnedNoteIds.indexOf(a.id) -
+								channel.pinnedNoteIds.indexOf(b.id),
+						),
+				  }
+				: {}),
 		};
 	}
 }
-

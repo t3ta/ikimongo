@@ -3,19 +3,19 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import * as http from 'node:http';
-import * as https from 'node:https';
-import * as net from 'node:net';
-import CacheableLookup from 'cacheable-lookup';
-import fetch from 'node-fetch';
-import { HttpProxyAgent, HttpsProxyAgent } from 'hpagent';
-import { Inject, Injectable } from '@nestjs/common';
-import { DI } from '@/di-symbols.js';
-import type { Config } from '@/config.js';
-import { StatusError } from '@/misc/status-error.js';
-import { bindThis } from '@/decorators.js';
-import type { Response } from 'node-fetch';
-import type { URL } from 'node:url';
+import * as http from "node:http";
+import * as https from "node:https";
+import * as net from "node:net";
+import CacheableLookup from "cacheable-lookup";
+import fetch from "node-fetch";
+import { HttpProxyAgent, HttpsProxyAgent } from "hpagent";
+import { Inject, Injectable } from "@nestjs/common";
+import { DI } from "@/di-symbols.js";
+import type { Config } from "@/config.js";
+import { StatusError } from "@/misc/status-error.js";
+import { bindThis } from "@/decorators.js";
+import type { Response } from "node-fetch";
+import type { URL } from "node:url";
 
 @Injectable()
 export class HttpRequestService {
@@ -44,9 +44,9 @@ export class HttpRequestService {
 		private config: Config,
 	) {
 		const cache = new CacheableLookup({
-			maxTtl: 3600,	// 1hours
-			errorTtl: 30,	// 30secs
-			lookup: false,	// nativeのdns.lookupにfallbackしない
+			maxTtl: 3600, // 1hours
+			errorTtl: 30, // 30secs
+			lookup: false, // nativeのdns.lookupにfallbackしない
 		});
 
 		this.http = new http.Agent({
@@ -67,26 +67,26 @@ export class HttpRequestService {
 
 		this.httpAgent = config.proxy
 			? new HttpProxyAgent({
-				keepAlive: true,
-				keepAliveMsecs: 30 * 1000,
-				maxSockets,
-				maxFreeSockets: 256,
-				scheduling: 'lifo',
-				proxy: config.proxy,
-				localAddress: config.outgoingAddress,
-			})
+					keepAlive: true,
+					keepAliveMsecs: 30 * 1000,
+					maxSockets,
+					maxFreeSockets: 256,
+					scheduling: "lifo",
+					proxy: config.proxy,
+					localAddress: config.outgoingAddress,
+			  })
 			: this.http;
 
 		this.httpsAgent = config.proxy
 			? new HttpsProxyAgent({
-				keepAlive: true,
-				keepAliveMsecs: 30 * 1000,
-				maxSockets,
-				maxFreeSockets: 256,
-				scheduling: 'lifo',
-				proxy: config.proxy,
-				localAddress: config.outgoingAddress,
-			})
+					keepAlive: true,
+					keepAliveMsecs: 30 * 1000,
+					maxSockets,
+					maxFreeSockets: 256,
+					scheduling: "lifo",
+					proxy: config.proxy,
+					localAddress: config.outgoingAddress,
+			  })
 			: this.https;
 	}
 
@@ -96,35 +96,55 @@ export class HttpRequestService {
 	 * @param bypassProxy Allways bypass proxy
 	 */
 	@bindThis
-	public getAgentByUrl(url: URL, bypassProxy = false): http.Agent | https.Agent {
-		if (bypassProxy || (this.config.proxyBypassHosts ?? []).includes(url.hostname)) {
-			return url.protocol === 'http:' ? this.http : this.https;
+	public getAgentByUrl(
+		url: URL,
+		bypassProxy = false,
+	): http.Agent | https.Agent {
+		if (
+			bypassProxy ||
+			(this.config.proxyBypassHosts ?? []).includes(url.hostname)
+		) {
+			return url.protocol === "http:" ? this.http : this.https;
 		} else {
-			return url.protocol === 'http:' ? this.httpAgent : this.httpsAgent;
+			return url.protocol === "http:" ? this.httpAgent : this.httpsAgent;
 		}
 	}
 
 	@bindThis
-	public async getJson<T = unknown>(url: string, accept = 'application/json, */*', headers?: Record<string, string>): Promise<T> {
+	public async getJson<T = unknown>(
+		url: string,
+		accept = "application/json, */*",
+		headers?: Record<string, string>,
+	): Promise<T> {
 		const res = await this.send(url, {
-			method: 'GET',
-			headers: Object.assign({
-				Accept: accept,
-			}, headers ?? {}),
+			method: "GET",
+			headers: Object.assign(
+				{
+					Accept: accept,
+				},
+				headers ?? {},
+			),
 			timeout: 5000,
 			size: 1024 * 256,
 		});
 
-		return await res.json() as T;
+		return (await res.json()) as T;
 	}
 
 	@bindThis
-	public async getHtml(url: string, accept = 'text/html, */*', headers?: Record<string, string>): Promise<string> {
+	public async getHtml(
+		url: string,
+		accept = "text/html, */*",
+		headers?: Record<string, string>,
+	): Promise<string> {
 		const res = await this.send(url, {
-			method: 'GET',
-			headers: Object.assign({
-				Accept: accept,
-			}, headers ?? {}),
+			method: "GET",
+			headers: Object.assign(
+				{
+					Accept: accept,
+				},
+				headers ?? {},
+			),
 			timeout: 5000,
 		});
 
@@ -132,17 +152,21 @@ export class HttpRequestService {
 	}
 
 	@bindThis
-	public async send(url: string, args: {
-		method?: string,
-		body?: string,
-		headers?: Record<string, string>,
-		timeout?: number,
-		size?: number,
-	} = {}, extra: {
-		throwErrorWhenResponseNotOk: boolean;
-	} = {
-		throwErrorWhenResponseNotOk: true,
-	}): Promise<Response> {
+	public async send(
+		url: string,
+		args: {
+			method?: string;
+			body?: string;
+			headers?: Record<string, string>;
+			timeout?: number;
+			size?: number;
+		} = {},
+		extra: {
+			throwErrorWhenResponseNotOk: boolean;
+		} = {
+			throwErrorWhenResponseNotOk: true,
+		},
+	): Promise<Response> {
 		const timeout = args.timeout ?? 5000;
 
 		const controller = new AbortController();
@@ -151,9 +175,9 @@ export class HttpRequestService {
 		}, timeout);
 
 		const res = await fetch(url, {
-			method: args.method ?? 'GET',
+			method: args.method ?? "GET",
 			headers: {
-				'User-Agent': this.config.userAgent,
+				"User-Agent": this.config.userAgent,
 				...(args.headers ?? {}),
 			},
 			body: args.body,
@@ -163,7 +187,11 @@ export class HttpRequestService {
 		});
 
 		if (!res.ok && extra.throwErrorWhenResponseNotOk) {
-			throw new StatusError(`${res.status} ${res.statusText}`, res.status, res.statusText);
+			throw new StatusError(
+				`${res.status} ${res.statusText}`,
+				res.status,
+				res.statusText,
+			);
 		}
 
 		return res;

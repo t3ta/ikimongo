@@ -3,19 +3,22 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import * as WebSocket from 'ws';
-import type { MiUser } from '@/models/user/User.js';
-import type { MiAccessToken } from '@/models/auth/AccessToken.js';
-import type { Packed } from '@/misc/json-schema.js';
-import type { NoteReadService } from '@/core/NoteReadService.js';
-import type { NotificationService } from '@/core/NotificationService.js';
-import { bindThis } from '@/decorators.js';
-import { CacheService } from '@/core/CacheService.js';
-import { MiUserProfile } from '@/models/_.js';
-import type { StreamEventEmitter, GlobalEvents } from '@/core/GlobalEventService.js';
-import type { ChannelsService } from './ChannelsService.js';
-import type { EventEmitter } from 'events';
-import type Channel from './channel.js';
+import * as WebSocket from "ws";
+import type { MiUser } from "@/models/user/User.js";
+import type { MiAccessToken } from "@/models/auth/AccessToken.js";
+import type { Packed } from "@/misc/json-schema.js";
+import type { NoteReadService } from "@/core/NoteReadService.js";
+import type { NotificationService } from "@/core/NotificationService.js";
+import { bindThis } from "@/decorators.js";
+import { CacheService } from "@/core/CacheService.js";
+import { MiUserProfile } from "@/models/_.js";
+import type {
+	StreamEventEmitter,
+	GlobalEvents,
+} from "@/core/GlobalEventService.js";
+import type { ChannelsService } from "./ChannelsService.js";
+import type { EventEmitter } from "events";
+import type Channel from "./channel.js";
 
 /**
  * Main stream connection
@@ -28,7 +31,7 @@ export default class Connection {
 	public subscriber: StreamEventEmitter;
 	private channels: Channel[] = [];
 	private subscribingNotes: any = {};
-	private cachedNotes: Packed<'Note'>[] = [];
+	private cachedNotes: Packed<"Note">[] = [];
 	public userProfile: MiUserProfile | null = null;
 	public following: Set<string> = new Set();
 	public followingChannels: Set<string> = new Set();
@@ -53,7 +56,14 @@ export default class Connection {
 	@bindThis
 	public async fetch() {
 		if (this.user == null) return;
-		const [userProfile, following, followingChannels, userIdsWhoMeMuting, userIdsWhoBlockingMe, userIdsWhoMeMutingRenotes] = await Promise.all([
+		const [
+			userProfile,
+			following,
+			followingChannels,
+			userIdsWhoMeMuting,
+			userIdsWhoBlockingMe,
+			userIdsWhoMeMutingRenotes,
+		] = await Promise.all([
 			this.cacheService.userProfileCache.fetch(this.user.id),
 			this.cacheService.userFollowingsCache.fetch(this.user.id),
 			this.cacheService.userFollowingChannelsCache.fetch(this.user.id),
@@ -81,13 +91,16 @@ export default class Connection {
 	}
 
 	@bindThis
-	public async listen(subscriber: EventEmitter, wsConnection: WebSocket.WebSocket) {
+	public async listen(
+		subscriber: EventEmitter,
+		wsConnection: WebSocket.WebSocket,
+	) {
 		this.subscriber = subscriber;
 
 		this.wsConnection = wsConnection;
-		this.wsConnection.on('message', this.onWsConnectionMessage);
+		this.wsConnection.on("message", this.onWsConnectionMessage);
 
-		this.subscriber.on('broadcast', data => {
+		this.subscriber.on("broadcast", (data) => {
 			this.onBroadcastMessage(data);
 		});
 	}
@@ -108,28 +121,49 @@ export default class Connection {
 		const { type, body } = obj;
 
 		switch (type) {
-			case 'readNotification': this.onReadNotification(body); break;
-			case 'subNote': this.onSubscribeNote(body); break;
-			case 's': this.onSubscribeNote(body); break; // alias
-			case 'sr': this.onSubscribeNote(body); this.readNote(body); break;
-			case 'unsubNote': this.onUnsubscribeNote(body); break;
-			case 'un': this.onUnsubscribeNote(body); break; // alias
-			case 'connect': this.onChannelConnectRequested(body); break;
-			case 'disconnect': this.onChannelDisconnectRequested(body); break;
-			case 'channel': this.onChannelMessageRequested(body); break;
-			case 'ch': this.onChannelMessageRequested(body); break; // alias
+			case "readNotification":
+				this.onReadNotification(body);
+				break;
+			case "subNote":
+				this.onSubscribeNote(body);
+				break;
+			case "s":
+				this.onSubscribeNote(body);
+				break; // alias
+			case "sr":
+				this.onSubscribeNote(body);
+				this.readNote(body);
+				break;
+			case "unsubNote":
+				this.onUnsubscribeNote(body);
+				break;
+			case "un":
+				this.onUnsubscribeNote(body);
+				break; // alias
+			case "connect":
+				this.onChannelConnectRequested(body);
+				break;
+			case "disconnect":
+				this.onChannelDisconnectRequested(body);
+				break;
+			case "channel":
+				this.onChannelMessageRequested(body);
+				break;
+			case "ch":
+				this.onChannelMessageRequested(body);
+				break; // alias
 		}
 	}
 
 	@bindThis
-	private onBroadcastMessage(data: GlobalEvents['broadcast']['payload']) {
+	private onBroadcastMessage(data: GlobalEvents["broadcast"]["payload"]) {
 		this.sendMessageToWs(data.type, data.body);
 	}
 
 	@bindThis
-	public cacheNote(note: Packed<'Note'>) {
-		const add = (note: Packed<'Note'>) => {
-			const existIndex = this.cachedNotes.findIndex(n => n.id === note.id);
+	public cacheNote(note: Packed<"Note">) {
+		const add = (note: Packed<"Note">) => {
+			const existIndex = this.cachedNotes.findIndex((n) => n.id === note.id);
 			if (existIndex > -1) {
 				this.cachedNotes[existIndex] = note;
 				return;
@@ -150,10 +184,10 @@ export default class Connection {
 	private readNote(body: any) {
 		const id = body.id;
 
-		const note = this.cachedNotes.find(n => n.id === id);
+		const note = this.cachedNotes.find((n) => n.id === id);
 		if (note == null) return;
 
-		if (this.user && (note.userId !== this.user.id)) {
+		if (this.user && note.userId !== this.user.id) {
 			this.noteReadService.read(this.user.id, [note]);
 		}
 	}
@@ -196,8 +230,8 @@ export default class Connection {
 	}
 
 	@bindThis
-	private async onNoteStreamMessage(data: GlobalEvents['note']['payload']) {
-		this.sendMessageToWs('noteUpdated', {
+	private async onNoteStreamMessage(data: GlobalEvents["note"]["payload"]) {
+		this.sendMessageToWs("noteUpdated", {
 			id: data.body.id,
 			type: data.type,
 			body: data.body.body,
@@ -227,17 +261,24 @@ export default class Connection {
 	 */
 	@bindThis
 	public sendMessageToWs(type: string, payload: any) {
-		this.wsConnection.send(JSON.stringify({
-			type: type,
-			body: payload,
-		}));
+		this.wsConnection.send(
+			JSON.stringify({
+				type: type,
+				body: payload,
+			}),
+		);
 	}
 
 	/**
 	 * チャンネルに接続
 	 */
 	@bindThis
-	public connectChannel(id: string, params: any, channel: string, pong = false) {
+	public connectChannel(
+		id: string,
+		params: any,
+		channel: string,
+		pong = false,
+	) {
 		const channelService = this.channelsService.getChannelService(channel);
 
 		if (channelService.requireCredential && this.user == null) {
@@ -245,7 +286,10 @@ export default class Connection {
 		}
 
 		// 共有可能チャンネルに接続しようとしていて、かつそのチャンネルに既に接続していたら無意味なので無視
-		if (channelService.shouldShare && this.channels.some(c => c.chName === channel)) {
+		if (
+			channelService.shouldShare &&
+			this.channels.some((c) => c.chName === channel)
+		) {
 			return;
 		}
 
@@ -254,7 +298,7 @@ export default class Connection {
 		ch.init(params ?? {});
 
 		if (pong) {
-			this.sendMessageToWs('connected', {
+			this.sendMessageToWs("connected", {
 				id: id,
 			});
 		}
@@ -266,11 +310,11 @@ export default class Connection {
 	 */
 	@bindThis
 	public disconnectChannel(id: string) {
-		const channel = this.channels.find(c => c.id === id);
+		const channel = this.channels.find((c) => c.id === id);
 
 		if (channel) {
 			if (channel.dispose) channel.dispose();
-			this.channels = this.channels.filter(c => c.id !== id);
+			this.channels = this.channels.filter((c) => c.id !== id);
 		}
 	}
 
@@ -280,7 +324,7 @@ export default class Connection {
 	 */
 	@bindThis
 	private onChannelMessageRequested(data: any) {
-		const channel = this.channels.find(c => c.id === data.id);
+		const channel = this.channels.find((c) => c.id === data.id);
 		if (channel != null && channel.onMessage != null) {
 			channel.onMessage(data.type, data.body);
 		}
@@ -292,7 +336,7 @@ export default class Connection {
 	@bindThis
 	public dispose() {
 		if (this.fetchIntervalId) clearInterval(this.fetchIntervalId);
-		for (const c of this.channels.filter(c => c.dispose)) {
+		for (const c of this.channels.filter((c) => c.dispose)) {
 			if (c.dispose) c.dispose();
 		}
 	}

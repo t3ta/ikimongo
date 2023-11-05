@@ -4,117 +4,247 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div :class="[$style.root, { [$style.rootIsMobile]: isMobile }]">
-	<XSidebar v-if="!isMobile"/>
+	<div :class="[$style.root, { [$style.rootIsMobile]: isMobile }]">
+		<XSidebar v-if="!isMobile" />
 
-	<div :class="$style.main">
-		<XAnnouncements v-if="$i" :class="$style.announcements"/>
-		<XStatusBars/>
-		<div ref="columnsEl" :class="[$style.sections, { [$style.center]: deckStore.reactiveState.columnAlign.value === 'center', [$style.snapScroll]: snapScroll }]" @contextmenu.self.prevent="onContextmenu" @wheel.self="onWheel">
-			<!-- sectionを利用しているのは、deck.vue側でcolumnに対してfirst-of-typeを効かせるため -->
-			<section
-				v-for="ids in layout"
-				:class="$style.section"
-				:style="columns.filter(c => ids.includes(c.id)).some(c => c.flexible) ? { flex: 1, minWidth: '350px' } : { width: Math.max(...columns.filter(c => ids.includes(c.id)).map(c => c.width)) + 'px' }"
+		<div :class="$style.main">
+			<XAnnouncements v-if="$i" :class="$style.announcements" />
+			<XStatusBars />
+			<div
+				ref="columnsEl"
+				:class="[
+					$style.sections,
+					{
+						[$style.center]:
+							deckStore.reactiveState.columnAlign.value === 'center',
+						[$style.snapScroll]: snapScroll,
+					},
+				]"
+				@contextmenu.self.prevent="onContextmenu"
 				@wheel.self="onWheel"
 			>
-				<component
-					:is="columnComponents[columns.find(c => c.id === id)!.type] ?? XTlColumn"
-					v-for="id in ids"
-					:ref="id"
-					:key="id"
-					:class="$style.column"
-					:column="columns.find(c => c.id === id)"
-					:isStacked="ids.length > 1"
-					@headerWheel="onWheel"
-				/>
-			</section>
-			<div v-if="layout.length === 0" class="_panel" :class="$style.onboarding">
-				<div>{{ i18n.ts._deck.introduction }}</div>
-				<MkButton primary style="margin: 1em auto;" @click="addColumn">{{ i18n.ts._deck.addColumn }}</MkButton>
-				<div>{{ i18n.ts._deck.introduction2 }}</div>
-			</div>
-			<div :class="$style.sideMenu">
-				<div :class="$style.sideMenuTop">
-					<button v-tooltip.noDelay.left="`${i18n.ts._deck.profile}: ${deckStore.state.profile}`" :class="$style.sideMenuButton" class="_button" @click="changeProfile"><i class="ti ti-caret-down"></i></button>
-					<button v-tooltip.noDelay.left="i18n.ts._deck.deleteProfile" :class="$style.sideMenuButton" class="_button" @click="deleteProfile"><i class="ti ti-trash"></i></button>
+				<!-- sectionを利用しているのは、deck.vue側でcolumnに対してfirst-of-typeを効かせるため -->
+				<section
+					v-for="ids in layout"
+					:class="$style.section"
+					:style="
+						columns.filter((c) => ids.includes(c.id)).some((c) => c.flexible)
+							? { flex: 1, minWidth: '350px' }
+							: {
+									width:
+										Math.max(
+											...columns
+												.filter((c) => ids.includes(c.id))
+												.map((c) => c.width),
+										) + 'px',
+							  }
+					"
+					@wheel.self="onWheel"
+				>
+					<component
+						:is="
+							columnComponents[columns.find((c) => c.id === id)!.type] ??
+							XTlColumn
+						"
+						v-for="id in ids"
+						:ref="id"
+						:key="id"
+						:class="$style.column"
+						:column="columns.find((c) => c.id === id)"
+						:isStacked="ids.length > 1"
+						@headerWheel="onWheel"
+					/>
+				</section>
+				<div
+					v-if="layout.length === 0"
+					class="_panel"
+					:class="$style.onboarding"
+				>
+					<div>{{ i18n.ts._deck.introduction }}</div>
+					<MkButton primary style="margin: 1em auto" @click="addColumn">{{
+						i18n.ts._deck.addColumn
+					}}</MkButton>
+					<div>{{ i18n.ts._deck.introduction2 }}</div>
 				</div>
-				<div :class="$style.sideMenuMiddle">
-					<button v-tooltip.noDelay.left="i18n.ts._deck.addColumn" :class="$style.sideMenuButton" class="_button" @click="addColumn"><i class="ti ti-plus"></i></button>
-				</div>
-				<div :class="$style.sideMenuBottom">
-					<button v-tooltip.noDelay.left="i18n.ts.settings" :class="$style.sideMenuButton" class="_button" @click="showSettings"><i class="ti ti-settings"></i></button>
+				<div :class="$style.sideMenu">
+					<div :class="$style.sideMenuTop">
+						<button
+							v-tooltip.noDelay.left="
+								`${i18n.ts._deck.profile}: ${deckStore.state.profile}`
+							"
+							:class="$style.sideMenuButton"
+							class="_button"
+							@click="changeProfile"
+						>
+							<i class="ti ti-caret-down"></i>
+						</button>
+						<button
+							v-tooltip.noDelay.left="i18n.ts._deck.deleteProfile"
+							:class="$style.sideMenuButton"
+							class="_button"
+							@click="deleteProfile"
+						>
+							<i class="ti ti-trash"></i>
+						</button>
+					</div>
+					<div :class="$style.sideMenuMiddle">
+						<button
+							v-tooltip.noDelay.left="i18n.ts._deck.addColumn"
+							:class="$style.sideMenuButton"
+							class="_button"
+							@click="addColumn"
+						>
+							<i class="ti ti-plus"></i>
+						</button>
+					</div>
+					<div :class="$style.sideMenuBottom">
+						<button
+							v-tooltip.noDelay.left="i18n.ts.settings"
+							:class="$style.sideMenuButton"
+							class="_button"
+							@click="showSettings"
+						>
+							<i class="ti ti-settings"></i>
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
 
-	<div v-if="isMobile" :class="$style.nav">
-		<button :class="$style.navButton" class="_button" @click="drawerMenuShowing = true"><i :class="$style.navButtonIcon" class="ti ti-menu-2"></i><span v-if="menuIndicated" :class="$style.navButtonIndicator"><i class="_indicatorCircle"></i></span></button>
-		<button :class="$style.navButton" class="_button" @click="mainRouter.push('/')"><i :class="$style.navButtonIcon" class="ti ti-home"></i></button>
-		<button :class="$style.navButton" class="_button" @click="mainRouter.push('/my/notifications')"><i :class="$style.navButtonIcon" class="ti ti-bell"></i><span v-if="$i?.hasUnreadNotification" :class="$style.navButtonIndicator"><i class="_indicatorCircle"></i></span></button>
-		<button :class="$style.postButton" class="_button" @click="os.post()"><i :class="$style.navButtonIcon" class="ti ti-pencil"></i></button>
-	</div>
-
-	<Transition
-		:enterActiveClass="defaultStore.state.animation ? $style.transition_menuDrawerBg_enterActive : ''"
-		:leaveActiveClass="defaultStore.state.animation ? $style.transition_menuDrawerBg_leaveActive : ''"
-		:enterFromClass="defaultStore.state.animation ? $style.transition_menuDrawerBg_enterFrom : ''"
-		:leaveToClass="defaultStore.state.animation ? $style.transition_menuDrawerBg_leaveTo : ''"
-	>
-		<div
-			v-if="drawerMenuShowing"
-			:class="$style.menuBg"
-			class="_modalBg"
-			@click="drawerMenuShowing = false"
-			@touchstart.passive="drawerMenuShowing = false"
-		></div>
-	</Transition>
-
-	<Transition
-		:enterActiveClass="defaultStore.state.animation ? $style.transition_menuDrawer_enterActive : ''"
-		:leaveActiveClass="defaultStore.state.animation ? $style.transition_menuDrawer_leaveActive : ''"
-		:enterFromClass="defaultStore.state.animation ? $style.transition_menuDrawer_enterFrom : ''"
-		:leaveToClass="defaultStore.state.animation ? $style.transition_menuDrawer_leaveTo : ''"
-	>
-		<div v-if="drawerMenuShowing" :class="$style.menu">
-			<XDrawerMenu/>
+		<div v-if="isMobile" :class="$style.nav">
+			<button
+				:class="$style.navButton"
+				class="_button"
+				@click="drawerMenuShowing = true"
+			>
+				<i :class="$style.navButtonIcon" class="ti ti-menu-2"></i
+				><span v-if="menuIndicated" :class="$style.navButtonIndicator"
+					><i class="_indicatorCircle"></i
+				></span>
+			</button>
+			<button
+				:class="$style.navButton"
+				class="_button"
+				@click="mainRouter.push('/')"
+			>
+				<i :class="$style.navButtonIcon" class="ti ti-home"></i>
+			</button>
+			<button
+				:class="$style.navButton"
+				class="_button"
+				@click="mainRouter.push('/my/notifications')"
+			>
+				<i :class="$style.navButtonIcon" class="ti ti-bell"></i
+				><span
+					v-if="$i?.hasUnreadNotification"
+					:class="$style.navButtonIndicator"
+					><i class="_indicatorCircle"></i
+				></span>
+			</button>
+			<button :class="$style.postButton" class="_button" @click="os.post()">
+				<i :class="$style.navButtonIcon" class="ti ti-pencil"></i>
+			</button>
 		</div>
-	</Transition>
 
-	<XCommon/>
-</div>
+		<Transition
+			:enterActiveClass="
+				defaultStore.state.animation
+					? $style.transition_menuDrawerBg_enterActive
+					: ''
+			"
+			:leaveActiveClass="
+				defaultStore.state.animation
+					? $style.transition_menuDrawerBg_leaveActive
+					: ''
+			"
+			:enterFromClass="
+				defaultStore.state.animation
+					? $style.transition_menuDrawerBg_enterFrom
+					: ''
+			"
+			:leaveToClass="
+				defaultStore.state.animation
+					? $style.transition_menuDrawerBg_leaveTo
+					: ''
+			"
+		>
+			<div
+				v-if="drawerMenuShowing"
+				:class="$style.menuBg"
+				class="_modalBg"
+				@click="drawerMenuShowing = false"
+				@touchstart.passive="drawerMenuShowing = false"
+			></div>
+		</Transition>
+
+		<Transition
+			:enterActiveClass="
+				defaultStore.state.animation
+					? $style.transition_menuDrawer_enterActive
+					: ''
+			"
+			:leaveActiveClass="
+				defaultStore.state.animation
+					? $style.transition_menuDrawer_leaveActive
+					: ''
+			"
+			:enterFromClass="
+				defaultStore.state.animation
+					? $style.transition_menuDrawer_enterFrom
+					: ''
+			"
+			:leaveToClass="
+				defaultStore.state.animation ? $style.transition_menuDrawer_leaveTo : ''
+			"
+		>
+			<div v-if="drawerMenuShowing" :class="$style.menu">
+				<XDrawerMenu />
+			</div>
+		</Transition>
+
+		<XCommon />
+	</div>
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, ref, watch } from 'vue';
-import { v4 as uuid } from 'uuid';
-import XCommon from './_common_/common.vue';
-import { deckStore, addColumn as addColumnToStore, loadDeck, getProfiles, deleteProfile as deleteProfile_ } from './deck/deck-store.js';
-import XSidebar from '@/ui/_common_/navbar.vue';
-import XDrawerMenu from '@/ui/_common_/navbar-for-mobile.vue';
-import MkButton from '@/components/MkButton.vue';
-import { getScrollContainer } from '@/scripts/scroll.js';
-import * as os from '@/os.js';
-import { navbarItemDef } from '@/navbar.js';
-import { $i } from '@/account.js';
-import { i18n } from '@/i18n.js';
-import { mainRouter } from '@/router.js';
-import { unisonReload } from '@/scripts/unison-reload.js';
-import { deviceKind } from '@/scripts/device-kind.js';
-import { defaultStore } from '@/store.js';
-import XMainColumn from '@/ui/deck/main-column.vue';
-import XTlColumn from '@/ui/deck/tl-column.vue';
-import XAntennaColumn from '@/ui/deck/antenna-column.vue';
-import XListColumn from '@/ui/deck/list-column.vue';
-import XChannelColumn from '@/ui/deck/channel-column.vue';
-import XNotificationsColumn from '@/ui/deck/notifications-column.vue';
-import XWidgetsColumn from '@/ui/deck/widgets-column.vue';
-import XMentionsColumn from '@/ui/deck/mentions-column.vue';
-import XDirectColumn from '@/ui/deck/direct-column.vue';
-import XRoleTimelineColumn from '@/ui/deck/role-timeline-column.vue';
-const XStatusBars = defineAsyncComponent(() => import('@/ui/_common_/statusbars.vue'));
-const XAnnouncements = defineAsyncComponent(() => import('@/ui/_common_/announcements.vue'));
+import { computed, defineAsyncComponent, ref, watch } from "vue";
+import { v4 as uuid } from "uuid";
+import XCommon from "./_common_/common.vue";
+import {
+	deckStore,
+	addColumn as addColumnToStore,
+	loadDeck,
+	getProfiles,
+	deleteProfile as deleteProfile_,
+} from "./deck/deck-store.js";
+import XSidebar from "@/ui/_common_/navbar.vue";
+import XDrawerMenu from "@/ui/_common_/navbar-for-mobile.vue";
+import MkButton from "@/components/mk_components/MkButton.vue";
+import { getScrollContainer } from "@/scripts/scroll.js";
+import * as os from "@/os.js";
+import { navbarItemDef } from "@/navbar.js";
+import { $i } from "@/account.js";
+import { i18n } from "@/i18n.js";
+import { mainRouter } from "@/router.js";
+import { unisonReload } from "@/scripts/unison-reload.js";
+import { deviceKind } from "@/scripts/device-kind.js";
+import { defaultStore } from "@/store.js";
+import XMainColumn from "@/ui/deck/main-column.vue";
+import XTlColumn from "@/ui/deck/tl-column.vue";
+import XAntennaColumn from "@/ui/deck/antenna-column.vue";
+import XListColumn from "@/ui/deck/list-column.vue";
+import XChannelColumn from "@/ui/deck/channel-column.vue";
+import XNotificationsColumn from "@/ui/deck/notifications-column.vue";
+import XWidgetsColumn from "@/ui/deck/widgets-column.vue";
+import XMentionsColumn from "@/ui/deck/mentions-column.vue";
+import XDirectColumn from "@/ui/deck/direct-column.vue";
+import XRoleTimelineColumn from "@/ui/deck/role-timeline-column.vue";
+const XStatusBars = defineAsyncComponent(
+	() => import("@/ui/_common_/statusbars.vue"),
+);
+const XAnnouncements = defineAsyncComponent(
+	() => import("@/ui/_common_/announcements.vue"),
+);
 
 const columnComponents = {
 	main: XMainColumn,
@@ -130,8 +260,8 @@ const columnComponents = {
 };
 
 mainRouter.navHook = (path, flag): boolean => {
-	if (flag === 'forcePage') return false;
-	const noMainColumn = !deckStore.state.columns.some(x => x.type === 'main');
+	if (flag === "forcePage") return false;
+	const noMainColumn = !deckStore.state.columns.some((x) => x.type === "main");
 	if (deckStore.state.navWindow || noMainColumn) {
 		os.pageWindow(path);
 		return true;
@@ -140,14 +270,14 @@ mainRouter.navHook = (path, flag): boolean => {
 };
 
 const isMobile = ref(window.innerWidth <= 500);
-window.addEventListener('resize', () => {
+window.addEventListener("resize", () => {
 	isMobile.value = window.innerWidth <= 500;
 });
 
-const snapScroll = deviceKind === 'smartphone' || deviceKind === 'tablet';
+const snapScroll = deviceKind === "smartphone" || deviceKind === "tablet";
 const drawerMenuShowing = ref(false);
 
-const route = 'TODO';
+const route = "TODO";
 watch(route, () => {
 	drawerMenuShowing.value = false;
 });
@@ -163,29 +293,30 @@ const menuIndicated = computed(() => {
 });
 
 function showSettings() {
-	os.pageWindow('/settings/deck');
+	os.pageWindow("/settings/deck");
 }
 
 let columnsEl = $shallowRef<HTMLElement>();
 
 const addColumn = async (ev) => {
 	const columns = [
-		'main',
-		'widgets',
-		'notifications',
-		'tl',
-		'antenna',
-		'list',
-		'channel',
-		'mentions',
-		'direct',
-		'roleTimeline',
+		"main",
+		"widgets",
+		"notifications",
+		"tl",
+		"antenna",
+		"list",
+		"channel",
+		"mentions",
+		"direct",
+		"roleTimeline",
 	];
 
 	const { canceled, result: column } = await os.select({
 		title: i18n.ts._deck.addColumn,
-		items: columns.map(column => ({
-			value: column, text: i18n.t('_deck._columns.' + column),
+		items: columns.map((column) => ({
+			value: column,
+			text: i18n.t("_deck._columns." + column),
 		})),
 	});
 	if (canceled) return;
@@ -193,16 +324,21 @@ const addColumn = async (ev) => {
 	addColumnToStore({
 		type: column,
 		id: uuid(),
-		name: i18n.t('_deck._columns.' + column),
+		name: i18n.t("_deck._columns." + column),
 		width: 330,
 	});
 };
 
 const onContextmenu = (ev) => {
-	os.contextMenu([{
-		text: i18n.ts._deck.addColumn,
-		action: addColumn,
-	}], ev);
+	os.contextMenu(
+		[
+			{
+				text: i18n.ts._deck.addColumn,
+				action: addColumn,
+			},
+		],
+		ev,
+	);
 };
 
 function onWheel(ev: WheelEvent) {
@@ -211,53 +347,62 @@ function onWheel(ev: WheelEvent) {
 	}
 }
 
-document.documentElement.style.overflowY = 'hidden';
-document.documentElement.style.scrollBehavior = 'auto';
+document.documentElement.style.overflowY = "hidden";
+document.documentElement.style.scrollBehavior = "auto";
 
 loadDeck();
 
 function changeProfile(ev: MouseEvent) {
-	const items = ref([{
-		text: deckStore.state.profile,
-		active: true.valueOf,
-	}]);
-	getProfiles().then(profiles => {
-		items.value = [{
+	const items = ref([
+		{
 			text: deckStore.state.profile,
 			active: true.valueOf,
-		}, ...(profiles.filter(k => k !== deckStore.state.profile).map(k => ({
-			text: k,
-			action: () => {
-				deckStore.set('profile', k);
-				unisonReload();
+		},
+	]);
+	getProfiles().then((profiles) => {
+		items.value = [
+			{
+				text: deckStore.state.profile,
+				active: true.valueOf,
 			},
-		}))), null, {
-			text: i18n.ts._deck.newProfile,
-			icon: 'ti ti-plus',
-			action: async () => {
-				const { canceled, result: name } = await os.inputText({
-					title: i18n.ts._deck.profile,
-					allowEmpty: false,
-				});
-				if (canceled) return;
+			...profiles
+				.filter((k) => k !== deckStore.state.profile)
+				.map((k) => ({
+					text: k,
+					action: () => {
+						deckStore.set("profile", k);
+						unisonReload();
+					},
+				})),
+			null,
+			{
+				text: i18n.ts._deck.newProfile,
+				icon: "ti ti-plus",
+				action: async () => {
+					const { canceled, result: name } = await os.inputText({
+						title: i18n.ts._deck.profile,
+						allowEmpty: false,
+					});
+					if (canceled) return;
 
-				deckStore.set('profile', name);
-				unisonReload();
+					deckStore.set("profile", name);
+					unisonReload();
+				},
 			},
-		}];
+		];
 	});
 	os.popupMenu(items, ev.currentTarget ?? ev.target);
 }
 
 async function deleteProfile() {
 	const { canceled } = await os.confirm({
-		type: 'warning',
-		text: i18n.t('deleteAreYouSure', { x: deckStore.state.profile }),
+		type: "warning",
+		text: i18n.t("deleteAreYouSure", { x: deckStore.state.profile }),
 	});
 	if (canceled) return;
 
 	deleteProfile_(deckStore.state.profile);
-	deckStore.set('profile', 'default');
+	deckStore.set("profile", "default");
 	unisonReload();
 }
 </script>
@@ -299,7 +444,9 @@ body {
 .transition_menuDrawer_leaveActive {
 	opacity: 1;
 	transform: translateX(0);
-	transition: transform 300ms cubic-bezier(0.23, 1, 0.32, 1), opacity 300ms cubic-bezier(0.23, 1, 0.32, 1);
+	transition:
+		transform 300ms cubic-bezier(0.23, 1, 0.32, 1),
+		opacity 300ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 .transition_menuDrawer_enterFrom,
 .transition_menuDrawer_leaveTo {
@@ -461,7 +608,11 @@ body {
 
 .postButton {
 	composes: navButton;
-	background: linear-gradient(90deg, var(--buttonGradateA), var(--buttonGradateB));
+	background: linear-gradient(
+		90deg,
+		var(--buttonGradateA),
+		var(--buttonGradateB)
+	);
 	color: var(--fgOnAccent);
 
 	&:hover {

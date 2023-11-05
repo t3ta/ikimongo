@@ -3,22 +3,22 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import * as fs from 'node:fs';
-import * as crypto from 'node:crypto';
-import { join } from 'node:path';
-import * as stream from 'node:stream/promises';
-import { Injectable } from '@nestjs/common';
-import { FSWatcher } from 'chokidar';
-import * as fileType from 'file-type';
-import FFmpeg from 'fluent-ffmpeg';
-import isSvg from 'is-svg';
-import probeImageSize from 'probe-image-size';
-import { type predictionType } from 'nsfwjs';
-import sharp from 'sharp';
-import { encode } from 'blurhash';
-import { createTempDir } from '@/misc/create-temp.js';
-import { AiService } from '@/core/AiService.js';
-import { bindThis } from '@/decorators.js';
+import * as fs from "node:fs";
+import * as crypto from "node:crypto";
+import { join } from "node:path";
+import * as stream from "node:stream/promises";
+import { Injectable } from "@nestjs/common";
+import { FSWatcher } from "chokidar";
+import * as fileType from "file-type";
+import FFmpeg from "fluent-ffmpeg";
+import isSvg from "is-svg";
+import probeImageSize from "probe-image-size";
+import { type predictionType } from "nsfwjs";
+import sharp from "sharp";
+import { encode } from "blurhash";
+import { createTempDir } from "@/misc/create-temp.js";
+import { AiService } from "@/core/AiService.js";
+import { bindThis } from "@/decorators.js";
 
 export type FileInfo = {
 	size: number;
@@ -37,32 +37,32 @@ export type FileInfo = {
 };
 
 const TYPE_OCTET_STREAM = {
-	mime: 'application/octet-stream',
+	mime: "application/octet-stream",
 	ext: null,
 };
 
 const TYPE_SVG = {
-	mime: 'image/svg+xml',
-	ext: 'svg',
+	mime: "image/svg+xml",
+	ext: "svg",
 };
 
 @Injectable()
 export class FileInfoService {
-	constructor(
-		private aiService: AiService,
-	) {
-	}
+	constructor(private aiService: AiService) {}
 
 	/**
 	 * Get file information
 	 */
 	@bindThis
-	public async getFileInfo(path: string, opts: {
-		skipSensitiveDetection: boolean;
-		sensitiveThreshold?: number;
-		sensitiveThresholdForPorn?: number;
-		enableSensitiveMediaDetectionForVideos?: boolean;
-	}): Promise<FileInfo> {
+	public async getFileInfo(
+		path: string,
+		opts: {
+			skipSensitiveDetection: boolean;
+			sensitiveThreshold?: number;
+			sensitiveThresholdForPorn?: number;
+			enableSensitiveMediaDetectionForVideos?: boolean;
+		},
+	): Promise<FileInfo> {
 		const warnings = [] as string[];
 
 		const size = await this.getFileSize(path);
@@ -75,35 +75,37 @@ export class FileInfoService {
 		let height: number | undefined;
 		let orientation: number | undefined;
 
-		if ([
-			'image/png',
-			'image/gif',
-			'image/jpeg',
-			'image/webp',
-			'image/avif',
-			'image/apng',
-			'image/bmp',
-			'image/tiff',
-			'image/svg+xml',
-			'image/vnd.adobe.photoshop',
-		].includes(type.mime)) {
-			const imageSize = await this.detectImageSize(path).catch(e => {
+		if (
+			[
+				"image/png",
+				"image/gif",
+				"image/jpeg",
+				"image/webp",
+				"image/avif",
+				"image/apng",
+				"image/bmp",
+				"image/tiff",
+				"image/svg+xml",
+				"image/vnd.adobe.photoshop",
+			].includes(type.mime)
+		) {
+			const imageSize = await this.detectImageSize(path).catch((e) => {
 				warnings.push(`detectImageSize failed: ${e}`);
 				return undefined;
 			});
 
 			// うまく判定できない画像は octet-stream にする
 			if (!imageSize) {
-				warnings.push('cannot detect image dimensions');
+				warnings.push("cannot detect image dimensions");
 				type = TYPE_OCTET_STREAM;
-			} else if (imageSize.wUnits === 'px') {
+			} else if (imageSize.wUnits === "px") {
 				width = imageSize.width;
 				height = imageSize.height;
 				orientation = imageSize.orientation;
 
 				// 制限を超えている画像は octet-stream にする
 				if (imageSize.width > 16383 || imageSize.height > 16383) {
-					warnings.push('image dimensions exceeds limits');
+					warnings.push("image dimensions exceeds limits");
 					type = TYPE_OCTET_STREAM;
 				}
 			} else {
@@ -113,16 +115,18 @@ export class FileInfoService {
 
 		let blurhash: string | undefined;
 
-		if ([
-			'image/jpeg',
-			'image/gif',
-			'image/png',
-			'image/apng',
-			'image/webp',
-			'image/avif',
-			'image/svg+xml',
-		].includes(type.mime)) {
-			blurhash = await this.getBlurhash(path).catch(e => {
+		if (
+			[
+				"image/jpeg",
+				"image/gif",
+				"image/png",
+				"image/apng",
+				"image/webp",
+				"image/avif",
+				"image/svg+xml",
+			].includes(type.mime)
+		) {
+			blurhash = await this.getBlurhash(path).catch((e) => {
 				warnings.push(`getBlurhash failed: ${e}`);
 				return undefined;
 			});
@@ -138,11 +142,14 @@ export class FileInfoService {
 				opts.sensitiveThreshold ?? 0.5,
 				opts.sensitiveThresholdForPorn ?? 0.75,
 				opts.enableSensitiveMediaDetectionForVideos ?? false,
-			).then(value => {
-				[sensitive, porn] = value;
-			}, error => {
-				warnings.push(`detectSensitivity failed: ${error}`);
-			});
+			).then(
+				(value) => {
+					[sensitive, porn] = value;
+				},
+				(error) => {
+					warnings.push(`detectSensitivity failed: ${error}`);
+				},
+			);
 		}
 
 		return {
@@ -160,75 +167,100 @@ export class FileInfoService {
 	}
 
 	@bindThis
-	private async detectSensitivity(source: string, mime: string, sensitiveThreshold: number, sensitiveThresholdForPorn: number, analyzeVideo: boolean): Promise<[sensitive: boolean, porn: boolean]> {
+	private async detectSensitivity(
+		source: string,
+		mime: string,
+		sensitiveThreshold: number,
+		sensitiveThresholdForPorn: number,
+		analyzeVideo: boolean,
+	): Promise<[sensitive: boolean, porn: boolean]> {
 		let sensitive = false;
 		let porn = false;
 
-		function judgePrediction(result: readonly predictionType[]): [sensitive: boolean, porn: boolean] {
+		function judgePrediction(
+			result: readonly predictionType[],
+		): [sensitive: boolean, porn: boolean] {
 			let sensitive = false;
 			let porn = false;
 
-			if ((result.find(x => x.className === 'Sexy')?.probability ?? 0) > sensitiveThreshold) sensitive = true;
-			if ((result.find(x => x.className === 'Hentai')?.probability ?? 0) > sensitiveThreshold) sensitive = true;
-			if ((result.find(x => x.className === 'Porn')?.probability ?? 0) > sensitiveThreshold) sensitive = true;
+			if (
+				(result.find((x) => x.className === "Sexy")?.probability ?? 0) >
+				sensitiveThreshold
+			)
+				sensitive = true;
+			if (
+				(result.find((x) => x.className === "Hentai")?.probability ?? 0) >
+				sensitiveThreshold
+			)
+				sensitive = true;
+			if (
+				(result.find((x) => x.className === "Porn")?.probability ?? 0) >
+				sensitiveThreshold
+			)
+				sensitive = true;
 
-			if ((result.find(x => x.className === 'Porn')?.probability ?? 0) > sensitiveThresholdForPorn) porn = true;
+			if (
+				(result.find((x) => x.className === "Porn")?.probability ?? 0) >
+				sensitiveThresholdForPorn
+			)
+				porn = true;
 
 			return [sensitive, porn];
 		}
 
-		if ([
-			'image/jpeg',
-			'image/png',
-			'image/webp',
-		].includes(mime)) {
+		if (["image/jpeg", "image/png", "image/webp"].includes(mime)) {
 			const result = await this.aiService.detectSensitive(source);
 			if (result) {
 				[sensitive, porn] = judgePrediction(result);
 			}
-		} else if (analyzeVideo && (mime === 'image/apng' || mime.startsWith('video/'))) {
+		} else if (
+			analyzeVideo &&
+			(mime === "image/apng" || mime.startsWith("video/"))
+		) {
 			const [outDir, disposeOutDir] = await createTempDir();
 			try {
 				const command = FFmpeg()
 					.input(source)
 					.inputOptions([
-						'-skip_frame', 'nokey', // 可能ならキーフレームのみを取得してほしいとする（そうなるとは限らない）
-						'-lowres', '3', // 元の画質でデコードする必要はないので 1/8 画質でデコードしてもよいとする（そうなるとは限らない）
+						"-skip_frame",
+						"nokey", // 可能ならキーフレームのみを取得してほしいとする（そうなるとは限らない）
+						"-lowres",
+						"3", // 元の画質でデコードする必要はないので 1/8 画質でデコードしてもよいとする（そうなるとは限らない）
 					])
 					.noAudio()
 					.videoFilters([
 						{
-							filter: 'select', // フレームのフィルタリング
+							filter: "select", // フレームのフィルタリング
 							options: {
-								e: 'eq(pict_type,PICT_TYPE_I)', // I-Frame のみをフィルタする（VP9 とかはデコードしてみないとわからないっぽい）
+								e: "eq(pict_type,PICT_TYPE_I)", // I-Frame のみをフィルタする（VP9 とかはデコードしてみないとわからないっぽい）
 							},
 						},
 						{
-							filter: 'blackframe', // 暗いフレームの検出
+							filter: "blackframe", // 暗いフレームの検出
 							options: {
-								amount: '0', // 暗さに関わらず全てのフレームで測定値を取る
+								amount: "0", // 暗さに関わらず全てのフレームで測定値を取る
 							},
 						},
 						{
-							filter: 'metadata',
+							filter: "metadata",
 							options: {
-								mode: 'select', // フレーム選択モード
-								key: 'lavfi.blackframe.pblack', // フレームにおける暗部の百分率（前のフィルタからのメタデータを参照する）
-								value: '50',
-								function: 'less', // 50% 未満のフレームを選択する（50% 以上暗部があるフレームだと誤検知を招くかもしれないので）
+								mode: "select", // フレーム選択モード
+								key: "lavfi.blackframe.pblack", // フレームにおける暗部の百分率（前のフィルタからのメタデータを参照する）
+								value: "50",
+								function: "less", // 50% 未満のフレームを選択する（50% 以上暗部があるフレームだと誤検知を招くかもしれないので）
 							},
 						},
 						{
-							filter: 'scale',
+							filter: "scale",
 							options: {
 								w: 299,
 								h: 299,
 							},
 						},
 					])
-					.format('image2')
-					.output(join(outDir, '%d.png'))
-					.outputOptions(['-vsync', '0']); // 可変フレームレートにすることで穴埋めをさせない
+					.format("image2")
+					.output(join(outDir, "%d.png"))
+					.outputOptions(["-vsync", "0"]); // 可変フレームレートにすることで穴埋めをさせない
 				const results: ReturnType<typeof judgePrediction>[] = [];
 				let frameIndex = 0;
 				let targetIndex = 0;
@@ -249,8 +281,12 @@ export class FileInfoService {
 						fs.promises.unlink(path);
 					}
 				}
-				sensitive = results.filter(x => x[0]).length >= Math.ceil(results.length * sensitiveThreshold);
-				porn = results.filter(x => x[1]).length >= Math.ceil(results.length * sensitiveThresholdForPorn);
+				sensitive =
+					results.filter((x) => x[0]).length >=
+					Math.ceil(results.length * sensitiveThreshold);
+				porn =
+					results.filter((x) => x[1]).length >=
+					Math.ceil(results.length * sensitiveThresholdForPorn);
 			} finally {
 				disposeOutDir();
 			}
@@ -259,35 +295,41 @@ export class FileInfoService {
 		return [sensitive, porn];
 	}
 
-	private async *asyncIterateFrames(cwd: string, command: FFmpeg.FfmpegCommand): AsyncGenerator<string, void> {
+	private async *asyncIterateFrames(
+		cwd: string,
+		command: FFmpeg.FfmpegCommand,
+	): AsyncGenerator<string, void> {
 		const watcher = new FSWatcher({
 			cwd,
 			disableGlobbing: true,
 		});
 		let finished = false;
-		command.once('end', () => {
+		command.once("end", () => {
 			finished = true;
 			watcher.close();
 		});
 		command.run();
-		for (let i = 1; true; i++) { // eslint-disable-line @typescript-eslint/no-unnecessary-condition
+		for (let i = 1; true; i++) {
+			// eslint-disable-line @typescript-eslint/no-unnecessary-condition
 			const current = `${i}.png`;
 			const next = `${i + 1}.png`;
 			const framePath = join(cwd, current);
 			if (await this.exists(join(cwd, next))) {
 				yield framePath;
-			} else if (!finished) { // eslint-disable-line @typescript-eslint/no-unnecessary-condition
+			} else if (!finished) {
+				// eslint-disable-line @typescript-eslint/no-unnecessary-condition
 				watcher.add(next);
 				await new Promise<void>((resolve, reject) => {
-					watcher.on('add', function onAdd(path) {
-						if (path === next) { // 次フレームの書き出しが始まっているなら、現在フレームの書き出しは終わっている
+					watcher.on("add", function onAdd(path) {
+						if (path === next) {
+							// 次フレームの書き出しが始まっているなら、現在フレームの書き出しは終わっている
 							watcher.unwatch(current);
-							watcher.off('add', onAdd);
+							watcher.off("add", onAdd);
 							resolve();
 						}
 					});
-					command.once('end', resolve); // 全てのフレームを処理し終わったなら、最終フレームである現在フレームの書き出しは終わっている
-					command.once('error', reject);
+					command.once("end", resolve); // 全てのフレームを処理し終わったなら、最終フレームである現在フレームの書き出しは終わっている
+					command.once("error", reject);
 				});
 				yield framePath;
 			} else if (await this.exists(framePath)) {
@@ -300,17 +342,20 @@ export class FileInfoService {
 
 	@bindThis
 	private exists(path: string): Promise<boolean> {
-		return fs.promises.access(path).then(() => true, () => false);
+		return fs.promises.access(path).then(
+			() => true,
+			() => false,
+		);
 	}
 
 	@bindThis
 	public fixMime(mime: string | fileType.MimeType): string {
 		// see https://github.com/misskey-dev/misskey/pull/10686
-		if (mime === 'audio/x-flac') {
-			return 'audio/flac';
+		if (mime === "audio/x-flac") {
+			return "audio/flac";
 		}
-		if (mime === 'audio/vnd.wave') {
-			return 'audio/wav';
+		if (mime === "audio/vnd.wave") {
+			return "audio/wav";
 		}
 
 		return mime;
@@ -324,7 +369,7 @@ export class FileInfoService {
 		mime: string;
 		ext: string | null;
 	}> {
-	// Check 0 byte
+		// Check 0 byte
 		const fileSize = await this.getFileSize(path);
 		if (fileSize === 0) {
 			return TYPE_OCTET_STREAM;
@@ -333,8 +378,8 @@ export class FileInfoService {
 		const type = await fileType.fileTypeFromFile(path);
 
 		if (type) {
-		// XMLはSVGかもしれない
-			if (type.mime === 'application/xml' && await this.checkSvg(path)) {
+			// XMLはSVGかもしれない
+			if (type.mime === "application/xml" && (await this.checkSvg(path))) {
 				return TYPE_SVG;
 			}
 
@@ -381,7 +426,7 @@ export class FileInfoService {
 	 */
 	@bindThis
 	private async calcHash(path: string): Promise<string> {
-		const hash = crypto.createHash('md5').setEncoding('hex');
+		const hash = crypto.createHash("md5").setEncoding("hex");
 		await stream.pipeline(fs.createReadStream(path), hash);
 		return hash.read();
 	}
@@ -391,12 +436,12 @@ export class FileInfoService {
 	 */
 	@bindThis
 	private async detectImageSize(path: string): Promise<{
-	width: number;
-	height: number;
-	wUnits: string;
-	hUnits: string;
-	orientation?: number;
-}> {
+		width: number;
+		height: number;
+		wUnits: string;
+		hUnits: string;
+		orientation?: number;
+	}> {
 		const readable = fs.createReadStream(path);
 		const imageSize = await probeImageSize(readable);
 		readable.destroy();
@@ -412,14 +457,20 @@ export class FileInfoService {
 			sharp(path)
 				.raw()
 				.ensureAlpha()
-				.resize(64, 64, { fit: 'inside' })
+				.resize(64, 64, { fit: "inside" })
 				.toBuffer((err, buffer, info) => {
 					if (err) return reject(err);
 
 					let hash;
 
 					try {
-						hash = encode(new Uint8ClampedArray(buffer), info.width, info.height, 5, 5);
+						hash = encode(
+							new Uint8ClampedArray(buffer),
+							info.width,
+							info.height,
+							5,
+							5,
+						);
 					} catch (e) {
 						return reject(e);
 					}

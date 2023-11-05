@@ -4,22 +4,28 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<XColumn :menu="menu" :column="column" :isStacked="isStacked">
-	<template #header>
-		<i class="ti ti-list"></i><span style="margin-left: 8px;">{{ column.name }}</span>
-	</template>
+	<XColumn :menu="menu" :column="column" :isStacked="isStacked">
+		<template #header>
+			<i class="ti ti-list"></i
+			><span style="margin-left: 8px">{{ column.name }}</span>
+		</template>
 
-	<MkTimeline v-if="column.listId" ref="timeline" src="list" :list="column.listId"/>
-</XColumn>
+		<MkTimeline
+			v-if="column.listId"
+			ref="timeline"
+			src="list"
+			:list="column.listId"
+		/>
+	</XColumn>
 </template>
 
 <script lang="ts" setup>
-import { } from 'vue';
-import XColumn from './column.vue';
-import { updateColumn, Column } from './deck-store';
-import MkTimeline from '@/components/MkTimeline.vue';
-import * as os from '@/os.js';
-import { i18n } from '@/i18n.js';
+import {} from "vue";
+import XColumn from "./column.vue";
+import { updateColumn, Column } from "./deck-store";
+import MkTimeline from "@/components/mk_components/MkTimeline.vue";
+import * as os from "@/os.js";
+import { i18n } from "@/i18n.js";
 
 const props = defineProps<{
 	column: Column;
@@ -33,11 +39,12 @@ if (props.column.listId == null) {
 }
 
 async function setList() {
-	const lists = await os.api('users/lists/list');
+	const lists = await os.api("users/lists/list");
 	const { canceled, result: list } = await os.select({
 		title: i18n.ts.selectList,
-		items: lists.map(x => ({
-			value: x, text: x.name,
+		items: lists.map((x) => ({
+			value: x,
+			text: x.name,
 		})),
 		default: props.column.listId,
 	});
@@ -48,17 +55,17 @@ async function setList() {
 }
 
 function editList() {
-	os.pageWindow('my/lists/' + props.column.listId);
+	os.pageWindow("my/lists/" + props.column.listId);
 }
 
 const menu = [
 	{
-		icon: 'ti ti-pencil',
+		icon: "ti ti-pencil",
 		text: i18n.ts.selectList,
 		action: setList,
 	},
 	{
-		icon: 'ti ti-settings',
+		icon: "ti ti-settings",
 		text: i18n.ts.editList,
 		action: editList,
 	},

@@ -4,8 +4,8 @@
  */
 
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { StoryObj } from '@storybook/vue3';
-import MkCondensedLine from './MkCondensedLine.vue';
+import { StoryObj } from "@storybook/vue3";
+import MkCondensedLine from "./MkCondensedLine.vue";
 export const Default = {
 	render(args) {
 		return {
@@ -24,14 +24,14 @@ export const Default = {
 					};
 				},
 			},
-			template: '<MkCondensedLine>{{ props.text }}</MkCondensedLine>',
+			template: "<MkCondensedLine>{{ props.text }}</MkCondensedLine>",
 		};
 	},
 	args: {
-		text: 'This is a condensed line.',
+		text: "This is a condensed line.",
 	},
 	parameters: {
-		layout: 'centered',
+		layout: "centered",
 	},
 } satisfies StoryObj<typeof MkCondensedLine>;
 export const ContainerIs100px = {

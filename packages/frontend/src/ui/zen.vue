@@ -4,36 +4,46 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div :class="showBottom ? $style.rootWithBottom : $style.root">
-	<div style="container-type: inline-size;">
-		<RouterView/>
+	<div :class="showBottom ? $style.rootWithBottom : $style.root">
+		<div style="container-type: inline-size">
+			<RouterView />
+		</div>
+
+		<XCommon />
 	</div>
 
-	<XCommon/>
-</div>
-
-<!--
+	<!--
 	デッキUIが設定されている場合はデッキUIに戻れるようにする (ただし?zenが明示された場合は表示しない)
 	See https://github.com/misskey-dev/misskey/issues/10905
 -->
-<div v-if="showBottom" :class="$style.bottom">
-	<button v-tooltip="i18n.ts.goToMisskey" :class="['_button', '_shadow', $style.button]" @click="goToMisskey"><i class="ti ti-home"></i></button>
-</div>
+	<div v-if="showBottom" :class="$style.bottom">
+		<button
+			v-tooltip="i18n.ts.goToMisskey"
+			:class="['_button', '_shadow', $style.button]"
+			@click="goToMisskey"
+		>
+			<i class="ti ti-home"></i>
+		</button>
+	</div>
 </template>
 
 <script lang="ts" setup>
-import { provide, ComputedRef } from 'vue';
-import XCommon from './_common_/common.vue';
-import { mainRouter } from '@/router.js';
-import { PageMetadata, provideMetadataReceiver } from '@/scripts/page-metadata.js';
-import { instanceName, ui } from '@/config.js';
-import { i18n } from '@/i18n.js';
+import { provide, ComputedRef } from "vue";
+import XCommon from "./_common_/common.vue";
+import { mainRouter } from "@/router.js";
+import {
+	PageMetadata,
+	provideMetadataReceiver,
+} from "@/scripts/page-metadata.js";
+import { instanceName, ui } from "@/config.js";
+import { i18n } from "@/i18n.js";
 
 let pageMetadata = $ref<null | ComputedRef<PageMetadata>>();
 
-const showBottom = !(new URLSearchParams(location.search)).has('zen') && ui === 'deck';
+const showBottom =
+	!new URLSearchParams(location.search).has("zen") && ui === "deck";
 
-provide('router', mainRouter);
+provide("router", mainRouter);
 provideMetadataReceiver((info) => {
 	pageMetadata = info;
 	if (pageMetadata.value) {
@@ -42,10 +52,10 @@ provideMetadataReceiver((info) => {
 });
 
 function goToMisskey() {
-	window.location.href = '/';
+	window.location.href = "/";
 }
 
-document.documentElement.style.overflowY = 'scroll';
+document.documentElement.style.overflowY = "scroll";
 </script>
 
 <style lang="scss" module>
@@ -55,7 +65,9 @@ document.documentElement.style.overflowY = 'scroll';
 }
 
 .rootWithBottom {
-	min-height: calc(100dvh - (60px + (var(--margin) * 2) + env(safe-area-inset-bottom, 0px)));
+	min-height: calc(
+		100dvh - (60px + (var(--margin) * 2) + env(safe-area-inset-bottom, 0px))
+	);
 	box-sizing: border-box;
 }
 

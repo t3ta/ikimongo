@@ -4,40 +4,52 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div class="mkw-unixClock _monospace" :class="{ _panel: !widgetProps.transparent }" :style="{ fontSize: `${widgetProps.fontSize}em` }">
-	<div v-if="widgetProps.showLabel" class="label">UNIX Epoch</div>
-	<div class="time">
-		<span v-text="ss"></span>
-		<span v-if="widgetProps.showMs" class="colon" :class="{ showColon }">:</span>
-		<span v-if="widgetProps.showMs" v-text="ms"></span>
+	<div
+		class="mkw-unixClock _monospace"
+		:class="{ _panel: !widgetProps.transparent }"
+		:style="{ fontSize: `${widgetProps.fontSize}em` }"
+	>
+		<div v-if="widgetProps.showLabel" class="label">UNIX Epoch</div>
+		<div class="time">
+			<span v-text="ss"></span>
+			<span v-if="widgetProps.showMs" class="colon" :class="{ showColon }"
+				>:</span
+			>
+			<span v-if="widgetProps.showMs" v-text="ms"></span>
+		</div>
+		<div v-if="widgetProps.showLabel" class="label">UTC</div>
 	</div>
-	<div v-if="widgetProps.showLabel" class="label">UTC</div>
-</div>
 </template>
 
 <script lang="ts" setup>
-import { onUnmounted, ref, watch } from 'vue';
-import { useWidgetPropsManager, Widget, WidgetComponentEmits, WidgetComponentExpose, WidgetComponentProps } from './widget.js';
-import { GetFormResultType } from '@/scripts/form.js';
+import { onUnmounted, ref, watch } from "vue";
+import {
+	useWidgetPropsManager,
+	Widget,
+	WidgetComponentEmits,
+	WidgetComponentExpose,
+	WidgetComponentProps,
+} from "./widget.js";
+import { GetFormResultType } from "@/scripts/form.js";
 
-const name = 'unixClock';
+const name = "unixClock";
 
 const widgetPropsDef = {
 	transparent: {
-		type: 'boolean' as const,
+		type: "boolean" as const,
 		default: false,
 	},
 	fontSize: {
-		type: 'number' as const,
+		type: "number" as const,
 		default: 1.5,
 		step: 0.1,
 	},
 	showMs: {
-		type: 'boolean' as const,
+		type: "boolean" as const,
 		default: true,
 	},
 	showLabel: {
-		type: 'boolean' as const,
+		type: "boolean" as const,
 		default: true,
 	},
 };
@@ -47,15 +59,16 @@ type WidgetProps = GetFormResultType<typeof widgetPropsDef>;
 const props = defineProps<WidgetComponentProps<WidgetProps>>();
 const emit = defineEmits<WidgetComponentEmits<WidgetProps>>();
 
-const { widgetProps, configure } = useWidgetPropsManager(name,
+const { widgetProps, configure } = useWidgetPropsManager(
+	name,
 	widgetPropsDef,
 	props,
 	emit,
 );
 
 let intervalId;
-const ss = ref('');
-const ms = ref('');
+const ss = ref("");
+const ms = ref("");
 const showColon = ref(false);
 let prevSec: string | null = null;
 
@@ -70,17 +83,23 @@ watch(showColon, (v) => {
 const tick = () => {
 	const now = new Date();
 	ss.value = Math.floor(now.getTime() / 1000).toString();
-	ms.value = Math.floor(now.getTime() % 1000 / 10).toString().padStart(2, '0');
+	ms.value = Math.floor((now.getTime() % 1000) / 10)
+		.toString()
+		.padStart(2, "0");
 	if (ss.value !== prevSec) showColon.value = true;
 	prevSec = ss.value;
 };
 
 tick();
 
-watch(() => widgetProps.showMs, () => {
-	if (intervalId) window.clearInterval(intervalId);
-	intervalId = window.setInterval(tick, widgetProps.showMs ? 10 : 1000);
-}, { immediate: true });
+watch(
+	() => widgetProps.showMs,
+	() => {
+		if (intervalId) window.clearInterval(intervalId);
+		intervalId = window.setInterval(tick, widgetProps.showMs ? 10 : 1000);
+	},
+	{ immediate: true },
+);
 
 onUnmounted(() => {
 	window.clearInterval(intervalId);

@@ -3,20 +3,24 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import * as fs from 'node:fs';
-import { Inject, Injectable } from '@nestjs/common';
-import { MoreThan } from 'typeorm';
-import { format as dateFormat } from 'date-fns';
-import { DI } from '@/di-symbols.js';
-import type { UsersRepository, BlockingsRepository, MiBlocking } from '@/models/_.js';
-import type Logger from '@/logger.js';
-import { DriveService } from '@/core/DriveService.js';
-import { createTemp } from '@/misc/create-temp.js';
-import { UtilityService } from '@/core/UtilityService.js';
-import { bindThis } from '@/decorators.js';
-import { QueueLoggerService } from '../QueueLoggerService.js';
-import type * as Bull from 'bullmq';
-import type { DbJobDataWithUser } from '../types.js';
+import * as fs from "node:fs";
+import { Inject, Injectable } from "@nestjs/common";
+import { MoreThan } from "typeorm";
+import { format as dateFormat } from "date-fns";
+import { DI } from "@/di-symbols.js";
+import type {
+	UsersRepository,
+	BlockingsRepository,
+	MiBlocking,
+} from "@/models/_.js";
+import type Logger from "@/logger.js";
+import { DriveService } from "@/core/DriveService.js";
+import { createTemp } from "@/misc/create-temp.js";
+import { UtilityService } from "@/core/UtilityService.js";
+import { bindThis } from "@/decorators.js";
+import { QueueLoggerService } from "../QueueLoggerService.js";
+import type * as Bull from "bullmq";
+import type { DbJobDataWithUser } from "../types.js";
 
 @Injectable()
 export class ExportBlockingProcessorService {
@@ -33,7 +37,8 @@ export class ExportBlockingProcessorService {
 		private driveService: DriveService,
 		private queueLoggerService: QueueLoggerService,
 	) {
-		this.logger = this.queueLoggerService.logger.createSubLogger('export-blocking');
+		this.logger =
+			this.queueLoggerService.logger.createSubLogger("export-blocking");
 	}
 
 	@bindThis
@@ -51,10 +56,10 @@ export class ExportBlockingProcessorService {
 		this.logger.info(`Temp file is ${path}`);
 
 		try {
-			const stream = fs.createWriteStream(path, { flags: 'a' });
+			const stream = fs.createWriteStream(path, { flags: "a" });
 
 			let exportedCount = 0;
-			let cursor: MiBlocking['id'] | null = null;
+			let cursor: MiBlocking["id"] | null = null;
 
 			while (true) {
 				const blockings = await this.blockingsRepository.find({
@@ -76,14 +81,20 @@ export class ExportBlockingProcessorService {
 				cursor = blockings.at(-1)?.id ?? null;
 
 				for (const block of blockings) {
-					const u = await this.usersRepository.findOneBy({ id: block.blockeeId });
+					const u = await this.usersRepository.findOneBy({
+						id: block.blockeeId,
+					});
 					if (u == null) {
-						exportedCount++; continue;
+						exportedCount++;
+						continue;
 					}
 
-					const content = this.utilityService.getFullApAccount(u.username, u.host);
+					const content = this.utilityService.getFullApAccount(
+						u.username,
+						u.host,
+					);
 					await new Promise<void>((res, rej) => {
-						stream.write(content + '\n', err => {
+						stream.write(content + "\n", (err) => {
 							if (err) {
 								this.logger.error(err);
 								rej(err);
@@ -105,8 +116,15 @@ export class ExportBlockingProcessorService {
 			stream.end();
 			this.logger.succ(`Exported to: ${path}`);
 
-			const fileName = 'blocking-' + dateFormat(new Date(), 'yyyy-MM-dd-HH-mm-ss') + '.csv';
-			const driveFile = await this.driveService.addFile({ user, path, name: fileName, force: true, ext: 'csv' });
+			const fileName =
+				"blocking-" + dateFormat(new Date(), "yyyy-MM-dd-HH-mm-ss") + ".csv";
+			const driveFile = await this.driveService.addFile({
+				user,
+				path,
+				name: fileName,
+				force: true,
+				ext: "csv",
+			});
 
 			this.logger.succ(`Exported to: ${driveFile.id}`);
 		} finally {

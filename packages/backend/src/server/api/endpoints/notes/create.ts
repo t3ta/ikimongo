@@ -3,184 +3,210 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import ms from 'ms';
-import { In } from 'typeorm';
-import { Inject, Injectable } from '@nestjs/common';
-import type { MiUser } from '@/models/user/User.js';
-import type { UsersRepository, NotesRepository, BlockingsRepository, DriveFilesRepository, ChannelsRepository } from '@/models/_.js';
-import type { MiDriveFile } from '@/models/drive/DriveFile.js';
-import type { MiNote } from '@/models/note/Note.js';
-import type { MiChannel } from '@/models/channel/Channel.js';
-import { MAX_NOTE_TEXT_LENGTH } from '@/const.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
-import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
-import { NoteCreateService } from '@/core/NoteCreateService.js';
-import { DI } from '@/di-symbols.js';
-import { ApiError } from '../../error.js';
+import ms from "ms";
+import { In } from "typeorm";
+import { Inject, Injectable } from "@nestjs/common";
+import type { MiUser } from "@/models/user/User.js";
+import type {
+	UsersRepository,
+	NotesRepository,
+	BlockingsRepository,
+	DriveFilesRepository,
+	ChannelsRepository,
+} from "@/models/_.js";
+import type { MiDriveFile } from "@/models/drive/DriveFile.js";
+import type { MiNote } from "@/models/note/Note.js";
+import type { MiChannel } from "@/models/channel/Channel.js";
+import { MAX_NOTE_TEXT_LENGTH } from "@/const.js";
+import { Endpoint } from "@/server/api/endpoint-base.js";
+import { NoteEntityService } from "@/core/entities/NoteEntityService.js";
+import { NoteCreateService } from "@/core/NoteCreateService.js";
+import { DI } from "@/di-symbols.js";
+import { ApiError } from "../../error.js";
 
 export const meta = {
-	tags: ['notes'],
+	tags: ["notes"],
 
 	requireCredential: true,
 
 	prohibitMoved: true,
 
 	limit: {
-		duration: ms('1hour'),
+		duration: ms("1hour"),
 		max: 300,
 	},
 
-	kind: 'write:notes',
+	kind: "write:notes",
 
 	res: {
-		type: 'object',
-		optional: false, nullable: false,
+		type: "object",
+		optional: false,
+		nullable: false,
 		properties: {
 			createdNote: {
-				type: 'object',
-				optional: false, nullable: false,
-				ref: 'Note',
+				type: "object",
+				optional: false,
+				nullable: false,
+				ref: "Note",
 			},
 		},
 	},
 
 	errors: {
 		noSuchRenoteTarget: {
-			message: 'No such renote target.',
-			code: 'NO_SUCH_RENOTE_TARGET',
-			id: 'b5c90186-4ab0-49c8-9bba-a1f76c282ba4',
+			message: "No such renote target.",
+			code: "NO_SUCH_RENOTE_TARGET",
+			id: "b5c90186-4ab0-49c8-9bba-a1f76c282ba4",
 		},
 
 		cannotReRenote: {
-			message: 'You can not Renote a pure Renote.',
-			code: 'CANNOT_RENOTE_TO_A_PURE_RENOTE',
-			id: 'fd4cc33e-2a37-48dd-99cc-9b806eb2031a',
+			message: "You can not Renote a pure Renote.",
+			code: "CANNOT_RENOTE_TO_A_PURE_RENOTE",
+			id: "fd4cc33e-2a37-48dd-99cc-9b806eb2031a",
 		},
 
 		noSuchReplyTarget: {
-			message: 'No such reply target.',
-			code: 'NO_SUCH_REPLY_TARGET',
-			id: '749ee0f6-d3da-459a-bf02-282e2da4292c',
+			message: "No such reply target.",
+			code: "NO_SUCH_REPLY_TARGET",
+			id: "749ee0f6-d3da-459a-bf02-282e2da4292c",
 		},
 
 		cannotReplyToPureRenote: {
-			message: 'You can not reply to a pure Renote.',
-			code: 'CANNOT_REPLY_TO_A_PURE_RENOTE',
-			id: '3ac74a84-8fd5-4bb0-870f-01804f82ce15',
+			message: "You can not reply to a pure Renote.",
+			code: "CANNOT_REPLY_TO_A_PURE_RENOTE",
+			id: "3ac74a84-8fd5-4bb0-870f-01804f82ce15",
 		},
 
 		cannotCreateAlreadyExpiredPoll: {
-			message: 'Poll is already expired.',
-			code: 'CANNOT_CREATE_ALREADY_EXPIRED_POLL',
-			id: '04da457d-b083-4055-9082-955525eda5a5',
+			message: "Poll is already expired.",
+			code: "CANNOT_CREATE_ALREADY_EXPIRED_POLL",
+			id: "04da457d-b083-4055-9082-955525eda5a5",
 		},
 
 		noSuchChannel: {
-			message: 'No such channel.',
-			code: 'NO_SUCH_CHANNEL',
-			id: 'b1653923-5453-4edc-b786-7c4f39bb0bbb',
+			message: "No such channel.",
+			code: "NO_SUCH_CHANNEL",
+			id: "b1653923-5453-4edc-b786-7c4f39bb0bbb",
 		},
 
 		youHaveBeenBlocked: {
-			message: 'You have been blocked by this user.',
-			code: 'YOU_HAVE_BEEN_BLOCKED',
-			id: 'b390d7e1-8a5e-46ed-b625-06271cafd3d3',
+			message: "You have been blocked by this user.",
+			code: "YOU_HAVE_BEEN_BLOCKED",
+			id: "b390d7e1-8a5e-46ed-b625-06271cafd3d3",
 		},
 
 		noSuchFile: {
-			message: 'Some files are not found.',
-			code: 'NO_SUCH_FILE',
-			id: 'b6992544-63e7-67f0-fa7f-32444b1b5306',
+			message: "Some files are not found.",
+			code: "NO_SUCH_FILE",
+			id: "b6992544-63e7-67f0-fa7f-32444b1b5306",
 		},
 	},
 } as const;
 
 export const paramDef = {
-	type: 'object',
+	type: "object",
 	properties: {
-		visibility: { type: 'string', enum: ['public', 'home', 'followers', 'specified'], default: 'public' },
+		visibility: {
+			type: "string",
+			enum: ["public", "home", "followers", "specified"],
+			default: "public",
+		},
 		visibleUserIds: {
-			type: 'array', uniqueItems: true, items: {
-				type: 'string', format: 'misskey:id',
+			type: "array",
+			uniqueItems: true,
+			items: {
+				type: "string",
+				format: "misskey:id",
 			},
 		},
-		cw: { type: 'string', nullable: true, maxLength: 100 },
-		localOnly: { type: 'boolean', default: false },
-		reactionAcceptance: { type: 'string', nullable: true, enum: [null, 'likeOnly', 'likeOnlyForRemote', 'nonSensitiveOnly', 'nonSensitiveOnlyForLocalLikeOnlyForRemote'], default: null },
-		noExtractMentions: { type: 'boolean', default: false },
-		noExtractHashtags: { type: 'boolean', default: false },
-		noExtractEmojis: { type: 'boolean', default: false },
-		replyId: { type: 'string', format: 'misskey:id', nullable: true },
-		renoteId: { type: 'string', format: 'misskey:id', nullable: true },
-		channelId: { type: 'string', format: 'misskey:id', nullable: true },
+		cw: { type: "string", nullable: true, maxLength: 100 },
+		localOnly: { type: "boolean", default: false },
+		reactionAcceptance: {
+			type: "string",
+			nullable: true,
+			enum: [
+				null,
+				"likeOnly",
+				"likeOnlyForRemote",
+				"nonSensitiveOnly",
+				"nonSensitiveOnlyForLocalLikeOnlyForRemote",
+			],
+			default: null,
+		},
+		noExtractMentions: { type: "boolean", default: false },
+		noExtractHashtags: { type: "boolean", default: false },
+		noExtractEmojis: { type: "boolean", default: false },
+		replyId: { type: "string", format: "misskey:id", nullable: true },
+		renoteId: { type: "string", format: "misskey:id", nullable: true },
+		channelId: { type: "string", format: "misskey:id", nullable: true },
 
 		// anyOf内にバリデーションを書いても最初の一つしかチェックされない
 		// See https://github.com/misskey-dev/misskey/pull/10082
 		text: {
-			type: 'string',
+			type: "string",
 			minLength: 1,
 			maxLength: MAX_NOTE_TEXT_LENGTH,
 			nullable: true,
 		},
 		fileIds: {
-			type: 'array',
+			type: "array",
 			uniqueItems: true,
 			minItems: 1,
 			maxItems: 16,
-			items: { type: 'string', format: 'misskey:id' },
+			items: { type: "string", format: "misskey:id" },
 		},
 		mediaIds: {
-			type: 'array',
+			type: "array",
 			uniqueItems: true,
 			minItems: 1,
 			maxItems: 16,
-			items: { type: 'string', format: 'misskey:id' },
+			items: { type: "string", format: "misskey:id" },
 		},
 		poll: {
-			type: 'object',
+			type: "object",
 			nullable: true,
 			properties: {
 				choices: {
-					type: 'array',
+					type: "array",
 					uniqueItems: true,
 					minItems: 2,
 					maxItems: 10,
-					items: { type: 'string', minLength: 1, maxLength: 50 },
+					items: { type: "string", minLength: 1, maxLength: 50 },
 				},
-				multiple: { type: 'boolean' },
-				expiresAt: { type: 'integer', nullable: true },
-				expiredAfter: { type: 'integer', nullable: true, minimum: 1 },
+				multiple: { type: "boolean" },
+				expiresAt: { type: "integer", nullable: true },
+				expiredAfter: { type: "integer", nullable: true, minimum: 1 },
 			},
-			required: ['choices'],
+			required: ["choices"],
 		},
 		observation: {
-			type: 'object',
+			type: "object",
 			nullable: true,
 			properties: {
 				location: {
-					type: 'object',
-					nullable: true,
+					type: "object",
 					properties: {
-						name: { type: 'string', nullable: true },
-						location: { type: 'string', nullable: true },
+						x: { type: "number" },
+						y: { type: "number" },
 					},
 				},
-				date: { type: 'string', nullable: true },
+				date: { type: "string" },
 			},
 		},
 	},
 	// (re)note with text, files and poll are optional
 	anyOf: [
-		{ required: ['text'] },
-		{ required: ['renoteId'] },
-		{ required: ['fileIds'] },
-		{ required: ['mediaIds'] },
-		{ required: ['poll'] },
+		{ required: ["text"] },
+		{ required: ["renoteId"] },
+		{ required: ["fileIds"] },
+		{ required: ["mediaIds"] },
+		{ required: ["poll"] },
 	],
 } as const;
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-disable-line import/no-default-export
+export default class extends Endpoint<typeof meta, typeof paramDef> {
+	// eslint-disable-line import/no-default-export
 	constructor(
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
@@ -211,8 +237,9 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			let files: MiDriveFile[] = [];
 			const fileIds = ps.fileIds ?? ps.mediaIds ?? null;
 			if (fileIds != null) {
-				files = await this.driveFilesRepository.createQueryBuilder('file')
-					.where('file.userId = :userId AND file.id IN (:...fileIds)', {
+				files = await this.driveFilesRepository
+					.createQueryBuilder("file")
+					.where("file.userId = :userId AND file.id IN (:...fileIds)", {
 						userId: me.id,
 						fileIds,
 					})
@@ -232,7 +259,12 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 				if (renote == null) {
 					throw new ApiError(meta.errors.noSuchRenoteTarget);
-				} else if (renote.renoteId && !renote.text && !renote.fileIds && !renote.hasPoll) {
+				} else if (
+					renote.renoteId &&
+					!renote.text &&
+					!renote.fileIds &&
+					!renote.hasPoll
+				) {
 					throw new ApiError(meta.errors.cannotReRenote);
 				}
 
@@ -257,7 +289,12 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 				if (reply == null) {
 					throw new ApiError(meta.errors.noSuchReplyTarget);
-				} else if (reply.renoteId && !reply.text && !reply.fileIds && !reply.hasPoll) {
+				} else if (
+					reply.renoteId &&
+					!reply.text &&
+					!reply.fileIds &&
+					!reply.hasPoll
+				) {
 					throw new ApiError(meta.errors.cannotReplyToPureRenote);
 				}
 
@@ -276,18 +313,21 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			}
 
 			if (ps.poll) {
-				if (typeof ps.poll.expiresAt === 'number') {
+				if (typeof ps.poll.expiresAt === "number") {
 					if (ps.poll.expiresAt < Date.now()) {
 						throw new ApiError(meta.errors.cannotCreateAlreadyExpiredPoll);
 					}
-				} else if (typeof ps.poll.expiredAfter === 'number') {
+				} else if (typeof ps.poll.expiredAfter === "number") {
 					ps.poll.expiresAt = Date.now() + ps.poll.expiredAfter;
 				}
 			}
 
 			let channel: MiChannel | null = null;
 			if (ps.channelId != null) {
-				channel = await this.channelsRepository.findOneBy({ id: ps.channelId, isArchived: false });
+				channel = await this.channelsRepository.findOneBy({
+					id: ps.channelId,
+					isArchived: false,
+				});
 
 				if (channel == null) {
 					throw new ApiError(meta.errors.noSuchChannel);
@@ -298,22 +338,30 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			const note = await this.noteCreateService.create(me, {
 				createdAt: new Date(),
 				files: files,
-				poll: ps.poll ? {
-					choices: ps.poll.choices,
-					multiple: ps.poll.multiple ?? false,
-					expiresAt: ps.poll.expiresAt ? new Date(ps.poll.expiresAt) : null,
-				} : undefined,
-				observation: ps.observation ? {
-					date: ps.observation.date ? new Date(ps.observation.date) : null,
-					locationName: ps.observation.location?.name ?? null,
-					location: ps.observation.location?.location ?? null,
-				} : undefined,
-				identification: ps.identification ? {
-					japaneseName: ps.identification.japaneseName,
-					scientificName: ps.identification.scientificName,
-					taxonomicRank: ps.identification.taxonomicRank,
-					taxon: ps.identification.taxon,
-				} : undefined,
+				poll: ps.poll
+					? {
+							choices: ps.poll.choices,
+							multiple: ps.poll.multiple ?? false,
+							expiresAt: ps.poll.expiresAt ? new Date(ps.poll.expiresAt) : null,
+					  }
+					: undefined,
+				observation: ps.observation
+					? {
+							date: new Date(ps.observation.date!),
+							location: {
+								x: ps.observation.location!.x!,
+								y: ps.observation.location!.y!,
+							},
+					  }
+					: undefined,
+				identification: ps.identification
+					? {
+							japaneseName: ps.identification.japaneseName,
+							scientificName: ps.identification.scientificName,
+							taxonomicRank: ps.identification.taxonomicRank,
+							taxon: ps.identification.taxon,
+					  }
+					: undefined,
 				text: ps.text ?? undefined,
 				reply,
 				renote,

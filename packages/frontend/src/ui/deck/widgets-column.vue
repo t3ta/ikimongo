@@ -4,22 +4,44 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<XColumn :menu="menu" :naked="true" :column="column" :isStacked="isStacked">
-	<template #header><i class="ti ti-apps" style="margin-right: 8px;"></i>{{ column.name }}</template>
+	<XColumn :menu="menu" :naked="true" :column="column" :isStacked="isStacked">
+		<template #header
+			><i class="ti ti-apps" style="margin-right: 8px"></i
+			>{{ column.name }}</template
+		>
 
-	<div :class="$style.root">
-		<div v-if="!(column.widgets && column.widgets.length > 0) && !edit" :class="$style.intro">{{ i18n.ts._deck.widgetsIntroduction }}</div>
-		<XWidgets :edit="edit" :widgets="column.widgets ?? []" @addWidget="addWidget" @removeWidget="removeWidget" @updateWidget="updateWidget" @updateWidgets="updateWidgets" @exit="edit = false"/>
-	</div>
-</XColumn>
+		<div :class="$style.root">
+			<div
+				v-if="!(column.widgets && column.widgets.length > 0) && !edit"
+				:class="$style.intro"
+			>
+				{{ i18n.ts._deck.widgetsIntroduction }}
+			</div>
+			<XWidgets
+				:edit="edit"
+				:widgets="column.widgets ?? []"
+				@addWidget="addWidget"
+				@removeWidget="removeWidget"
+				@updateWidget="updateWidget"
+				@updateWidgets="updateWidgets"
+				@exit="edit = false"
+			/>
+		</div>
+	</XColumn>
 </template>
 
 <script lang="ts" setup>
-import { } from 'vue';
-import XColumn from './column.vue';
-import { addColumnWidget, Column, removeColumnWidget, setColumnWidgets, updateColumnWidget } from './deck-store.js';
-import XWidgets from '@/components/MkWidgets.vue';
-import { i18n } from '@/i18n.js';
+import {} from "vue";
+import XColumn from "./column.vue";
+import {
+	addColumnWidget,
+	Column,
+	removeColumnWidget,
+	setColumnWidgets,
+	updateColumnWidget,
+} from "./deck-store.js";
+import XWidgets from "@/components/mk_components/MkWidgets.vue";
+import { i18n } from "@/i18n.js";
 
 const props = defineProps<{
 	column: Column;
@@ -48,11 +70,13 @@ function func() {
 	edit = !edit;
 }
 
-const menu = [{
-	icon: 'ti ti-pencil',
-	text: i18n.ts.editWidgets,
-	action: func,
-}];
+const menu = [
+	{
+		icon: "ti ti-pencil",
+		text: i18n.ts.editWidgets,
+		action: func,
+	},
+];
 </script>
 
 <style lang="scss" module>

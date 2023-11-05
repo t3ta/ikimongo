@@ -3,16 +3,21 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Directive } from 'vue';
+import { Directive } from "vue";
 
 export default {
-	mounted(src, binding, vn) {
+	mounted(src) {
 		const getBgColor = (el: HTMLElement) => {
 			const style = window.getComputedStyle(el);
-			if (style.backgroundColor && !['rgba(0, 0, 0, 0)', 'rgba(0,0,0,0)', 'transparent'].includes(style.backgroundColor)) {
+			if (
+				style.backgroundColor &&
+				!["rgba(0, 0, 0, 0)", "rgba(0,0,0,0)", "transparent"].includes(
+					style.backgroundColor,
+				)
+			) {
 				return style.backgroundColor;
 			} else {
-				return el.parentElement ? getBgColor(el.parentElement) : 'transparent';
+				return el.parentElement ? getBgColor(el.parentElement) : "transparent";
 			}
 		};
 
@@ -21,7 +26,7 @@ export default {
 		const myBg = window.getComputedStyle(src).backgroundColor;
 
 		if (parentBg === myBg) {
-			src.style.borderColor = 'var(--divider)';
+			src.style.borderColor = "var(--divider)";
 		} else {
 			src.style.borderColor = myBg;
 		}

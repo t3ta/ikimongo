@@ -4,43 +4,57 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkContainer :showHeader="widgetProps.showHeader" :naked="widgetProps.transparent" :class="$style.root" :data-transparent="widgetProps.transparent ? true : null" data-cy-mkw-photos class="mkw-photos">
-	<template #icon><i class="ti ti-camera"></i></template>
-	<template #header>{{ i18n.ts._widgets.photos }}</template>
+	<MkContainer
+		:showHeader="widgetProps.showHeader"
+		:naked="widgetProps.transparent"
+		:class="$style.root"
+		:data-transparent="widgetProps.transparent ? true : null"
+		data-cy-mkw-photos
+		class="mkw-photos"
+	>
+		<template #icon><i class="ti ti-camera"></i></template>
+		<template #header>{{ i18n.ts._widgets.photos }}</template>
 
-	<div class="">
-		<MkLoading v-if="fetching"/>
-		<div v-else :class="$style.stream">
-			<div
-				v-for="(image, i) in images" :key="i"
-				:class="$style.img"
-				:style="`background-image: url(${thumbnail(image)})`"
-			></div>
+		<div class="">
+			<MkLoading v-if="fetching" />
+			<div v-else :class="$style.stream">
+				<div
+					v-for="(image, i) in images"
+					:key="i"
+					:class="$style.img"
+					:style="`background-image: url(${thumbnail(image)})`"
+				></div>
+			</div>
 		</div>
-	</div>
-</MkContainer>
+	</MkContainer>
 </template>
 
 <script lang="ts" setup>
-import { onUnmounted, ref } from 'vue';
-import { useWidgetPropsManager, Widget, WidgetComponentEmits, WidgetComponentExpose, WidgetComponentProps } from './widget.js';
-import { GetFormResultType } from '@/scripts/form.js';
-import { useStream } from '@/stream.js';
-import { getStaticImageUrl } from '@/scripts/media-proxy.js';
-import * as os from '@/os.js';
-import MkContainer from '@/components/MkContainer.vue';
-import { defaultStore } from '@/store.js';
-import { i18n } from '@/i18n.js';
+import { onUnmounted, ref } from "vue";
+import {
+	useWidgetPropsManager,
+	Widget,
+	WidgetComponentEmits,
+	WidgetComponentExpose,
+	WidgetComponentProps,
+} from "./widget.js";
+import { GetFormResultType } from "@/scripts/form.js";
+import { useStream } from "@/stream.js";
+import { getStaticImageUrl } from "@/scripts/media-proxy.js";
+import * as os from "@/os.js";
+import MkContainer from "@/components/mk_components/MkContainer.vue";
+import { defaultStore } from "@/store.js";
+import { i18n } from "@/i18n.js";
 
-const name = 'photos';
+const name = "photos";
 
 const widgetPropsDef = {
 	showHeader: {
-		type: 'boolean' as const,
+		type: "boolean" as const,
 		default: true,
 	},
 	transparent: {
-		type: 'boolean' as const,
+		type: "boolean" as const,
 		default: false,
 	},
 };
@@ -50,13 +64,14 @@ type WidgetProps = GetFormResultType<typeof widgetPropsDef>;
 const props = defineProps<WidgetComponentProps<WidgetProps>>();
 const emit = defineEmits<WidgetComponentEmits<WidgetProps>>();
 
-const { widgetProps, configure } = useWidgetPropsManager(name,
+const { widgetProps, configure } = useWidgetPropsManager(
+	name,
 	widgetPropsDef,
 	props,
 	emit,
 );
 
-const connection = useStream().useChannel('main');
+const connection = useStream().useChannel("main");
 const images = ref([]);
 const fetching = ref(true);
 
@@ -73,15 +88,15 @@ const thumbnail = (image: any): string => {
 		: image.thumbnailUrl;
 };
 
-os.api('drive/stream', {
-	type: 'image/*',
+os.api("drive/stream", {
+	type: "image/*",
 	limit: 9,
-}).then(res => {
+}).then((res) => {
 	images.value = res;
 	fetching.value = false;
 });
 
-connection.on('driveFileCreated', onDriveFileCreated);
+connection.on("driveFileCreated", onDriveFileCreated);
 onUnmounted(() => {
 	connection.dispose();
 });

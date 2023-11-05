@@ -3,35 +3,35 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import { IsNull, Not } from 'typeorm';
-import { DI } from '@/di-symbols.js';
-import type { FollowingsRepository } from '@/models/_.js';
-import type { MiLocalUser, MiRemoteUser, MiUser } from '@/models/user/User.js';
-import { QueueService } from '@/core/QueueService.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { bindThis } from '@/decorators.js';
-import type { IActivity } from '@/core/activitypub/type.js';
-import { ThinUser } from '@/queue/types.js';
+import { Inject, Injectable } from "@nestjs/common";
+import { IsNull, Not } from "typeorm";
+import { DI } from "@/di-symbols.js";
+import type { FollowingsRepository } from "@/models/_.js";
+import type { MiLocalUser, MiRemoteUser, MiUser } from "@/models/user/User.js";
+import { QueueService } from "@/core/QueueService.js";
+import { UserEntityService } from "@/core/entities/UserEntityService.js";
+import { bindThis } from "@/decorators.js";
+import type { IActivity } from "@/core/activitypub/type.js";
+import { ThinUser } from "@/queue/types.js";
 
 interface IRecipe {
 	type: string;
 }
 
 interface IFollowersRecipe extends IRecipe {
-	type: 'Followers';
+	type: "Followers";
 }
 
 interface IDirectRecipe extends IRecipe {
-	type: 'Direct';
+	type: "Direct";
 	to: MiRemoteUser;
 }
 
 const isFollowers = (recipe: IRecipe): recipe is IFollowersRecipe =>
-	recipe.type === 'Followers';
+	recipe.type === "Followers";
 
 const isDirect = (recipe: IRecipe): recipe is IDirectRecipe =>
-	recipe.type === 'Direct';
+	recipe.type === "Direct";
 
 class DeliverManager {
 	private actor: ThinUser;
@@ -51,12 +51,12 @@ class DeliverManager {
 		private followingsRepository: FollowingsRepository,
 		private queueService: QueueService,
 
-		actor: { id: MiUser['id']; host: null; },
+		actor: { id: MiUser["id"]; host: null },
 		activity: IActivity | null,
 	) {
 		// 型で弾いてはいるが一応ローカルユーザーかチェック
 		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-		if (actor.host != null) throw new Error('actor.host must be null');
+		if (actor.host != null) throw new Error("actor.host must be null");
 
 		// パフォーマンス向上のためキューに突っ込むのはidのみに絞る
 		this.actor = {
@@ -71,7 +71,7 @@ class DeliverManager {
 	@bindThis
 	public addFollowersRecipe(): void {
 		const deliver: IFollowersRecipe = {
-			type: 'Followers',
+			type: "Followers",
 		};
 
 		this.addRecipe(deliver);
@@ -84,7 +84,7 @@ class DeliverManager {
 	@bindThis
 	public addDirectRecipe(to: MiRemoteUser): void {
 		const recipe: IDirectRecipe = {
-			type: 'Direct',
+			type: "Direct",
 			to,
 		};
 
@@ -111,7 +111,7 @@ class DeliverManager {
 
 		// build inbox list
 		// Process follower recipes first to avoid duplication when processing direct recipes later.
-		if (this.recipes.some(r => isFollowers(r))) {
+		if (this.recipes.some((r) => isFollowers(r))) {
 			// followers deliver
 			// TODO: SELECT DISTINCT ON ("followerSharedInbox") "followerSharedInbox" みたいな問い合わせにすればよりパフォーマンス向上できそう
 			// ただ、sharedInboxがnullなリモートユーザーも稀におり、その対応ができなさそう？
@@ -128,14 +128,15 @@ class DeliverManager {
 
 			for (const following of followers) {
 				const inbox = following.followerSharedInbox ?? following.followerInbox;
-				if (inbox === null) throw new Error('inbox is null');
+				if (inbox === null) throw new Error("inbox is null");
 				inboxes.set(inbox, following.followerSharedInbox != null);
 			}
 		}
 
 		for (const recipe of this.recipes.filter(isDirect)) {
 			// check that shared inbox has not been added yet
-			if (recipe.to.sharedInbox !== null && inboxes.has(recipe.to.sharedInbox)) continue;
+			if (recipe.to.sharedInbox !== null && inboxes.has(recipe.to.sharedInbox))
+				continue;
 
 			// check that they actually have an inbox
 			if (recipe.to.inbox === null) continue;
@@ -156,8 +157,7 @@ export class ApDeliverManagerService {
 
 		private userEntityService: UserEntityService,
 		private queueService: QueueService,
-	) {
-	}
+	) {}
 
 	/**
 	 * Deliver activity to followers
@@ -165,7 +165,10 @@ export class ApDeliverManagerService {
 	 * @param activity Activity
 	 */
 	@bindThis
-	public async deliverToFollowers(actor: { id: MiLocalUser['id']; host: null; }, activity: IActivity): Promise<void> {
+	public async deliverToFollowers(
+		actor: { id: MiLocalUser["id"]; host: null },
+		activity: IActivity,
+	): Promise<void> {
 		const manager = new DeliverManager(
 			this.userEntityService,
 			this.followingsRepository,
@@ -184,7 +187,11 @@ export class ApDeliverManagerService {
 	 * @param to Target user
 	 */
 	@bindThis
-	public async deliverToUser(actor: { id: MiLocalUser['id']; host: null; }, activity: IActivity, to: MiRemoteUser): Promise<void> {
+	public async deliverToUser(
+		actor: { id: MiLocalUser["id"]; host: null },
+		activity: IActivity,
+		to: MiRemoteUser,
+	): Promise<void> {
 		const manager = new DeliverManager(
 			this.userEntityService,
 			this.followingsRepository,
@@ -197,7 +204,10 @@ export class ApDeliverManagerService {
 	}
 
 	@bindThis
-	public createDeliverManager(actor: { id: MiUser['id']; host: null; }, activity: IActivity | null): DeliverManager {
+	public createDeliverManager(
+		actor: { id: MiUser["id"]; host: null },
+		activity: IActivity | null,
+	): DeliverManager {
 		return new DeliverManager(
 			this.userEntityService,
 			this.followingsRepository,

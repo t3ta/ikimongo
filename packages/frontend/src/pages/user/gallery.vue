@@ -4,28 +4,35 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkSpacer :contentMax="700">
-	<MkPagination v-slot="{items}" :pagination="pagination">
-		<div :class="$style.root">
-			<MkGalleryPostPreview v-for="post in items" :key="post.id" :post="post" class="post"/>
-		</div>
-	</MkPagination>
-</MkSpacer>
+	<MkSpacer :contentMax="700">
+		<MkPagination v-slot="{ items }" :pagination="pagination">
+			<div :class="$style.root">
+				<MkGalleryPostPreview
+					v-for="post in items"
+					:key="post.id"
+					:post="post"
+					class="post"
+				/>
+			</div>
+		</MkPagination>
+	</MkSpacer>
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue';
-import * as Misskey from 'misskey-js';
-import MkGalleryPostPreview from '@/components/MkGalleryPostPreview.vue';
-import MkPagination from '@/components/MkPagination.vue';
+import { computed } from "vue";
+import * as Misskey from "misskey-js";
+import MkGalleryPostPreview from "@/components/mk_components/MkGalleryPostPreview.vue";
+import MkPagination from "@/components/mk_components/MkPagination.vue";
 
-const props = withDefaults(defineProps<{
-	user: Misskey.entities.User;
-}>(), {
-});
+const props = withDefaults(
+	defineProps<{
+		user: Misskey.entities.User;
+	}>(),
+	{},
+);
 
 const pagination = {
-	endpoint: 'users/gallery/posts' as const,
+	endpoint: "users/gallery/posts" as const,
 	limit: 6,
 	params: computed(() => ({
 		userId: props.user.id,

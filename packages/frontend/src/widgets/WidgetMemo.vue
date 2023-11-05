@@ -4,34 +4,57 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkContainer :showHeader="widgetProps.showHeader" data-cy-mkw-memo class="mkw-memo">
-	<template #icon><i class="ti ti-note"></i></template>
-	<template #header>{{ i18n.ts._widgets.memo }}</template>
+	<MkContainer
+		:showHeader="widgetProps.showHeader"
+		data-cy-mkw-memo
+		class="mkw-memo"
+	>
+		<template #icon><i class="ti ti-note"></i></template>
+		<template #header>{{ i18n.ts._widgets.memo }}</template>
 
-	<div :class="$style.root">
-		<textarea v-model="text" :style="`height: ${widgetProps.height}px;`" :class="$style.textarea" :placeholder="i18n.ts.placeholder" @input="onChange"></textarea>
-		<button :class="$style.save" :disabled="!changed" class="_buttonPrimary" @click="saveMemo">{{ i18n.ts.save }}</button>
-	</div>
-</MkContainer>
+		<div :class="$style.root">
+			<textarea
+				v-model="text"
+				:style="`height: ${widgetProps.height}px;`"
+				:class="$style.textarea"
+				:placeholder="i18n.ts.placeholder"
+				@input="onChange"
+			></textarea>
+			<button
+				:class="$style.save"
+				:disabled="!changed"
+				class="_buttonPrimary"
+				@click="saveMemo"
+			>
+				{{ i18n.ts.save }}
+			</button>
+		</div>
+	</MkContainer>
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
-import { useWidgetPropsManager, Widget, WidgetComponentEmits, WidgetComponentExpose, WidgetComponentProps } from './widget.js';
-import { GetFormResultType } from '@/scripts/form.js';
-import MkContainer from '@/components/MkContainer.vue';
-import { defaultStore } from '@/store.js';
-import { i18n } from '@/i18n.js';
+import { ref, watch } from "vue";
+import {
+	useWidgetPropsManager,
+	Widget,
+	WidgetComponentEmits,
+	WidgetComponentExpose,
+	WidgetComponentProps,
+} from "./widget.js";
+import { GetFormResultType } from "@/scripts/form.js";
+import MkContainer from "@/components/mk_components/MkContainer.vue";
+import { defaultStore } from "@/store.js";
+import { i18n } from "@/i18n.js";
 
-const name = 'memo';
+const name = "memo";
 
 const widgetPropsDef = {
 	showHeader: {
-		type: 'boolean' as const,
+		type: "boolean" as const,
 		default: true,
 	},
 	height: {
-		type: 'number' as const,
+		type: "number" as const,
 		default: 100,
 	},
 };
@@ -41,7 +64,8 @@ type WidgetProps = GetFormResultType<typeof widgetPropsDef>;
 const props = defineProps<WidgetComponentProps<WidgetProps>>();
 const emit = defineEmits<WidgetComponentEmits<WidgetProps>>();
 
-const { widgetProps, configure } = useWidgetPropsManager(name,
+const { widgetProps, configure } = useWidgetPropsManager(
+	name,
 	widgetPropsDef,
 	props,
 	emit,
@@ -52,7 +76,7 @@ const changed = ref(false);
 let timeoutId;
 
 const saveMemo = () => {
-	defaultStore.set('memo', text.value);
+	defaultStore.set("memo", text.value);
 	changed.value = false;
 };
 
@@ -62,9 +86,12 @@ const onChange = () => {
 	timeoutId = window.setTimeout(saveMemo, 1000);
 };
 
-watch(() => defaultStore.reactiveState.memo, newText => {
-	text.value = newText.value;
-});
+watch(
+	() => defaultStore.reactiveState.memo,
+	(newText) => {
+		text.value = newText.value;
+	},
+);
 
 defineExpose<WidgetComponentExpose>({
 	name,

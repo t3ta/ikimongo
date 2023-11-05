@@ -4,58 +4,91 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkStickyContainer>
-	<template #header><MkPageHeader :actions="headerActions" :tabs="headerTabs"/></template>
-	<MkSpacer :contentMax="800">
-		<div>
-			<Transition :name="defaultStore.state.animation ? 'fade' : ''" mode="out-in">
-				<div v-if="note">
-					<div v-if="showNext" class="_margin">
-						<MkNotes class="" :pagination="nextPagination" :noGap="true" :disableAutoLoad="true"/>
-					</div>
-
-					<div class="_margin">
-						<MkButton v-if="!showNext" :class="$style.loadNext" @click="showNext = true"><i class="ti ti-chevron-up"></i></MkButton>
-						<div class="_margin _gaps_s">
-							<MkRemoteCaution v-if="note.user.host != null" :href="note.url ?? note.uri"/>
-							<MkNoteDetailed :key="note.id" v-model:note="note" :class="$style.note"/>
+	<MkStickyContainer>
+		<template #header
+			><MkPageHeader :actions="headerActions" :tabs="headerTabs"
+		/></template>
+		<MkSpacer :contentMax="800">
+			<div>
+				<Transition
+					:name="defaultStore.state.animation ? 'fade' : ''"
+					mode="out-in"
+				>
+					<div v-if="note">
+						<div v-if="showNext" class="_margin">
+							<MkNotes
+								class=""
+								:pagination="nextPagination"
+								:noGap="true"
+								:disableAutoLoad="true"
+							/>
 						</div>
-						<div v-if="clips && clips.length > 0" class="_margin">
-							<div style="font-weight: bold; padding: 12px;">{{ i18n.ts.clip }}</div>
-							<div class="_gaps">
-								<MkA v-for="item in clips" :key="item.id" :to="`/clips/${item.id}`">
-									<MkClipPreview :clip="item"/>
-								</MkA>
+
+						<div class="_margin">
+							<MkButton
+								v-if="!showNext"
+								:class="$style.loadNext"
+								@click="showNext = true"
+								><i class="ti ti-chevron-up"></i
+							></MkButton>
+							<div class="_margin _gaps_s">
+								<MkRemoteCaution
+									v-if="note.user.host != null"
+									:href="note.url ?? note.uri"
+								/>
+								<MkNoteDetailed
+									:key="note.id"
+									v-model:note="note"
+									:class="$style.note"
+								/>
 							</div>
+							<div v-if="clips && clips.length > 0" class="_margin">
+								<div style="font-weight: bold; padding: 12px">
+									{{ i18n.ts.clip }}
+								</div>
+								<div class="_gaps">
+									<MkA
+										v-for="item in clips"
+										:key="item.id"
+										:to="`/clips/${item.id}`"
+									>
+										<MkClipPreview :clip="item" />
+									</MkA>
+								</div>
+							</div>
+							<MkButton
+								v-if="!showPrev"
+								:class="$style.loadPrev"
+								@click="showPrev = true"
+								><i class="ti ti-chevron-down"></i
+							></MkButton>
 						</div>
-						<MkButton v-if="!showPrev" :class="$style.loadPrev" @click="showPrev = true"><i class="ti ti-chevron-down"></i></MkButton>
-					</div>
 
-					<div v-if="showPrev" class="_margin">
-						<MkNotes class="" :pagination="prevPagination" :noGap="true"/>
+						<div v-if="showPrev" class="_margin">
+							<MkNotes class="" :pagination="prevPagination" :noGap="true" />
+						</div>
 					</div>
-				</div>
-				<MkError v-else-if="error" @retry="fetchNote()"/>
-				<MkLoading v-else/>
-			</Transition>
-		</div>
-	</MkSpacer>
-</MkStickyContainer>
+					<MkError v-else-if="error" @retry="fetchNote()" />
+					<MkLoading v-else />
+				</Transition>
+			</div>
+		</MkSpacer>
+	</MkStickyContainer>
 </template>
 
 <script lang="ts" setup>
-import { computed, watch } from 'vue';
-import * as Misskey from 'misskey-js';
-import MkNoteDetailed from '@/components/MkNoteDetailed.vue';
-import MkNotes from '@/components/MkNotes.vue';
-import MkRemoteCaution from '@/components/MkRemoteCaution.vue';
-import MkButton from '@/components/MkButton.vue';
-import * as os from '@/os.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
-import { i18n } from '@/i18n.js';
-import { dateString } from '@/filters/date.js';
-import MkClipPreview from '@/components/MkClipPreview.vue';
-import { defaultStore } from '@/store.js';
+import { computed, watch } from "vue";
+import * as Misskey from "misskey-js";
+import MkNoteDetailed from "@/components/mk_components/MkNoteDetailed.vue";
+import MkNotes from "@/components/mk_components/MkNotes.vue";
+import MkRemoteCaution from "@/components/mk_components/MkRemoteCaution.vue";
+import MkButton from "@/components/mk_components/MkButton.vue";
+import * as os from "@/os.js";
+import { definePageMetadata } from "@/scripts/page-metadata.js";
+import { i18n } from "@/i18n.js";
+import { dateString } from "@/filters/date.js";
+import MkClipPreview from "@/components/mk_components/MkClipPreview.vue";
+import { defaultStore } from "@/store.js";
 
 const props = defineProps<{
 	noteId: string;
@@ -68,43 +101,56 @@ let showNext = $ref(false);
 let error = $ref();
 
 const prevPagination = {
-	endpoint: 'users/notes' as const,
+	endpoint: "users/notes" as const,
 	limit: 10,
-	params: computed(() => note ? ({
-		userId: note.userId,
-		untilId: note.id,
-	}) : null),
+	params: computed(() =>
+		note
+			? {
+					userId: note.userId,
+					untilId: note.id,
+			  }
+			: null,
+	),
 };
 
 const nextPagination = {
 	reversed: true,
-	endpoint: 'users/notes' as const,
+	endpoint: "users/notes" as const,
 	limit: 10,
-	params: computed(() => note ? ({
-		userId: note.userId,
-		sinceId: note.id,
-	}) : null),
+	params: computed(() =>
+		note
+			? {
+					userId: note.userId,
+					sinceId: note.id,
+			  }
+			: null,
+	),
 };
 
 function fetchNote() {
 	showPrev = false;
 	showNext = false;
 	note = null;
-	os.api('notes/show', {
+	os.api("notes/show", {
 		noteId: props.noteId,
-	}).then(res => {
-		note = res;
-		// 古いノートは被クリップ数をカウントしていないので、2023-10-01以前のものは強制的にnotes/clipsを叩く
-		if (note.clippedCount > 0 || new Date(note.createdAt).getTime() < new Date('2023-10-01').getTime()) {
-			os.api('notes/clips', {
-				noteId: note.id,
-			}).then((_clips) => {
-				clips = _clips;
-			});
-		}
-	}).catch(err => {
-		error = err;
-	});
+	})
+		.then((res) => {
+			note = res;
+			// 古いノートは被クリップ数をカウントしていないので、2023-10-01以前のものは強制的にnotes/clipsを叩く
+			if (
+				note.clippedCount > 0 ||
+				new Date(note.createdAt).getTime() < new Date("2023-10-01").getTime()
+			) {
+				os.api("notes/clips", {
+					noteId: note.id,
+				}).then((_clips) => {
+					clips = _clips;
+				});
+			}
+		})
+		.catch((err) => {
+			error = err;
+		});
 }
 
 watch(() => props.noteId, fetchNote, {
@@ -115,16 +161,22 @@ const headerActions = $computed(() => []);
 
 const headerTabs = $computed(() => []);
 
-definePageMetadata(computed(() => note ? {
-	title: i18n.ts.note,
-	subtitle: dateString(note.createdAt),
-	avatar: note.user,
-	path: `/notes/${note.id}`,
-	share: {
-		title: i18n.t('noteOf', { user: note.user.name }),
-		text: note.text,
-	},
-} : null));
+definePageMetadata(
+	computed(() =>
+		note
+			? {
+					title: i18n.ts.note,
+					subtitle: dateString(note.createdAt),
+					avatar: note.user,
+					path: `/notes/${note.id}`,
+					share: {
+						title: i18n.t("noteOf", { user: note.user.name }),
+						text: note.text,
+					},
+			  }
+			: null,
+	),
+);
 </script>
 
 <style lang="scss" module>

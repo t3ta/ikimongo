@@ -3,11 +3,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { onUnmounted, onDeactivated, ref } from 'vue';
-import * as os from '@/os.js';
-import MkChartTooltip from '@/components/MkChartTooltip.vue';
+import { onUnmounted, onDeactivated, ref } from "vue";
+import * as os from "@/os.js";
+import MkChartTooltip from "@/components/mk_components/MkChartTooltip.vue";
 
-export function useChartTooltip(opts: { position: 'top' | 'middle' } = { position: 'top' }) {
+export function useChartTooltip(
+	opts: { position: "top" | "middle" } = { position: "top" },
+) {
 	const tooltipShowing = ref(false);
 	const tooltipX = ref(0);
 	const tooltipY = ref(0);
@@ -15,13 +17,17 @@ export function useChartTooltip(opts: { position: 'top' | 'middle' } = { positio
 	const tooltipSeries = ref(null);
 	let disposeTooltipComponent;
 
-	os.popup(MkChartTooltip, {
-		showing: tooltipShowing,
-		x: tooltipX,
-		y: tooltipY,
-		title: tooltipTitle,
-		series: tooltipSeries,
-	}, {}).then(({ dispose }) => {
+	os.popup(
+		MkChartTooltip,
+		{
+			showing: tooltipShowing,
+			x: tooltipX,
+			y: tooltipY,
+			title: tooltipTitle,
+			series: tooltipSeries,
+		},
+		{},
+	).then(({ dispose }) => {
 		disposeTooltipComponent = dispose;
 	});
 
@@ -50,9 +56,9 @@ export function useChartTooltip(opts: { position: 'top' | 'middle' } = { positio
 
 		tooltipShowing.value = true;
 		tooltipX.value = rect.left + window.pageXOffset + context.tooltip.caretX;
-		if (opts.position === 'top') {
+		if (opts.position === "top") {
 			tooltipY.value = rect.top + window.pageYOffset;
-		} else if (opts.position === 'middle') {
+		} else if (opts.position === "middle") {
 			tooltipY.value = rect.top + window.pageYOffset + context.tooltip.caretY;
 		}
 	}

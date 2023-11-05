@@ -3,11 +3,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { notificationTypes } from '@/types.js';
-import { MiUser } from '../user/User.js';
-import { MiFollowRequest } from '../following/FollowRequest.js';
-import { MiAccessToken } from '../auth/AccessToken.js';
-import { MiNote } from './Note.js';
+import { notificationTypes } from "@/types.js";
+import { MiUser } from "../user/User.js";
+import { MiFollowRequest } from "../following/FollowRequest.js";
+import { MiAccessToken } from "../auth/AccessToken.js";
+import { MiNote } from "./Note.js";
 
 export type MiNotification = {
 	id: string;
@@ -18,16 +18,16 @@ export type MiNotification = {
 	/**
 	 * 通知の送信者(initiator)
 	 */
-	notifierId: MiUser['id'] | null;
+	notifierId: MiUser["id"] | null;
 
 	/**
 	 * 通知の種類。
 	 */
-	type: typeof notificationTypes[number];
+	type: (typeof notificationTypes)[number];
 
-	noteId: MiNote['id'] | null;
+	noteId: MiNote["id"] | null;
 
-	followRequestId: MiFollowRequest['id'] | null;
+	followRequestId: MiFollowRequest["id"] | null;
 
 	reaction: string | null;
 
@@ -55,5 +55,5 @@ export type MiNotification = {
 	/**
 	 * アプリ通知のアプリ(のトークン)
 	 */
-	appAccessTokenId: MiAccessToken['id'] | null;
-}
+	appAccessTokenId: MiAccessToken["id"] | null;
+};

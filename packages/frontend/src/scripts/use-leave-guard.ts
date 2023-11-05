@@ -3,9 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Ref } from 'vue';
-
-export function useLeaveGuard(enabled: Ref<boolean>) {
+export function useLeaveGuard() {
 	/* TODO
 	const setLeaveGuard = inject('setLeaveGuard');
 
@@ -33,7 +31,6 @@ export function useLeaveGuard(enabled: Ref<boolean>) {
 		});
 	}
 	*/
-
 	/*
 	function onBeforeLeave(ev: BeforeUnloadEvent) {
 		if (enabled.value) {

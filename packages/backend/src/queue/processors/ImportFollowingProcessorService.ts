@@ -3,20 +3,20 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import { IsNull } from 'typeorm';
-import { DI } from '@/di-symbols.js';
-import type { UsersRepository, DriveFilesRepository } from '@/models/_.js';
-import type Logger from '@/logger.js';
-import * as Acct from '@/misc/acct.js';
-import { RemoteUserResolveService } from '@/core/RemoteUserResolveService.js';
-import { DownloadService } from '@/core/DownloadService.js';
-import { UtilityService } from '@/core/UtilityService.js';
-import { bindThis } from '@/decorators.js';
-import { QueueService } from '@/core/QueueService.js';
-import { QueueLoggerService } from '../QueueLoggerService.js';
-import type * as Bull from 'bullmq';
-import type { DbUserImportJobData, DbUserImportToDbJobData } from '../types.js';
+import { Inject, Injectable } from "@nestjs/common";
+import { IsNull } from "typeorm";
+import { DI } from "@/di-symbols.js";
+import type { UsersRepository, DriveFilesRepository } from "@/models/_.js";
+import type Logger from "@/logger.js";
+import * as Acct from "@/misc/acct.js";
+import { RemoteUserResolveService } from "@/core/RemoteUserResolveService.js";
+import { DownloadService } from "@/core/DownloadService.js";
+import { UtilityService } from "@/core/UtilityService.js";
+import { bindThis } from "@/decorators.js";
+import { QueueService } from "@/core/QueueService.js";
+import { QueueLoggerService } from "../QueueLoggerService.js";
+import type * as Bull from "bullmq";
+import type { DbUserImportJobData, DbUserImportToDbJobData } from "../types.js";
 
 @Injectable()
 export class ImportFollowingProcessorService {
@@ -35,7 +35,8 @@ export class ImportFollowingProcessorService {
 		private downloadService: DownloadService,
 		private queueLoggerService: QueueLoggerService,
 	) {
-		this.logger = this.queueLoggerService.logger.createSubLogger('import-following');
+		this.logger =
+			this.queueLoggerService.logger.createSubLogger("import-following");
 	}
 
 	@bindThis
@@ -55,35 +56,42 @@ export class ImportFollowingProcessorService {
 		}
 
 		const csv = await this.downloadService.downloadTextFile(file.url);
-		const targets = csv.trim().split('\n');
+		const targets = csv.trim().split("\n");
 		this.queueService.createImportFollowingToDbJob({ id: user.id }, targets);
 
-		this.logger.succ('Import jobs created');
+		this.logger.succ("Import jobs created");
 	}
 
 	@bindThis
-	public async processDb(job: Bull.Job<DbUserImportToDbJobData>): Promise<void> {
+	public async processDb(
+		job: Bull.Job<DbUserImportToDbJobData>,
+	): Promise<void> {
 		const line = job.data.target;
 		const user = job.data.user;
 
 		try {
-			const acct = line.split(',')[0].trim();
+			const acct = line.split(",")[0].trim();
 			const { username, host } = Acct.parse(acct);
 
 			if (!host) return;
 
-			let target = this.utilityService.isSelfHost(host) ? await this.usersRepository.findOneBy({
-				host: IsNull(),
-				usernameLower: username.toLowerCase(),
-			}) : await this.usersRepository.findOneBy({
-				host: this.utilityService.toPuny(host),
-				usernameLower: username.toLowerCase(),
-			});
+			let target = this.utilityService.isSelfHost(host)
+				? await this.usersRepository.findOneBy({
+						host: IsNull(),
+						usernameLower: username.toLowerCase(),
+				  })
+				: await this.usersRepository.findOneBy({
+						host: this.utilityService.toPuny(host),
+						usernameLower: username.toLowerCase(),
+				  });
 
 			if (host == null && target == null) return;
 
 			if (target == null) {
-				target = await this.remoteUserResolveService.resolveUser(username, host);
+				target = await this.remoteUserResolveService.resolveUser(
+					username,
+					host,
+				);
 			}
 
 			if (target == null) {
@@ -95,7 +103,9 @@ export class ImportFollowingProcessorService {
 
 			this.logger.info(`Follow ${target.id} ...`);
 
-			this.queueService.createFollowJob([{ from: user, to: { id: target.id }, silent: true }]);
+			this.queueService.createFollowJob([
+				{ from: user, to: { id: target.id }, silent: true },
+			]);
 		} catch (e) {
 			this.logger.warn(`Error: ${e}`);
 		}

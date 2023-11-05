@@ -3,13 +3,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Injectable } from '@nestjs/common';
-import type { Packed } from '@/misc/json-schema.js';
-import type { } from '@/models/mute-block/Blocking.js';
-import type { MiInstance } from '@/models/Instance.js';
-import { MetaService } from '@/core/MetaService.js';
-import { bindThis } from '@/decorators.js';
-import { UtilityService } from '../UtilityService.js';
+import { Injectable } from "@nestjs/common";
+import type { Packed } from "@/misc/json-schema.js";
+import type {} from "@/models/mute-block/Blocking.js";
+import type { MiInstance } from "@/models/Instance.js";
+import { MetaService } from "@/core/MetaService.js";
+import { bindThis } from "@/decorators.js";
+import { UtilityService } from "../UtilityService.js";
 
 @Injectable()
 export class InstanceEntityService {
@@ -17,13 +17,12 @@ export class InstanceEntityService {
 		private metaService: MetaService,
 
 		private utilityService: UtilityService,
-	) {
-	}
+	) {}
 
 	@bindThis
 	public async pack(
 		instance: MiInstance,
-	): Promise<Packed<'FederationInstance'>> {
+	): Promise<Packed<"FederationInstance">> {
 		const meta = await this.metaService.fetch();
 		return {
 			id: instance.id,
@@ -35,7 +34,10 @@ export class InstanceEntityService {
 			followersCount: instance.followersCount,
 			isNotResponding: instance.isNotResponding,
 			isSuspended: instance.isSuspended,
-			isBlocked: this.utilityService.isBlockedHost(meta.blockedHosts, instance.host),
+			isBlocked: this.utilityService.isBlockedHost(
+				meta.blockedHosts,
+				instance.host,
+			),
 			softwareName: instance.softwareName,
 			softwareVersion: instance.softwareVersion,
 			openRegistrations: instance.openRegistrations,
@@ -46,15 +48,14 @@ export class InstanceEntityService {
 			iconUrl: instance.iconUrl,
 			faviconUrl: instance.faviconUrl,
 			themeColor: instance.themeColor,
-			infoUpdatedAt: instance.infoUpdatedAt ? instance.infoUpdatedAt.toISOString() : null,
+			infoUpdatedAt: instance.infoUpdatedAt
+				? instance.infoUpdatedAt.toISOString()
+				: null,
 		};
 	}
 
 	@bindThis
-	public packMany(
-		instances: MiInstance[],
-	) {
-		return Promise.all(instances.map(x => this.pack(x)));
+	public packMany(instances: MiInstance[]) {
+		return Promise.all(instances.map((x) => this.pack(x)));
 	}
 }
-

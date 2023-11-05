@@ -3,15 +3,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import Parser from 'rss-parser';
-import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
-import { HttpRequestService } from '@/core/HttpRequestService.js';
+import Parser from "rss-parser";
+import { Injectable } from "@nestjs/common";
+import { Endpoint } from "@/server/api/endpoint-base.js";
+import { HttpRequestService } from "@/core/HttpRequestService.js";
 
 const rssParser = new Parser();
 
 export const meta = {
-	tags: ['meta'],
+	tags: ["meta"],
 
 	requireCredential: false,
 	allowGet: true,
@@ -19,23 +19,22 @@ export const meta = {
 } as const;
 
 export const paramDef = {
-	type: 'object',
+	type: "object",
 	properties: {
-		url: { type: 'string' },
+		url: { type: "string" },
 	},
-	required: ['url'],
+	required: ["url"],
 } as const;
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-disable-line import/no-default-export
-	constructor(
-		private httpRequestService: HttpRequestService,
-	) {
+export default class extends Endpoint<typeof meta, typeof paramDef> {
+	// eslint-disable-line import/no-default-export
+	constructor(private httpRequestService: HttpRequestService) {
 		super(meta, paramDef, async (ps, me) => {
 			const res = await this.httpRequestService.send(ps.url, {
-				method: 'GET',
+				method: "GET",
 				headers: {
-					Accept: 'application/rss+xml, */*',
+					Accept: "application/rss+xml, */*",
 				},
 				timeout: 5000,
 			});

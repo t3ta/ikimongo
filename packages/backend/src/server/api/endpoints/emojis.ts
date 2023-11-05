@@ -3,31 +3,34 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { IsNull } from 'typeorm';
-import { Inject, Injectable } from '@nestjs/common';
-import type { EmojisRepository } from '@/models/_.js';
-import { Endpoint } from '@/server/api/endpoint-base.js';
-import { EmojiEntityService } from '@/core/entities/EmojiEntityService.js';
-import { DI } from '@/di-symbols.js';
+import { IsNull } from "typeorm";
+import { Inject, Injectable } from "@nestjs/common";
+import type { EmojisRepository } from "@/models/_.js";
+import { Endpoint } from "@/server/api/endpoint-base.js";
+import { EmojiEntityService } from "@/core/entities/EmojiEntityService.js";
+import { DI } from "@/di-symbols.js";
 
 export const meta = {
-	tags: ['meta'],
+	tags: ["meta"],
 
 	requireCredential: false,
 	allowGet: true,
 	cacheSec: 3600,
 
 	res: {
-		type: 'object',
-		optional: false, nullable: false,
+		type: "object",
+		optional: false,
+		nullable: false,
 		properties: {
 			emojis: {
-				type: 'array',
-				optional: false, nullable: false,
+				type: "array",
+				optional: false,
+				nullable: false,
 				items: {
-					type: 'object',
-					optional: false, nullable: false,
-					ref: 'EmojiSimple',
+					type: "object",
+					optional: false,
+					nullable: false,
+					ref: "EmojiSimple",
 				},
 			},
 		},
@@ -35,14 +38,14 @@ export const meta = {
 } as const;
 
 export const paramDef = {
-	type: 'object',
-	properties: {
-	},
+	type: "object",
+	properties: {},
 	required: [],
 } as const;
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-disable-line import/no-default-export
+export default class extends Endpoint<typeof meta, typeof paramDef> {
+	// eslint-disable-line import/no-default-export
 	constructor(
 		@Inject(DI.emojisRepository)
 		private emojisRepository: EmojisRepository,
@@ -55,8 +58,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					host: IsNull(),
 				},
 				order: {
-					category: 'ASC',
-					name: 'ASC',
+					category: "ASC",
+					name: "ASC",
 				},
 			});
 

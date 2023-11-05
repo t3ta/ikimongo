@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Ref, ref, watch, onUnmounted } from 'vue';
+import { Ref, ref, watch, onUnmounted } from "vue";
 
 export function useTooltip(
 	elRef: Ref<HTMLElement | { $el: HTMLElement } | null | undefined>,
@@ -70,20 +70,25 @@ export function useTooltip(
 		close();
 	};
 
-	const stop = watch(elRef, () => {
-		if (elRef.value) {
-			stop();
-			const el = elRef.value instanceof Element ? elRef.value : elRef.value.$el;
-			el.addEventListener('mouseover', onMouseover, { passive: true });
-			el.addEventListener('mouseleave', onMouseleave, { passive: true });
-			el.addEventListener('touchstart', onTouchstart, { passive: true });
-			el.addEventListener('touchend', onTouchend, { passive: true });
-			el.addEventListener('click', close, { passive: true });
-		}
-	}, {
-		immediate: true,
-		flush: 'post',
-	});
+	const stop = watch(
+		elRef,
+		() => {
+			if (elRef.value) {
+				stop();
+				const el =
+					elRef.value instanceof Element ? elRef.value : elRef.value.$el;
+				el.addEventListener("mouseover", onMouseover, { passive: true });
+				el.addEventListener("mouseleave", onMouseleave, { passive: true });
+				el.addEventListener("touchstart", onTouchstart, { passive: true });
+				el.addEventListener("touchend", onTouchend, { passive: true });
+				el.addEventListener("click", close, { passive: true });
+			}
+		},
+		{
+			immediate: true,
+			flush: "post",
+		},
+	);
 
 	onUnmounted(() => {
 		close();

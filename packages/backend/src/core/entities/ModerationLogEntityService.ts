@@ -3,14 +3,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import { DI } from '@/di-symbols.js';
-import type { ModerationLogsRepository } from '@/models/_.js';
-import { awaitAll } from '@/misc/prelude/await-all.js';
-import type { } from '@/models/mute-block/Blocking.js';
-import type { MiModerationLog } from '@/models/ModerationLog.js';
-import { bindThis } from '@/decorators.js';
-import { UserEntityService } from './UserEntityService.js';
+import { Inject, Injectable } from "@nestjs/common";
+import { DI } from "@/di-symbols.js";
+import type { ModerationLogsRepository } from "@/models/_.js";
+import { awaitAll } from "@/misc/prelude/await-all.js";
+import type {} from "@/models/mute-block/Blocking.js";
+import type { MiModerationLog } from "@/models/ModerationLog.js";
+import { bindThis } from "@/decorators.js";
+import { UserEntityService } from "./UserEntityService.js";
 
 @Injectable()
 export class ModerationLogEntityService {
@@ -19,14 +19,14 @@ export class ModerationLogEntityService {
 		private moderationLogsRepository: ModerationLogsRepository,
 
 		private userEntityService: UserEntityService,
-	) {
-	}
+	) {}
 
 	@bindThis
-	public async pack(
-		src: MiModerationLog['id'] | MiModerationLog,
-	) {
-		const log = typeof src === 'object' ? src : await this.moderationLogsRepository.findOneByOrFail({ id: src });
+	public async pack(src: MiModerationLog["id"] | MiModerationLog) {
+		const log =
+			typeof src === "object"
+				? src
+				: await this.moderationLogsRepository.findOneByOrFail({ id: src });
 
 		return await awaitAll({
 			id: log.id,
@@ -41,10 +41,7 @@ export class ModerationLogEntityService {
 	}
 
 	@bindThis
-	public packMany(
-		reports: any[],
-	) {
-		return Promise.all(reports.map(x => this.pack(x)));
+	public packMany(reports: any[]) {
+		return Promise.all(reports.map((x) => this.pack(x)));
 	}
 }
-

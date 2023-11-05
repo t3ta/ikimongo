@@ -4,9 +4,9 @@
  */
 
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { waitFor } from '@storybook/testing-library';
-import { StoryObj } from '@storybook/vue3';
-import MkPageHeader from './MkPageHeader.vue';
+import { waitFor } from "@storybook/testing-library";
+import { StoryObj } from "@storybook/vue3";
+import MkPageHeader from "./MkPageHeader.vue";
 export const Empty = {
 	render(args) {
 		return {
@@ -37,18 +37,18 @@ export const Empty = {
 		tabs: [],
 	},
 	parameters: {
-		layout: 'centered',
+		layout: "centered",
 	},
 } satisfies StoryObj<typeof MkPageHeader>;
 export const OneTab = {
 	...Empty,
 	args: {
 		...Empty.args,
-		tab: 'sometabkey',
+		tab: "sometabkey",
 		tabs: [
 			{
-				key: 'sometabkey',
-				title: 'Some Tab Title',
+				key: "sometabkey",
+				title: "Some Tab Title",
 			},
 		],
 	},
@@ -60,7 +60,7 @@ export const Icon = {
 		tabs: [
 			{
 				...OneTab.args.tabs[0],
-				icon: 'ti ti-home',
+				icon: "ti ti-home",
 			},
 		],
 	},
@@ -82,22 +82,22 @@ export const SomeTabs = {
 	...Empty,
 	args: {
 		...Empty.args,
-		tab: 'princess',
+		tab: "princess",
 		tabs: [
 			{
-				key: 'princess',
-				title: 'Princess',
-				icon: 'ti ti-crown',
+				key: "princess",
+				title: "Princess",
+				icon: "ti ti-crown",
 			},
 			{
-				key: 'fairy',
-				title: 'Fairy',
-				icon: 'ti ti-snowflake',
+				key: "fairy",
+				title: "Fairy",
+				icon: "ti ti-snowflake",
 			},
 			{
-				key: 'angel',
-				title: 'Angel',
-				icon: 'ti ti-feather',
+				key: "angel",
+				title: "Angel",
+				icon: "ti ti-feather",
 			},
 		],
 	},

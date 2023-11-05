@@ -4,46 +4,54 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkContainer :max-height="300" :foldable="true">
-	<template #icon><i class="ti ti-photo"></i></template>
-	<template #header>{{ i18n.ts.images }}</template>
-	<div :class="$style.root">
-		<MkLoading v-if="fetching"/>
-		<div v-if="!fetching && images.length > 0" :class="$style.stream">
-			<MkA
-				v-for="image in images"
-				:key="image.note.id + image.file.id"
-				:class="$style.img"
-				:to="notePage(image.note)"
-			>
-				<ImgWithBlurhash :hash="image.file.blurhash" :src="thumbnail(image.file)" :title="image.file.name"/>
-			</MkA>
+	<MkContainer :max-height="300" :foldable="true">
+		<template #icon><i class="ti ti-photo"></i></template>
+		<template #header>{{ i18n.ts.images }}</template>
+		<div :class="$style.root">
+			<MkLoading v-if="fetching" />
+			<div v-if="!fetching && images.length > 0" :class="$style.stream">
+				<MkA
+					v-for="image in images"
+					:key="image.note.id + image.file.id"
+					:class="$style.img"
+					:to="notePage(image.note)"
+				>
+					<ImgWithBlurhash
+						:hash="image.file.blurhash"
+						:src="thumbnail(image.file)"
+						:title="image.file.name"
+					/>
+				</MkA>
+			</div>
+			<p v-if="!fetching && images.length == 0" :class="$style.empty">
+				{{ i18n.ts.nothing }}
+			</p>
 		</div>
-		<p v-if="!fetching && images.length == 0" :class="$style.empty">{{ i18n.ts.nothing }}</p>
-	</div>
-</MkContainer>
+	</MkContainer>
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from 'vue';
-import * as Misskey from 'misskey-js';
-import { getStaticImageUrl } from '@/scripts/media-proxy.js';
-import { notePage } from '@/filters/note.js';
-import * as os from '@/os.js';
-import MkContainer from '@/components/MkContainer.vue';
-import ImgWithBlurhash from '@/components/MkImgWithBlurhash.vue';
-import { defaultStore } from '@/store.js';
-import { i18n } from '@/i18n.js';
+import { onMounted } from "vue";
+import * as Misskey from "misskey-js";
+import { getStaticImageUrl } from "@/scripts/media-proxy.js";
+import { notePage } from "@/filters/note.js";
+import * as os from "@/os.js";
+import MkContainer from "@/components/mk_components/MkContainer.vue";
+import ImgWithBlurhash from "@/components/mk_components/MkImgWithBlurhash.vue";
+import { defaultStore } from "@/store.js";
+import { i18n } from "@/i18n.js";
 
 const props = defineProps<{
 	user: Misskey.entities.UserDetailed;
 }>();
 
 let fetching = $ref(true);
-let images = $ref<{
-	note: Misskey.entities.Note;
-	file: Misskey.entities.DriveFile;
-}[]>([]);
+let images = $ref<
+	{
+		note: Misskey.entities.Note;
+		file: Misskey.entities.DriveFile;
+	}[]
+>([]);
 
 function thumbnail(image: Misskey.entities.DriveFile): string {
 	return defaultStore.state.disableShowingAnimatedImages
@@ -53,20 +61,20 @@ function thumbnail(image: Misskey.entities.DriveFile): string {
 
 onMounted(() => {
 	const image = [
-		'image/jpeg',
-		'image/webp',
-		'image/avif',
-		'image/png',
-		'image/gif',
-		'image/apng',
-		'image/vnd.mozilla.apng',
+		"image/jpeg",
+		"image/webp",
+		"image/avif",
+		"image/png",
+		"image/gif",
+		"image/apng",
+		"image/vnd.mozilla.apng",
 	];
-	os.api('users/notes', {
+	os.api("users/notes", {
 		userId: props.user.id,
 		fileType: image,
-		excludeNsfw: defaultStore.state.nsfw !== 'ignore',
+		excludeNsfw: defaultStore.state.nsfw !== "ignore",
 		limit: 10,
-	}).then(notes => {
+	}).then((notes) => {
 		for (const note of notes) {
 			for (const file of note.files) {
 				images.push({

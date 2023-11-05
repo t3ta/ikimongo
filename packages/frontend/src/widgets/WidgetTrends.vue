@@ -4,41 +4,61 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkContainer :showHeader="widgetProps.showHeader" data-cy-mkw-trends class="mkw-trends">
-	<template #icon><i class="ti ti-hash"></i></template>
-	<template #header>{{ i18n.ts._widgets.trends }}</template>
+	<MkContainer
+		:showHeader="widgetProps.showHeader"
+		data-cy-mkw-trends
+		class="mkw-trends"
+	>
+		<template #icon><i class="ti ti-hash"></i></template>
+		<template #header>{{ i18n.ts._widgets.trends }}</template>
 
-	<div class="wbrkwala">
-		<MkLoading v-if="fetching"/>
-		<TransitionGroup v-else tag="div" :name="defaultStore.state.animation ? 'chart' : ''" class="tags">
-			<div v-for="stat in stats" :key="stat.tag">
-				<div class="tag">
-					<MkA class="a" :to="`/tags/${ encodeURIComponent(stat.tag) }`" :title="stat.tag">#{{ stat.tag }}</MkA>
-					<p>{{ i18n.t('nUsersMentioned', { n: stat.usersCount }) }}</p>
+		<div class="wbrkwala">
+			<MkLoading v-if="fetching" />
+			<TransitionGroup
+				v-else
+				tag="div"
+				:name="defaultStore.state.animation ? 'chart' : ''"
+				class="tags"
+			>
+				<div v-for="stat in stats" :key="stat.tag">
+					<div class="tag">
+						<MkA
+							class="a"
+							:to="`/tags/${encodeURIComponent(stat.tag)}`"
+							:title="stat.tag"
+							>#{{ stat.tag }}</MkA
+						>
+						<p>{{ i18n.t("nUsersMentioned", { n: stat.usersCount }) }}</p>
+					</div>
+					<MkMiniChart class="chart" :src="stat.chart" />
 				</div>
-				<MkMiniChart class="chart" :src="stat.chart"/>
-			</div>
-		</TransitionGroup>
-	</div>
-</MkContainer>
+			</TransitionGroup>
+		</div>
+	</MkContainer>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
-import { useWidgetPropsManager, Widget, WidgetComponentEmits, WidgetComponentExpose, WidgetComponentProps } from './widget.js';
-import { GetFormResultType } from '@/scripts/form.js';
-import MkContainer from '@/components/MkContainer.vue';
-import MkMiniChart from '@/components/MkMiniChart.vue';
-import * as os from '@/os.js';
-import { useInterval } from '@/scripts/use-interval.js';
-import { i18n } from '@/i18n.js';
-import { defaultStore } from '@/store.js';
+import { ref } from "vue";
+import {
+	useWidgetPropsManager,
+	Widget,
+	WidgetComponentEmits,
+	WidgetComponentExpose,
+	WidgetComponentProps,
+} from "./widget.js";
+import { GetFormResultType } from "@/scripts/form.js";
+import MkContainer from "@/components/mk_components/MkContainer.vue";
+import MkMiniChart from "@/components/mk_components/MkMiniChart.vue";
+import * as os from "@/os.js";
+import { useInterval } from "@/scripts/use-interval.js";
+import { i18n } from "@/i18n.js";
+import { defaultStore } from "@/store.js";
 
-const name = 'hashtags';
+const name = "hashtags";
 
 const widgetPropsDef = {
 	showHeader: {
-		type: 'boolean' as const,
+		type: "boolean" as const,
 		default: true,
 	},
 };
@@ -48,7 +68,8 @@ type WidgetProps = GetFormResultType<typeof widgetPropsDef>;
 const props = defineProps<WidgetComponentProps<WidgetProps>>();
 const emit = defineEmits<WidgetComponentEmits<WidgetProps>>();
 
-const { widgetProps, configure } = useWidgetPropsManager(name,
+const { widgetProps, configure } = useWidgetPropsManager(
+	name,
 	widgetPropsDef,
 	props,
 	emit,
@@ -58,7 +79,7 @@ const stats = ref([]);
 const fetching = ref(true);
 
 const fetch = () => {
-	os.apiGet('hashtags/trend').then(res => {
+	os.apiGet("hashtags/trend").then((res) => {
 		stats.value = res;
 		fetching.value = false;
 	});

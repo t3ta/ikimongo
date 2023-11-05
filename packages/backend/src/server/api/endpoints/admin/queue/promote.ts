@@ -3,28 +3,29 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Injectable } from '@nestjs/common';
-import { Endpoint } from '@/server/api/endpoint-base.js';
-import { ModerationLogService } from '@/core/ModerationLogService.js';
-import { QueueService } from '@/core/QueueService.js';
+import { Injectable } from "@nestjs/common";
+import { Endpoint } from "@/server/api/endpoint-base.js";
+import { ModerationLogService } from "@/core/ModerationLogService.js";
+import { QueueService } from "@/core/QueueService.js";
 
 export const meta = {
-	tags: ['admin'],
+	tags: ["admin"],
 
 	requireCredential: true,
 	requireModerator: true,
 } as const;
 
 export const paramDef = {
-	type: 'object',
+	type: "object",
 	properties: {
-		type: { type: 'string', enum: ['deliver', 'inbox'] },
+		type: { type: "string", enum: ["deliver", "inbox"] },
 	},
-	required: ['type'],
+	required: ["type"],
 } as const;
 
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-disable-line import/no-default-export
+export default class extends Endpoint<typeof meta, typeof paramDef> {
+	// eslint-disable-line import/no-default-export
 	constructor(
 		private moderationLogService: ModerationLogService,
 		private queueService: QueueService,
@@ -33,15 +34,19 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			let delayedQueues;
 
 			switch (ps.type) {
-				case 'deliver':
+				case "deliver":
 					delayedQueues = await this.queueService.deliverQueue.getDelayed();
-					for (let queueIndex = 0; queueIndex < delayedQueues.length; queueIndex++) {
+					for (
+						let queueIndex = 0;
+						queueIndex < delayedQueues.length;
+						queueIndex++
+					) {
 						const queue = delayedQueues[queueIndex];
 						try {
 							await queue.promote();
 						} catch (e) {
 							if (e instanceof Error) {
-								if (e.message.indexOf('not in a delayed state') !== -1) {
+								if (e.message.indexOf("not in a delayed state") !== -1) {
 									throw e;
 								}
 							} else {
@@ -51,15 +56,19 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					}
 					break;
 
-				case 'inbox':
+				case "inbox":
 					delayedQueues = await this.queueService.inboxQueue.getDelayed();
-					for (let queueIndex = 0; queueIndex < delayedQueues.length; queueIndex++) {
+					for (
+						let queueIndex = 0;
+						queueIndex < delayedQueues.length;
+						queueIndex++
+					) {
 						const queue = delayedQueues[queueIndex];
 						try {
 							await queue.promote();
 						} catch (e) {
 							if (e instanceof Error) {
-								if (e.message.indexOf('not in a delayed state') !== -1) {
+								if (e.message.indexOf("not in a delayed state") !== -1) {
 									throw e;
 								}
 							} else {
@@ -70,7 +79,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					break;
 			}
 
-			this.moderationLogService.log(me, 'promoteQueue');
+			this.moderationLogService.log(me, "promoteQueue");
 		});
 	}
 }

@@ -3,17 +3,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Injectable } from '@nestjs/common';
-import { isUserRelated } from '@/misc/is-user-related.js';
-import type { Packed } from '@/misc/json-schema.js';
-import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
-import { bindThis } from '@/decorators.js';
-import { RoleService } from '@/core/RoleService.js';
-import type { GlobalEvents } from '@/core/GlobalEventService.js';
-import Channel from '../channel.js';
+import { Injectable } from "@nestjs/common";
+import { isUserRelated } from "@/misc/is-user-related.js";
+import type { Packed } from "@/misc/json-schema.js";
+import { NoteEntityService } from "@/core/entities/NoteEntityService.js";
+import { bindThis } from "@/decorators.js";
+import { RoleService } from "@/core/RoleService.js";
+import type { GlobalEvents } from "@/core/GlobalEventService.js";
+import Channel from "../channel.js";
 
 class RoleTimelineChannel extends Channel {
-	public readonly chName = 'roleTimeline';
+	public readonly chName = "roleTimeline";
 	public static shouldShare = false;
 	public static requireCredential = false;
 	private roleId: string;
@@ -23,7 +23,7 @@ class RoleTimelineChannel extends Channel {
 		private roleservice: RoleService,
 
 		id: string,
-		connection: Channel['connection'],
+		connection: Channel["connection"],
 	) {
 		super(id, connection);
 		//this.onNote = this.onNote.bind(this);
@@ -37,23 +37,28 @@ class RoleTimelineChannel extends Channel {
 	}
 
 	@bindThis
-	private async onEvent(data: GlobalEvents['roleTimeline']['payload']) {
-		if (data.type === 'note') {
+	private async onEvent(data: GlobalEvents["roleTimeline"]["payload"]) {
+		if (data.type === "note") {
 			const note = data.body;
 
 			if (!(await this.roleservice.isExplorable({ id: this.roleId }))) {
 				return;
 			}
-			if (note.visibility !== 'public') return;
+			if (note.visibility !== "public") return;
 
 			// 流れてきたNoteがミュートしているユーザーが関わるものだったら無視する
 			if (isUserRelated(note, this.userIdsWhoMeMuting)) return;
 			// 流れてきたNoteがブロックされているユーザーが関わるものだったら無視する
 			if (isUserRelated(note, this.userIdsWhoBlockingMe)) return;
 
-			if (note.renote && !note.text && isUserRelated(note, this.userIdsWhoMeMutingRenotes)) return;
+			if (
+				note.renote &&
+				!note.text &&
+				isUserRelated(note, this.userIdsWhoMeMutingRenotes)
+			)
+				return;
 
-			this.send('note', note);
+			this.send("note", note);
 		} else {
 			this.send(data.type, data.body);
 		}
@@ -74,11 +79,13 @@ export class RoleTimelineChannelService {
 	constructor(
 		private noteEntityService: NoteEntityService,
 		private roleservice: RoleService,
-	) {
-	}
+	) {}
 
 	@bindThis
-	public create(id: string, connection: Channel['connection']): RoleTimelineChannel {
+	public create(
+		id: string,
+		connection: Channel["connection"],
+	): RoleTimelineChannel {
 		return new RoleTimelineChannel(
 			this.noteEntityService,
 			this.roleservice,

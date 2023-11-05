@@ -3,31 +3,38 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { PrimaryColumn, Entity, Index, JoinColumn, Column, ManyToOne } from 'typeorm';
-import { id } from '../util/id.js';
-import { MiUser } from './User.js';
-import { MiUserList } from './UserList.js';
+import {
+	PrimaryColumn,
+	Entity,
+	Index,
+	JoinColumn,
+	Column,
+	ManyToOne,
+} from "typeorm";
+import { id } from "../util/id.js";
+import { MiUser } from "./User.js";
+import { MiUserList } from "./UserList.js";
 
-@Entity('user_list_joining')
-@Index(['userId', 'userListId'], { unique: true })
+@Entity("user_list_joining")
+@Index(["userId", "userListId"], { unique: true })
 export class MiUserListJoining {
 	@PrimaryColumn(id())
 	public id: string;
 
-	@Column('timestamp with time zone', {
-		comment: 'The created date of the UserListJoining.',
+	@Column("timestamp with time zone", {
+		comment: "The created date of the UserListJoining.",
 	})
 	public createdAt: Date;
 
 	@Index()
 	@Column({
 		...id(),
-		comment: 'The user ID.',
+		comment: "The user ID.",
 	})
-	public userId: MiUser['id'];
+	public userId: MiUser["id"];
 
-	@ManyToOne(type => MiUser, {
-		onDelete: 'CASCADE',
+	@ManyToOne((type) => MiUser, {
+		onDelete: "CASCADE",
 	})
 	@JoinColumn()
 	public user: MiUser | null;
@@ -35,12 +42,12 @@ export class MiUserListJoining {
 	@Index()
 	@Column({
 		...id(),
-		comment: 'The list ID.',
+		comment: "The list ID.",
 	})
-	public userListId: MiUserList['id'];
+	public userListId: MiUserList["id"];
 
-	@ManyToOne(type => MiUserList, {
-		onDelete: 'CASCADE',
+	@ManyToOne((type) => MiUserList, {
+		onDelete: "CASCADE",
 	})
 	@JoinColumn()
 	public userList: MiUserList | null;

@@ -8,7 +8,7 @@
 // (c) mei23
 // https://misskey.m544.net/notes/71899acdcc9859ec5708ac24
 
-import { customAlphabet } from 'nanoid';
+import { customAlphabet } from "nanoid";
 
 export const aidxRegExp = /^[0-9a-z]{16}$/;
 
@@ -17,28 +17,31 @@ const TIME_LENGTH = 8;
 const NODE_LENGTH = 4;
 const NOISE_LENGTH = 4;
 
-const nodeId = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', NODE_LENGTH)();
+const nodeId = customAlphabet(
+	"0123456789abcdefghijklmnopqrstuvwxyz",
+	NODE_LENGTH,
+)();
 let counter = 0;
 
 function getTime(time: number): string {
 	time = time - TIME2000;
 	if (time < 0) time = 0;
 
-	return time.toString(36).padStart(TIME_LENGTH, '0').slice(-TIME_LENGTH);
+	return time.toString(36).padStart(TIME_LENGTH, "0").slice(-TIME_LENGTH);
 }
 
 function getNoise(): string {
-	return counter.toString(36).padStart(NOISE_LENGTH, '0').slice(-NOISE_LENGTH);
+	return counter.toString(36).padStart(NOISE_LENGTH, "0").slice(-NOISE_LENGTH);
 }
 
 export function genAidx(date: Date): string {
 	const t = date.getTime();
-	if (isNaN(t)) throw new Error('Failed to create AIDX: Invalid Date');
+	if (isNaN(t)) throw new Error("Failed to create AIDX: Invalid Date");
 	counter++;
 	return getTime(t) + nodeId + getNoise();
 }
 
-export function parseAidx(id: string): { date: Date; } {
+export function parseAidx(id: string): { date: Date } {
 	const time = parseInt(id.slice(0, TIME_LENGTH), 36) + TIME2000;
 	return { date: new Date(time) };
 }

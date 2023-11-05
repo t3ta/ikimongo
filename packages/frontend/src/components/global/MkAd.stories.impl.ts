@@ -4,13 +4,9 @@
  */
 
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { expect } from '@storybook/jest';
-import { userEvent, waitFor, within } from '@storybook/testing-library';
-import { StoryObj } from '@storybook/vue3';
-import MkAd from './MkAd.vue';
-import { i18n } from '@/i18n.js';
 
-let lock: Promise<undefined> | undefined;
+import { StoryObj } from "@storybook/vue3";
+import MkAd from "./MkAd.vue";
 
 const common = {
 	render(args) {
@@ -87,14 +83,14 @@ const common = {
 	args: {
 		prefer: [],
 		specify: {
-			id: 'someadid',
+			id: "someadid",
 			radio: 1,
-			url: '#test',
+			url: "#test",
 		},
 		__hasReduce: true,
 	},
 	parameters: {
-		layout: 'centered',
+		layout: "centered",
 	},
 } satisfies StoryObj<typeof MkAd>;
 export const Square = {
@@ -103,9 +99,9 @@ export const Square = {
 		...common.args,
 		specify: {
 			...common.args.specify,
-			place: 'square',
+			place: "square",
 			imageUrl:
-				'https://github.com/misskey-dev/misskey/blob/master/packages/frontend/assets/about-icon.png?raw=true',
+				"https://github.com/misskey-dev/misskey/blob/master/packages/frontend/assets/about-icon.png?raw=true",
 		},
 	},
 } satisfies StoryObj<typeof MkAd>;
@@ -115,9 +111,9 @@ export const Horizontal = {
 		...common.args,
 		specify: {
 			...common.args.specify,
-			place: 'horizontal',
+			place: "horizontal",
 			imageUrl:
-				'https://github.com/misskey-dev/misskey/blob/master/packages/frontend/assets/fedi.jpg?raw=true',
+				"https://github.com/misskey-dev/misskey/blob/master/packages/frontend/assets/fedi.jpg?raw=true",
 		},
 	},
 } satisfies StoryObj<typeof MkAd>;
@@ -127,9 +123,9 @@ export const HorizontalBig = {
 		...common.args,
 		specify: {
 			...common.args.specify,
-			place: 'horizontal-big',
+			place: "horizontal-big",
 			imageUrl:
-				'https://github.com/misskey-dev/misskey/blob/master/packages/frontend/assets/fedi.jpg?raw=true',
+				"https://github.com/misskey-dev/misskey/blob/master/packages/frontend/assets/fedi.jpg?raw=true",
 		},
 	},
 } satisfies StoryObj<typeof MkAd>;

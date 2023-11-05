@@ -3,14 +3,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import Limiter from 'ratelimiter';
-import * as Redis from 'ioredis';
-import { DI } from '@/di-symbols.js';
-import type Logger from '@/logger.js';
-import { LoggerService } from '@/core/LoggerService.js';
-import { bindThis } from '@/decorators.js';
-import type { IEndpointMeta } from './endpoints.js';
+import { Inject, Injectable } from "@nestjs/common";
+import Limiter from "ratelimiter";
+import * as Redis from "ioredis";
+import { DI } from "@/di-symbols.js";
+import type Logger from "@/logger.js";
+import { LoggerService } from "@/core/LoggerService.js";
+import { bindThis } from "@/decorators.js";
+import type { IEndpointMeta } from "./endpoints.js";
 
 @Injectable()
 export class RateLimiterService {
@@ -23,15 +23,19 @@ export class RateLimiterService {
 
 		private loggerService: LoggerService,
 	) {
-		this.logger = this.loggerService.getLogger('limiter');
+		this.logger = this.loggerService.getLogger("limiter");
 
-		if (process.env.NODE_ENV !== 'production') {
+		if (process.env.NODE_ENV !== "production") {
 			this.disabled = true;
 		}
 	}
 
 	@bindThis
-	public limit(limitation: IEndpointMeta['limit'] & { key: NonNullable<string> }, actor: string, factor = 1) {
+	public limit(
+		limitation: IEndpointMeta["limit"] & { key: NonNullable<string> },
+		actor: string,
+		factor = 1,
+	) {
 		return new Promise<void>((ok, reject) => {
 			if (this.disabled) ok();
 
@@ -46,13 +50,15 @@ export class RateLimiterService {
 
 				minIntervalLimiter.get((err, info) => {
 					if (err) {
-						return reject('ERR');
+						return reject("ERR");
 					}
 
-					this.logger.debug(`${actor} ${limitation.key} min remaining: ${info.remaining}`);
+					this.logger.debug(
+						`${actor} ${limitation.key} min remaining: ${info.remaining}`,
+					);
 
 					if (info.remaining === 0) {
-						reject('BRIEF_REQUEST_INTERVAL');
+						reject("BRIEF_REQUEST_INTERVAL");
 					} else {
 						if (hasLongTermLimit) {
 							max();
@@ -74,24 +80,26 @@ export class RateLimiterService {
 
 				limiter.get((err, info) => {
 					if (err) {
-						return reject('ERR');
+						return reject("ERR");
 					}
 
-					this.logger.debug(`${actor} ${limitation.key} max remaining: ${info.remaining}`);
+					this.logger.debug(
+						`${actor} ${limitation.key} max remaining: ${info.remaining}`,
+					);
 
 					if (info.remaining === 0) {
-						reject('RATE_LIMIT_EXCEEDED');
+						reject("RATE_LIMIT_EXCEEDED");
 					} else {
 						ok();
 					}
 				});
 			};
 
-			const hasShortTermLimit = typeof limitation.minInterval === 'number';
+			const hasShortTermLimit = typeof limitation.minInterval === "number";
 
 			const hasLongTermLimit =
-				typeof limitation.duration === 'number' &&
-				typeof limitation.max === 'number';
+				typeof limitation.duration === "number" &&
+				typeof limitation.max === "number";
 
 			if (hasShortTermLimit) {
 				min();

@@ -3,17 +3,20 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Inject, Injectable } from '@nestjs/common';
-import { DI } from '@/di-symbols.js';
-import type { GalleryLikesRepository, GalleryPostsRepository } from '@/models/_.js';
-import { awaitAll } from '@/misc/prelude/await-all.js';
-import type { Packed } from '@/misc/json-schema.js';
-import type { } from '@/models/mute-block/Blocking.js';
-import type { MiUser } from '@/models/user/User.js';
-import type { MiGalleryPost } from '@/models/gallery/GalleryPost.js';
-import { bindThis } from '@/decorators.js';
-import { UserEntityService } from './UserEntityService.js';
-import { DriveFileEntityService } from './DriveFileEntityService.js';
+import { Inject, Injectable } from "@nestjs/common";
+import { DI } from "@/di-symbols.js";
+import type {
+	GalleryLikesRepository,
+	GalleryPostsRepository,
+} from "@/models/_.js";
+import { awaitAll } from "@/misc/prelude/await-all.js";
+import type { Packed } from "@/misc/json-schema.js";
+import type {} from "@/models/mute-block/Blocking.js";
+import type { MiUser } from "@/models/user/User.js";
+import type { MiGalleryPost } from "@/models/gallery/GalleryPost.js";
+import { bindThis } from "@/decorators.js";
+import { UserEntityService } from "./UserEntityService.js";
+import { DriveFileEntityService } from "./DriveFileEntityService.js";
 
 @Injectable()
 export class GalleryPostEntityService {
@@ -26,16 +29,18 @@ export class GalleryPostEntityService {
 
 		private userEntityService: UserEntityService,
 		private driveFileEntityService: DriveFileEntityService,
-	) {
-	}
+	) {}
 
 	@bindThis
 	public async pack(
-		src: MiGalleryPost['id'] | MiGalleryPost,
-		me?: { id: MiUser['id'] } | null | undefined,
-	): Promise<Packed<'GalleryPost'>> {
+		src: MiGalleryPost["id"] | MiGalleryPost,
+		me?: { id: MiUser["id"] } | null | undefined,
+	): Promise<Packed<"GalleryPost">> {
 		const meId = me ? me.id : null;
-		const post = typeof src === 'object' ? src : await this.galleryPostsRepository.findOneByOrFail({ id: src });
+		const post =
+			typeof src === "object"
+				? src
+				: await this.galleryPostsRepository.findOneByOrFail({ id: src });
 
 		return await awaitAll({
 			id: post.id,
@@ -51,16 +56,19 @@ export class GalleryPostEntityService {
 			tags: post.tags.length > 0 ? post.tags : undefined,
 			isSensitive: post.isSensitive,
 			likedCount: post.likedCount,
-			isLiked: meId ? await this.galleryLikesRepository.exist({ where: { postId: post.id, userId: meId } }) : undefined,
+			isLiked: meId
+				? await this.galleryLikesRepository.exist({
+						where: { postId: post.id, userId: meId },
+				  })
+				: undefined,
 		});
 	}
 
 	@bindThis
 	public packMany(
 		posts: MiGalleryPost[],
-		me?: { id: MiUser['id'] } | null | undefined,
+		me?: { id: MiUser["id"] } | null | undefined,
 	) {
-		return Promise.all(posts.map(x => this.pack(x, me)));
+		return Promise.all(posts.map((x) => this.pack(x, me)));
 	}
 }
-
