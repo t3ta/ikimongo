@@ -4,7 +4,7 @@
 		<div class="map-container">
 			<l-map
 				:zoom="15"
-				:center="[location.x, location.y]"
+				:center="[location.y, location.x]"
 				:useGlobalLeaflet="false"
 			>
 				<l-tile-layer
@@ -12,7 +12,7 @@
 					layerType="base"
 					name="OpenStreetMap"
 				></l-tile-layer>
-				<l-marker :latLng="[location.x, location.y]" />
+				<l-marker :latLng="[location.y, location.x]" />
 			</l-map>
 		</div>
 	</div>
