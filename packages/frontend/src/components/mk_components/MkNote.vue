@@ -107,10 +107,6 @@ SPDX-License-Identifier: AGPL-3.0-only
       <MkAvatar :class="$style.avatar" :user="appearNote.user" link preview />
       <div :class="$style.main">
         <MkNoteHeader :note="appearNote" :mini="true" />
-        <IGObservation
-          v-if="appearNote.observation"
-          v-model="appearNote.observation"
-        />
         <MkInstanceTicker
           v-if="showTicker"
           :instance="appearNote.user.instance"
@@ -170,6 +166,14 @@ SPDX-License-Identifier: AGPL-3.0-only
             <div v-if="appearNote.files.length > 0">
               <MkMediaList :mediaList="appearNote.files" />
             </div>
+            <IGObservation
+              v-if="appearNote.observation"
+              v-model="appearNote.observation"
+            />
+            <IGIdentification
+              v-if="appearNote.identification"
+              v-model="appearNote.identification"
+            />
             <MkPoll
               v-if="appearNote.poll"
               :note="appearNote"
@@ -315,6 +319,7 @@ import MkUsersTooltip from '@/components/mk_components/MkUsersTooltip.vue';
 import MkUrlPreview from '@/components/mk_components/MkUrlPreview.vue';
 import MkInstanceTicker from '@/components/mk_components/MkInstanceTicker.vue';
 import IGObservation from '@/components/ig_components/IGObservation.vue';
+import IGIdentification from '@/components/ig_components/IGIdentification.vue';
 import { pleaseLogin } from '@/scripts/please-login.js';
 import { focusPrev, focusNext } from '@/scripts/focus.js';
 import { checkWordMute } from '@/scripts/check-word-mute.js';

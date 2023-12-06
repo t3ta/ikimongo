@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="root">
     <span class="observation-date">観察日：{{ date }}</span>
     <div class="map-container">
       <l-map
@@ -42,6 +42,10 @@ console.log('hoge');
 </script>
 
 <style scoped>
+.root {
+  padding: 16px 0;
+}
+
 .map-container {
   height: 300px;
   margin: 1rem 0;

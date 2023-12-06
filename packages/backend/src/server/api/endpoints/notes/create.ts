@@ -349,7 +349,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
           : undefined,
         identification: ps.identification
           ? {
-              observationId: ps.identification.observationId,
               scientificName: ps.identification.scientificName,
               vernacularName: ps.identification.vernacularName,
               taxonRank: ps.identification.taxonRank,

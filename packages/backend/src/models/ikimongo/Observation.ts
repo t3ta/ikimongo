@@ -96,7 +96,10 @@ export class IGObservation {
     nullable: true,
     comment: 'The location of the Observation.',
     transformer: {
-      to: (v: Point | null) => v,
+      to: (v: Point | null) => {
+        if (v == null) return null;
+        return v.coordinates[0] + ', ' + v.coordinates[1];
+      },
       from: (v: any | null) => {
         if (v == null) return null;
         return {

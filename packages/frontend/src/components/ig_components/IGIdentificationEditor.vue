@@ -1,16 +1,19 @@
 <template>
   <div class="igidentificationeditor">
     <ul>
-      <li>
+      <li class="scientific-name">
         <MkInput v-model="scientificName" small type="text" class="input">
           <template #label>学名</template>
         </MkInput>
+        <div v-if="matchedData?.scientificName" class="suggested" @click="fill">
+          {{ matchedData.scientificName }}
+        </div>
       </li>
-      <li>
+      <!-- <li>
         <MkInput v-model="vernacularName" small type="text" class="input">
           <template #label>和名</template>
         </MkInput>
-      </li>
+      </li> -->
       <li>
         <MkInput v-model="taxonRank" small type="text" class="input">
           <template #label>分類階級</template>
@@ -56,7 +59,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import { Ref, ref, watch } from 'vue';
 import MkInput from '../..//components/mk_components/MkInput.vue';
 import { IIGIdentificationRequest } from '../../../../ikimongo-types/index.js';
 
@@ -70,6 +73,7 @@ const emit = defineEmits<{
 
 const scientificName = ref(props.modelValue.scientificName);
 const vernacularName = ref(props.modelValue.vernacularName);
+const taxonId = ref(props.modelValue.taxonId);
 const taxonRank = ref(props.modelValue.taxonRank);
 const kingdom = ref(props.modelValue.kingdom);
 const phylum = ref(props.modelValue.phylum);
@@ -78,14 +82,27 @@ const order = ref(props.modelValue.order);
 const family = ref(props.modelValue.family);
 const genus = ref(props.modelValue.genus);
 const description = ref(props.modelValue.description);
+const matchedData: Ref<any | null> = ref(null);
 
 watch(
-  [scientificName],
+  [
+    scientificName,
+    vernacularName,
+    taxonId,
+    taxonRank,
+    kingdom,
+    phylum,
+    iclass,
+    order,
+    family,
+    genus,
+    description,
+  ],
   () =>
     emit('update:modelValue', {
       scientificName: scientificName.value,
       vernacularName: vernacularName.value,
-      taxonId: '',
+      taxonId: taxonId.value,
       taxonRank: taxonRank.value,
       kingdom: kingdom.value,
       phylum: phylum.value,
@@ -98,6 +115,33 @@ watch(
     }),
   { deep: true },
 );
+
+watch([scientificName], async () => {
+  const data = await getMatchedName(scientificName.value ?? '');
+  if (scientificName.value === data.scientificName) return;
+  matchedData.value = data;
+});
+
+const getMatchedName = async (scientificName: string) => {
+  const res = await fetch(
+    `https://api.gbif.org/v1/species/match?name=${scientificName}`,
+  );
+  const data = await res.json();
+  return data;
+};
+
+const fill = () => {
+  scientificName.value = matchedData.value.scientificName;
+  taxonId.value = matchedData.value.usageKey;
+  taxonRank.value = matchedData.value.rank;
+  kingdom.value = matchedData.value.kingdom;
+  phylum.value = matchedData.value.phylum;
+  iclass.value = matchedData.value.class;
+  order.value = matchedData.value.order;
+  family.value = matchedData.value.family;
+  genus.value = matchedData.value.genus;
+  matchedData.value = null;
+};
 </script>
 
 <style lang="scss" scoped>
@@ -173,6 +217,22 @@ watch(
         }
       }
     }
+  }
+}
+
+.scientific-name {
+  position: relative;
+
+  > .suggested {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #000;
+    padding: 4px;
+    z-index: 1;
   }
 }
 </style>
