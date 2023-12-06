@@ -780,6 +780,8 @@ export class ApRendererService {
 						isCat: "misskey:isCat",
 						// vcard
 						vcard: "http://www.w3.org/2006/vcard/ns#",
+						// Darwin Core
+						dwc: "http://rs.tdwg.org/dwc/terms/",
 					},
 				],
 			},

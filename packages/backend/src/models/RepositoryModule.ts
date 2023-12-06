@@ -6,6 +6,7 @@
 import { Module } from "@nestjs/common";
 import { DI } from "@/di-symbols.js";
 import {
+	IGIdentification,
 	IGObservation,
 	MiAbuseUserReport,
 	MiAccessToken,
@@ -472,6 +473,12 @@ const $observationsRepository: Provider = {
 	inject: [DI.db],
 };
 
+const $identificationsRepository: Provider = {
+	provide: DI.identificationsRepository,
+	useFactory: (db: DataSource) => db.getRepository(IGIdentification),
+	inject: [DI.db],
+};
+
 @Module({
 	imports: [],
 	providers: [
@@ -541,6 +548,7 @@ const $observationsRepository: Provider = {
 		$flashLikesRepository,
 		$userMemosRepository,
 		$observationsRepository,
+		$identificationsRepository,
 	],
 	exports: [
 		$usersRepository,
@@ -609,6 +617,7 @@ const $observationsRepository: Provider = {
 		$flashLikesRepository,
 		$userMemosRepository,
 		$observationsRepository,
+		$identificationsRepository,
 	],
 })
 export class RepositoryModule {}

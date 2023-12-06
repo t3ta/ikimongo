@@ -1,10 +1,10 @@
 {
-  "name": "tsconfig",
-  "private": true,
-  "version": "1.0.0",
-  "author": "UMITRON PTE. LTD",
-  "type": "module",
-  "devDependencies": {
-    "@tsconfig/recommended": "^1.0.3"
-  }
+	"name": "tsconfig",
+	"private": true,
+	"version": "1.0.0",
+	"author": "t3ta",
+	"type": "module",
+	"devDependencies": {
+		"@tsconfig/recommended": "^1.0.3"
+	}
 }

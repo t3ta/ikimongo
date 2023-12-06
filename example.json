@@ -1,0 +1,41 @@
+{
+	"basisOfRecord": "HumanObservation",
+	"bibliographicCitation": "Species recordings from the Danish National portal Arter.dk (Project by The Danish Environmental Protection Agency and The Natural History Museum of Denmark)",
+	"catalogNumber": "Arter_004c617d-76ad-4002-95b2-af990133cb3c",
+	"class": "Aves",
+	"coordinateUncertaintyInMeters": "68.32303560697996",
+	"country": "Denmark",
+	"countryCode": "DK",
+	"decimalLatitude": "56.11774118230281",
+	"decimalLongitude": "10.096339168508612",
+	"dynamicProperties": "{\"Substrate\":\"\"}",
+	"eventDate": "2023-01-29",
+	"eventTime": "10:24:10.000+01:00",
+	"extensions": {
+		"gbif:Multimedia": [
+			{
+				"identifier": "https://arter.dk/media/07618d71-1cdf-4afb-bdc8-af990133cabb.jpg",
+				"license": "https://creativecommons.org/licenses/by/4.0/",
+				"type": "Image"
+			}
+		]
+	},
+	"family": "Corvidae",
+	"genus": "Corvus",
+	"geodeticDatum": "EPSG:4326",
+	"id": "004c617d-76ad-4002-95b2-af990133cb3c",
+	"identifiedBy": "Mads Meilandt Sørensen",
+	"institutionCode": "MST-and-NHMD",
+	"language": "da",
+	"license": "https://creativecommons.org/licenses/by/4.0/legalcode",
+	"modified": "2023-02-01T16:33:07.898+01:00",
+	"occurrenceID": "https://arter.dk/observation/record-details/004c617d-76ad-4002-95b2-af990133cb3c",
+	"occurrenceStatus": "Present",
+	"order": "Passeriformes",
+	"phylum": "Chordata",
+	"recordedBy": "Mads Meilandt Sørensen",
+	"scientificName": "Corvus frugilegus Linnaeus, 1758",
+	"taxonID": "MSTSNM:Arter:8556c19a-65f8-4adc-b4ff-abc800d9ebbc",
+	"taxonRank": "SPECIES",
+	"vernacularName": "Råge"
+}

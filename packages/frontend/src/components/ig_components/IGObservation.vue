@@ -1,49 +1,53 @@
 <template>
-	<div>
-		<span class="observation-date">観察日：{{ date }}</span>
-		<div class="map-container">
-			<l-map
-				:zoom="15"
-				:center="[location.y, location.x]"
-				:useGlobalLeaflet="false"
-			>
-				<l-tile-layer
-					url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-					layerType="base"
-					name="OpenStreetMap"
-				></l-tile-layer>
-				<l-marker :latLng="[location.y, location.x]" />
-			</l-map>
-		</div>
-	</div>
+  <div>
+    <span class="observation-date">観察日：{{ date }}</span>
+    <div class="map-container">
+      <l-map
+        :zoom="10"
+        :center="[decimalLatitude ?? 0, decimalLongitude ?? 0]"
+        :useGlobalLeaflet="false"
+        :maxBounds="[
+          [decimalLatitude, decimalLongitude],
+          [decimalLatitude, decimalLongitude],
+        ]"
+        :maxBoundsViscosity="1.0"
+      >
+        <l-tile-layer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          layerType="base"
+          name="OpenStreetMap"
+        ></l-tile-layer>
+        <l-marker :latLng="[decimalLatitude ?? 0, decimalLongitude ?? 0]" />
+      </l-map>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-import { LMap, LMarker, LTileLayer } from "@vue-leaflet/vue-leaflet";
-import { DateTime } from "luxon";
+import { IIGObservation } from 'ikimongo-types';
+import { ref } from 'vue';
+import { LMap, LMarker, LTileLayer } from '@vue-leaflet/vue-leaflet';
 
-import "leaflet/dist/leaflet.css";
+import 'leaflet/dist/leaflet.css';
 
 const props = defineProps<{
-	location: {
-		x: number;
-		y: number;
-	};
-	date: string;
+  modelValue: IIGObservation;
 }>();
 
-const location = ref(props.location);
-const date = ref(DateTime.fromISO(props.date).toFormat("yyyy-MM-dd"));
+const decimalLatitude = ref(props.modelValue.decimalLatitude);
+const decimalLongitude = ref(props.modelValue.decimalLongitude);
+const date = ref(props.modelValue.date);
+console.log(typeof props.modelValue.date);
+console.log('hoge');
 </script>
 
 <style scoped>
 .map-container {
-	height: 300px;
-	margin: 1rem 0;
+  height: 300px;
+  margin: 1rem 0;
 }
 
 .observation-date {
-	font-size: 1.2rem;
+  font-size: 1.2rem;
 }
 </style>

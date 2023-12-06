@@ -66,7 +66,7 @@ import { useInterval } from "@/scripts/use-interval.js";
 import { i18n } from "@/i18n.js";
 
 const props = defineProps<{
-	modelValue: string | number | null;
+	modelValue: string | number | Date | null;
 	type?:
 		| "text"
 		| "number"

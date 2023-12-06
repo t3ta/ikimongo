@@ -1,0 +1,7 @@
+{
+	"name": "ikimongo-types",
+	"private": true,
+	"version": "1.0.0",
+	"author": "t3ta",
+	"main": "index.ts"
+}

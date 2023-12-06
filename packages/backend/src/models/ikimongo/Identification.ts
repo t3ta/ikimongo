@@ -4,126 +4,181 @@
  */
 
 import {
-	PrimaryColumn,
-	Entity,
-	Index,
-	JoinColumn,
-	Column,
-	ManyToOne,
-	OneToOne,
-} from "typeorm";
-import { id } from "@/models/util/id.js";
-import * as IGTypes from "@/IGTypes.js";
-import { MiUser } from "@/models/user/User.js";
-import { IGObservation } from "@/models/ikimongo/Observation.js";
-import { MiNote } from "@/models/note/Note.js";
+  PrimaryColumn,
+  Entity,
+  Index,
+  JoinColumn,
+  Column,
+  ManyToOne,
+  OneToOne,
+} from 'typeorm';
+import { id } from '@/models/util/id.js';
+import * as IGTypes from '@/IGTypes.js';
+import { MiUser } from '@/models/user/User.js';
+import { IGObservation } from '@/models/ikimongo/Observation.js';
+import { MiNote } from '@/models/note/Note.js';
 
-@Entity("identification")
-@Index(["observationId", "userId", "id"])
+@Entity('identification')
+@Index(['observationId', 'userId', 'id'])
 export class IGIdentification {
-	@PrimaryColumn(id())
-	public id: string;
+  @PrimaryColumn(id())
+  public readonly id: string;
 
-	@OneToOne((type) => MiNote, {
-		onDelete: "CASCADE",
-	})
-	@JoinColumn()
-	public note: MiNote | null;
+  @Index()
+  @Column({ ...id(), nullable: true })
+  public noteId: MiNote['id'] | null;
 
-	@Index()
-	@Column("timestamp with time zone", {
-		comment: "The created date of the Observation.",
-	})
-	public createdAt: Date;
+  @OneToOne(() => MiNote, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  public note: MiNote | null;
 
-	@Index()
-	@Column("timestamp with time zone", {
-		comment: "The created date of the Observation.",
-		nullable: true,
-	})
-	public updatedAt: Date | null;
+  @Index()
+  @Column('timestamp with time zone', {
+    comment: 'The created date of the Observation.',
+  })
+  public createdAt: Date;
 
-	@Index()
-	@Column({
-		...id(),
-		comment: "The ID of author.",
-	})
-	public userId: MiUser["id"];
+  @Index()
+  @Column('timestamp with time zone', {
+    comment: 'The created date of the Observation.',
+    nullable: true,
+  })
+  public updatedAt: Date | null;
 
-	@ManyToOne((type) => MiUser, {
-		onDelete: "SET NULL",
-	})
-	@JoinColumn()
-	public user: MiUser | null;
+  @Index()
+  @Column({
+    ...id(),
+    comment: 'dwc:identifiedBy http://rs.tdwg.org/dwc/terms/identifiedBy',
+  })
+  public userId: MiUser['id'];
 
-	@Index()
-	@Column({
-		...id(),
-		comment: "The Observation ID.",
-	})
-	public observationId: IGObservation["id"];
+  @ManyToOne(() => MiUser, {
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn()
+  public user: MiUser | null;
 
-	@ManyToOne((type) => IGObservation, {
-		onDelete: "CASCADE",
-	})
-	@Column({
-		...id(),
-		comment: "The Observation ID corresponding to the Identification.",
-	})
-	public observation: IGObservation;
+  @Index()
+  @Column({
+    ...id(),
+    comment: 'dwc:occurenceID http://rs.tdwg.org/dwc/terms/identificationID',
+  })
+  public observationId: IGObservation['id'];
 
-	@Index()
-	@Column("varchar", {
-		length: 128,
-		nullable: true,
-		comment: "The host of owner. It will be null if the user in local.",
-	})
-	public userHost: string | null;
+  @ManyToOne(() => IGObservation, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  public observation: IGObservation;
 
-	@Column("varchar", {
-		length: 128,
-		comment: "The scientific names of the Observation.",
-	})
-	public scientificName: string;
+  @Index()
+  @Column('varchar', {
+    length: 128,
+    nullable: true,
+    comment: 'The host of owner. It will be null if the user in local.',
+  })
+  public userHost: string | null;
 
-	@Index()
-	@Column("varchar", {
-		length: 128,
-		comment: "The common names of the Observation",
-	})
-	public japaneseName: string;
+  @Column('varchar', {
+    length: 128,
+    nullable: true,
+    comment: 'dwc:scientificName http://rs.tdwg.org/dwc/terms/scientificName',
+  })
+  public scientificName: string;
 
-	@Index()
-	@Column({
-		type: "enum",
-		enum: IGTypes.taxonomicRanks,
-		default: IGTypes.taxonomicRanks[6], // 'species'
-	})
-	public taxonomicRank: string;
+  @Column('varchar', {
+    length: 2000,
+    nullable: true,
+    comment: 'dwc:taxonID http://rs.tdwg.org/dwc/terms/taxonID',
+  })
+  public taxonId: string;
 
-	@Column("jsonb", {
-		default: {},
-	})
-	public taxon: IGTypes.Taxon;
+  @Index()
+  @Column('varchar', {
+    length: 128,
+    nullable: true,
+    comment: 'dwc:vernacularName http://rs.tdwg.org/dwc/terms/vernacularName',
+  })
+  public vernacularName: string;
 
-	@Column("varchar", {
-		length: 1024,
-		comment: "The description of the Identification.",
-	})
-	public description: string;
+  @Index()
+  @Column('varchar', {
+    length: 128,
+    nullable: true,
+    comment: 'dwc:taxonRank http://rs.tdwg.org/dwc/terms/taxonRank',
+  })
+  public taxonRank: string;
 
-	constructor(data: Partial<IGIdentification>) {
-		if (data == null) return;
+  @Index()
+  @Column('varchar', {
+    length: 128,
+    nullable: true,
+    comment: 'dwc:kingdom http://rs.tdwg.org/dwc/terms/kingdom',
+  })
+  public kingdom: string;
 
-		for (const [k, v] of Object.entries(data)) {
-			(this as any)[k] = v;
-		}
-	}
+  @Index()
+  @Column('varchar', {
+    length: 128,
+    nullable: true,
+    comment: 'dwc:phylum http://rs.tdwg.org/dwc/terms/phylum',
+  })
+  public phylum: string;
+
+  @Index()
+  @Column('varchar', {
+    length: 128,
+    nullable: true,
+    comment: 'dwc:class http://rs.tdwg.org/dwc/terms/class',
+  })
+  public class: string;
+
+  @Index()
+  @Column('varchar', {
+    length: 128,
+    nullable: true,
+    comment: 'dwc:order http://rs.tdwg.org/dwc/terms/order',
+  })
+  public order: string;
+
+  @Index()
+  @Column('varchar', {
+    length: 128,
+    nullable: true,
+    comment: 'dwc:family http://rs.tdwg.org/dwc/terms/family',
+  })
+  public family: string;
+
+  @Index()
+  @Column('varchar', {
+    length: 128,
+    nullable: true,
+    comment: 'dwc:genus http://rs.tdwg.org/dwc/terms/genus',
+  })
+  public genus: string;
+
+  @Index()
+  @Column('char', {
+    length: 128,
+    nullable: true,
+    comment: 'dwc:language http://rs.tdwg.org/dwc/terms/countryCode',
+  })
+  public language: string;
+
+  @Column('varchar', {
+    length: 1024,
+    nullable: true,
+    comment: 'The description of the Identification.',
+  })
+  public description: string;
+
+  constructor(data: Partial<IGIdentification>) {
+    if (data == null) return;
+
+    for (const [k, v] of Object.entries(data)) {
+      (this as any)[k] = v;
+    }
+  }
 }
-
-export type IIGIdentification = {
-	japaneseName?: string;
-	scientificName?: string;
-	taxonomicRank?: string;
-	taxon?: IGTypes.Taxon;
-};

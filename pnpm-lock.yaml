@@ -206,6 +206,9 @@ importers:
       http-link-header:
         specifier: 1.1.1
         version: 1.1.1
+      ikimongo-types:
+        specifier: workspace:*
+        version: link:../ikimongo-types
       ioredis:
         specifier: 5.3.2
         version: 5.3.2
@@ -742,6 +745,9 @@ importers:
       idb-keyval:
         specifier: 6.2.1
         version: 6.2.1
+      ikimongo-types:
+        specifier: workspace:*
+        version: link:../ikimongo-types
       insert-text-at-cursor:
         specifier: 0.3.0
         version: 0.3.0
@@ -1029,6 +1035,8 @@ importers:
         specifier: 1.8.15
         version: 1.8.15(typescript@5.2.2)
 
+  packages/ikimongo-types: {}
+
   packages/misskey-js:
     dependencies:
       '@swc/cli':
@@ -1065,6 +1073,9 @@ importers:
       eslint:
         specifier: 8.50.0
         version: 8.50.0
+      ikimongo-types:
+        specifier: workspace:*
+        version: link:../ikimongo-types
       jest:
         specifier: 29.7.0
         version: 29.7.0(@types/node@20.7.1)
@@ -6860,7 +6871,7 @@ packages:
       ts-dedent: 2.2.0
       type-fest: 2.19.0
       vue: 3.3.4
-      vue-component-type-helpers: 1.8.22
+      vue-component-type-helpers: 1.8.24
     transitivePeerDependencies:
       - encoding
       - supports-color
@@ -19204,8 +19215,8 @@ packages:
     resolution: {integrity: sha512-Dhxzh5HZuiHQhbvTW9AMetFfBHDMYpo23Uo9btPXgdYP+3T5S+p+jgNy7spra+veYhBP2dCSgxR/i2Y02h5/6w==}
     engines: {node: '>=0.10.0'}
 
-  /vue-component-type-helpers@1.8.22:
-    resolution: {integrity: sha512-LK3wJHs3vJxHG292C8cnsRusgyC5SEZDCzDCD01mdE/AoREFMl2tzLRuzwyuEsOIz13tqgBcnvysN3Lxsa14Fw==}
+  /vue-component-type-helpers@1.8.24:
+    resolution: {integrity: sha512-lqWs/7fdRXoSBAlbouHBX+LNuaY6gI9xWW34m/ZIz9zVPYHEyw0b2/zaCBwlKx0NtKTeF/6pOpvrxVkh7nhIYg==}
     dev: true
 
   /vue-demi@0.13.11(vue@3.3.4):
